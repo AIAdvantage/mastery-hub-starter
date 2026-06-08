@@ -74,51 +74,105 @@ const TRACKS = [
   },
 ];
 
-const CORE_RESOURCES = [
+const MONTH_BUILDS = [
   {
-    title: "Month 5 Sales Build",
-    emoji: "🎯",
-    outcome: "sales",
-    path: ["business", "stuck", "advanced"],
-    rung: "R4",
-    format: "Workshop",
-    month: "Month 5",
-    summary: "Meeting transcript to intelligence report, proposal, and follow-up.",
-    action: "Open the build page",
-  },
-  {
+    month: "Month 1",
     title: "Personal Advisory Board",
     emoji: "🧠",
-    outcome: "strategy",
-    path: ["personal", "steady", "advanced"],
+    upstream: "Self-awareness and reflection",
+    system: "DNA extraction to five AI advisors",
+    output: "Custom advisory board that knows the member's context",
     rung: "R3",
-    format: "System",
-    month: "Month 1",
-    summary: "DNA extraction into five advisors who challenge and guide decisions.",
-    action: "Adapt advisors",
+    tool: "ChatGPT Custom GPTs",
+    prework: "Bring personal DNA notes or use the guided intake fallback.",
+    challenge: "Create your own advisory board and use it on one real decision.",
+    paths: {
+      business: "Turn the advisors into a CEO room for strategy, delegation, and tradeoff decisions.",
+      personal: "Use advisors for legacy, family decisions, learning plans, and life direction.",
+      steady: "Build one advisor first, test it on one question, then add the other four.",
+      advanced: "Package the advisor prompt stack as a reusable skill or client-facing template.",
+      stuck: "Submit the advisor that feels generic plus the context it failed to use.",
+    },
   },
   {
-    title: "Time Buyback Sheet",
-    emoji: "⏱️",
-    outcome: "time",
-    path: ["business", "steady", "personal"],
+    month: "Month 2",
+    title: "Strategy Dashboard",
+    emoji: "🗺️",
+    upstream: "Strategic thinking",
+    system: "Clone DNA to roadmap dashboard",
+    output: "Long-term vision, low-hanging fruit, and quarterly roadmap",
     rung: "R3",
-    format: "Template",
+    tool: "ChatGPT + Lovable",
+    prework: "Bring business or project DNA. Backup: use the sample owner-operator profile.",
+    challenge: "Build a simple strategy dashboard for a real business, job, or project.",
+    paths: {
+      business: "Map offers, bottlenecks, next hires, and the next 90-day operating plan.",
+      personal: "Map a second-chapter project, learning plan, or family archive roadmap.",
+      steady: "Skip the app wrapper and complete only the roadmap artifact.",
+      advanced: "Turn the roadmap into a living dashboard with review cadence and update prompts.",
+      stuck: "Submit the part where the dashboard became too broad or too generic.",
+    },
+  },
+  {
     month: "Month 3",
-    summary: "Map recurring tasks, identify the biggest time killer, and automate the first draft.",
-    action: "Find my bottleneck",
+    title: "Time Buyback System",
+    emoji: "⏱️",
+    upstream: "Time awareness",
+    system: "Task map to automation candidates",
+    output: "AI-assisted sheet that finds and drafts the first automation target",
+    rung: "R3",
+    tool: "Google Sheets AI + ChatGPT",
+    prework: "Bring a rough list of weekly tasks. Backup: use the sample week.",
+    challenge: "Automate or delegate the highest-friction recurring task.",
+    paths: {
+      business: "Find the work only the owner still approves and build the first handoff.",
+      personal: "Turn scattered routines into a weekly planning assistant.",
+      steady: "Track only one day, choose one task, and write one reusable prompt.",
+      advanced: "Create a weekly time audit pipeline with recurring review and improvement.",
+      stuck: "Submit the task that resists automation and the exact reason it still needs you.",
+    },
   },
   {
+    month: "Month 4",
     title: "Marketing Skill Builder",
     emoji: "📣",
-    outcome: "marketing",
-    path: ["business", "advanced", "steady"],
+    upstream: "Creative multiplication",
+    system: "Source idea to reusable Claude skill",
+    output: "Platform-ready content generated from one source idea",
     rung: "R4",
-    format: "Skill",
-    month: "Month 4",
-    summary: "Create a reusable Claude skill that turns source ideas into platform-ready assets.",
-    action: "Make a skill",
+    tool: "Claude Cowork",
+    prework: "Bring one content idea, offer, or story. Backup: use the provided sample.",
+    challenge: "Build and share your first reusable skill.",
+    paths: {
+      business: "Turn an offer, listing, case study, or client story into reusable marketing output.",
+      personal: "Create a family newsletter, learning reflection, or personal project update system.",
+      steady: "Make one format work before adding multiple platforms.",
+      advanced: "Package the skill with examples, constraints, QA checks, and install instructions.",
+      stuck: "Submit where the skill loses your voice or produces bland output.",
+    },
   },
+  {
+    month: "Month 5",
+    title: "AI Meeting Command Center",
+    emoji: "🎯",
+    upstream: "Active listening and empathy",
+    system: "Transcript to intelligence, proposal, and follow-up",
+    output: "Meeting intelligence report, proposal, and follow-up sequence",
+    rung: "R4",
+    tool: "Claude Cowork + Connectors",
+    prework: "Bring 2-3 real transcripts. Backup: use the sample transcript.",
+    challenge: "Run the system on three real meetings and bring the best output to demo.",
+    paths: {
+      business: "Use sales, client, tenant, or vendor conversations to improve follow-up and conversion.",
+      personal: "Use family interviews, advisory calls, or planning conversations to capture decisions.",
+      steady: "Generate only the intelligence report before attempting proposals or follow-up.",
+      advanced: "Create a dispatcher for sales, coaching, internal, and vendor meetings.",
+      stuck: "Submit the transcript, the weak output, and the exact output you expected.",
+    },
+  },
+];
+
+const CORE_RESOURCES = [
   {
     title: "ChatGPT to Claude Bridge",
     emoji: "🌉",
@@ -167,6 +221,31 @@ const SHOWCASE = [
 ];
 
 const OUTCOMES = ["all", "sales", "time", "marketing", "strategy", "setup", "advanced"];
+const MONTH_FILTERS = ["all", ...MONTH_BUILDS.map((build) => build.month), "Resource", "Ongoing", "Vault"];
+const RUNG_FILTERS = ["all", ...RUNGS.map((rung) => rung.id)];
+const FORMAT_FILTERS = ["all", "Workshop", "System", "Template", "Skill", "Guide", "Peer Track", "Tool", "Library"];
+
+function buildToResource(build) {
+  const outcomeMap = {
+    "Month 1": "strategy",
+    "Month 2": "strategy",
+    "Month 3": "time",
+    "Month 4": "marketing",
+    "Month 5": "sales",
+  };
+  return {
+    title: build.title,
+    emoji: build.emoji,
+    outcome: outcomeMap[build.month] || "strategy",
+    path: Object.keys(build.paths),
+    rung: build.rung,
+    format: "Workshop",
+    month: build.month,
+    summary: `${build.system}. Output: ${build.output}.`,
+    action: "Open monthly build page",
+    build,
+  };
+}
 
 function normalizeVaultCard(card) {
   const category = (card.fm.category || "tools").toLowerCase();
@@ -196,8 +275,12 @@ export default function App() {
   const [error, setError] = useState(null);
   const [selectedPath, setSelectedPath] = useState("business");
   const [outcome, setOutcome] = useState("all");
+  const [monthFilter, setMonthFilter] = useState("all");
+  const [rungFilter, setRungFilter] = useState("all");
+  const [formatFilter, setFormatFilter] = useState("all");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(null);
+  const [buildOpen, setBuildOpen] = useState(null);
   const [makeMineOpen, setMakeMineOpen] = useState(false);
   const [stuckOpen, setStuckOpen] = useState(false);
   const [dark, setDark] = useState(() => localStorage.getItem("hub-theme") === "dark");
@@ -217,7 +300,8 @@ export default function App() {
 
   const resources = useMemo(() => {
     const vaultResources = cards.map(normalizeVaultCard);
-    return [...CORE_RESOURCES, ...vaultResources];
+    const monthlyResources = MONTH_BUILDS.map(buildToResource);
+    return [...monthlyResources, ...CORE_RESOURCES, ...vaultResources];
   }, [cards]);
 
   const filteredResources = useMemo(() => {
@@ -225,15 +309,18 @@ export default function App() {
     return resources.filter((resource) => {
       const matchesPath = resource.path.includes(selectedPath);
       const matchesOutcome = outcome === "all" || resource.outcome === outcome;
+      const matchesMonth = monthFilter === "all" || resource.month === monthFilter;
+      const matchesRung = rungFilter === "all" || resource.rung === rungFilter;
+      const matchesFormat = formatFilter === "all" || resource.format === formatFilter;
       const matchesQuery =
         !q ||
         [resource.title, resource.summary, resource.format, resource.month]
           .join(" ")
           .toLowerCase()
           .includes(q);
-      return matchesPath && matchesOutcome && matchesQuery;
+      return matchesPath && matchesOutcome && matchesMonth && matchesRung && matchesFormat && matchesQuery;
     });
-  }, [outcome, query, resources, selectedPath]);
+  }, [formatFilter, monthFilter, outcome, query, resources, rungFilter, selectedPath]);
 
   const activePath = PATHS.find((path) => path.id === selectedPath);
   const pathResources = resources.filter((resource) => resource.path.includes(selectedPath)).length;
@@ -247,6 +334,7 @@ export default function App() {
         </div>
         <div className="navtabs">
           <a href="#month">This Month</a>
+          <a href="#builds">Build Pages</a>
           <a href="#paths">Paths</a>
           <a href="#library">Library</a>
           <a href="#support">Support</a>
@@ -270,6 +358,7 @@ export default function App() {
             <div className="heroactions">
               <button className="primary" onClick={() => setMakeMineOpen(true)}>Make It Mine</button>
               <button className="secondary" onClick={() => setStuckOpen(true)}>I Am Stuck</button>
+              <button className="secondary" onClick={() => setBuildOpen(MONTH_BUILDS[4])}>Open Build Page</button>
             </div>
           </div>
           <aside className="current">
@@ -304,6 +393,32 @@ export default function App() {
                 <h3>{track.title}</h3>
                 <p>{track.copy}</p>
               </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section" id="builds">
+          <div className="sechead">
+            <h2>Monthly Build Pages</h2>
+            <span className="secblurb">Canonical pages for Months 1-5 with pre-work, outputs, challenge, and path adaptations.</span>
+          </div>
+          <div className="buildgrid">
+            {MONTH_BUILDS.map((build) => (
+              <button className="buildcard" key={build.month} onClick={() => setBuildOpen(build)}>
+                <div className="buildtop">
+                  <span>{build.month}</span>
+                  <span className={`rung ${build.rung}`}>{build.rung}</span>
+                </div>
+                <div className="buildtitle">
+                  <span>{build.emoji}</span>
+                  <strong>{build.title}</strong>
+                </div>
+                <p>{build.output}</p>
+                <div className="buildmeta">
+                  <span>{build.upstream}</span>
+                  <span>{build.tool}</span>
+                </div>
+              </button>
             ))}
           </div>
         </section>
@@ -346,6 +461,30 @@ export default function App() {
                 ))}
               </select>
             </label>
+            <label>
+              <span>Month</span>
+              <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}>
+                {MONTH_FILTERS.map((item) => (
+                  <option key={item} value={item}>{item === "all" ? "All months" : item}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Rung</span>
+              <select value={rungFilter} onChange={(e) => setRungFilter(e.target.value)}>
+                {RUNG_FILTERS.map((item) => (
+                  <option key={item} value={item}>{item === "all" ? "All rungs" : item}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Format</span>
+              <select value={formatFilter} onChange={(e) => setFormatFilter(e.target.value)}>
+                {FORMAT_FILTERS.map((item) => (
+                  <option key={item} value={item}>{item === "all" ? "All formats" : item}</option>
+                ))}
+              </select>
+            </label>
             <label className="search">
               <span>Find</span>
               <input
@@ -360,7 +499,11 @@ export default function App() {
           {!loading && (
             <div className="resourcegrid">
               {filteredResources.map((resource, index) => (
-                <button className="resource" key={`${resource.title}-${index}`} onClick={() => setOpen(resource)}>
+                <button
+                  className="resource"
+                  key={`${resource.title}-${index}`}
+                  onClick={() => (resource.build ? setBuildOpen(resource.build) : setOpen(resource))}
+                >
                   <div className="resourcetop">
                     <span className="resourceicon">{resource.emoji}</span>
                     <span className={`rung ${resource.rung}`}>{resource.rung}</span>
@@ -426,10 +569,79 @@ export default function App() {
       </main>
 
       {open && <ResourceModal resource={open} onClose={() => setOpen(null)} />}
+      {buildOpen && <BuildModal build={buildOpen} selectedPath={selectedPath} onClose={() => setBuildOpen(null)} />}
       {makeMineOpen && <MakeMineModal selectedPath={selectedPath} onClose={() => setMakeMineOpen(false)} />}
       {stuckOpen && <StuckModal onClose={() => setStuckOpen(false)} />}
 
       <footer>Comparison fork · Mastery Avatar DNA v2.0 · powered by Claude Cowork + GitHub</footer>
+    </div>
+  );
+}
+
+function BuildModal({ build, selectedPath, onClose }) {
+  return (
+    <div className="modal" onClick={(e) => e.target.className === "modal" && onClose()}>
+      <div className="panel buildpanel">
+        <button className="x" onClick={onClose}>×</button>
+        <div className="phead">
+          <div className="icon big">{build.emoji}</div>
+          <div>
+            <h2>{build.title}</h2>
+            <div className="pmeta">
+              <span>{build.month}</span>
+              <span className={`rung ${build.rung}`}>{build.rung}</span>
+              <span>{build.tool}</span>
+            </div>
+          </div>
+        </div>
+        <div className="buildpage">
+          <section>
+            <h3>The Promise</h3>
+            <p>{build.output}</p>
+          </section>
+          <div className="twocol">
+            <section>
+              <h3>Upstream Principle</h3>
+              <p>{build.upstream}</p>
+            </section>
+            <section>
+              <h3>Downstream System</h3>
+              <p>{build.system}</p>
+            </section>
+          </div>
+          <div className="twocol">
+            <section>
+              <h3>Pre-work</h3>
+              <p>{build.prework}</p>
+            </section>
+            <section>
+              <h3>Challenge</h3>
+              <p>{build.challenge}</p>
+            </section>
+          </div>
+          <section>
+            <h3>Adapt This Build</h3>
+            <div className="adaptgrid">
+              {PATHS.map((path) => (
+                <button className={path.id === selectedPath ? "on" : ""} key={path.id}>
+                  <strong>{path.short}</strong>
+                  <span>{build.paths[path.id]}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+          <section>
+            <h3>Resource Page Checklist</h3>
+            <ul>
+              <li>Finished demo in the first five minutes.</li>
+              <li>Pre-work plus fallback for members who did not prepare.</li>
+              <li>Minimum Win, Full Build, and Power-Up clearly separated.</li>
+              <li>Submission example for each member path.</li>
+              <li>Troubleshooting prompts for common stuck points.</li>
+            </ul>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
