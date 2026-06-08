@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CONFIG } from "./config.js";
-import { loadVault, mdToHtml } from "./lib/vault.js";
+import { loadVault, loadDna, mdToHtml } from "./lib/vault.js";
 
 const RUNGS = [
   { id: "R1", label: "Prompt" },
@@ -18,6 +18,7 @@ const CATEGORIES = [
 
 export default function App() {
   const [cards, setCards] = useState([]);
+  const [dna, setDna] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(null);
@@ -28,7 +29,21 @@ export default function App() {
       .then(setCards)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+    loadDna(CONFIG.githubRepo).then(setDna).catch(() => {});
   }, []);
+
+  async function downloadDna(file) {
+    try {
+      const text = await (await fetch(file.downloadUrl)).text();
+      const blob = new Blob([text], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (_) {}
+  }
 
   const counts = useMemo(() => {
     const c = { all: cards.length };
@@ -63,6 +78,11 @@ export default function App() {
               {c.emoji} {c.label} <span className="ct">{counts[c.id] || 0}</span>
             </button>
           ))}
+          {dna.length > 0 && (
+            <button className={tab === "dna" ? "on" : ""} onClick={() => setTab("dna")}>
+              🧬 DNA <span className="ct">{dna.length}</span>
+            </button>
+          )}
         </div>
         <a className="repo" href={`https://github.com/${CONFIG.githubRepo}`} target="_blank" rel="noreferrer">
           vault ↗
@@ -95,7 +115,26 @@ export default function App() {
           </div>
         )}
 
-        {!loading && !error &&
+        {/* DNA REPOSITORY */}
+        {!loading && dna.length > 0 && (tab === "all" || tab === "dna") && (
+          <section className="section">
+            <div className="sechead">
+              <h2><span className="secemoji">🧬</span> DNA Files</h2>
+              <span className="secblurb">Your AI's context — download any file with one click</span>
+            </div>
+            <div className="dnagrid">
+              {dna.map((f, i) => (
+                <div className="dnacard" key={i}>
+                  <span className="dnaicon">🧬</span>
+                  <span className="dnatitle">{f.title}</span>
+                  <button className="dnabtn" onClick={() => downloadDna(f)}>↓ Download</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {!loading && !error && tab !== "dna" &&
           groups.map(
             ({ cat, items }) =>
               items.length > 0 && (

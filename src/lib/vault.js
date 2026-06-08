@@ -46,6 +46,21 @@ export async function loadVault(repo, folder = "") {
   return cards;
 }
 
+// Lists DNA files from a /dna folder in the repo, for 1-click download.
+export async function loadDna(repo, folder = "dna") {
+  const api = `https://api.github.com/repos/${repo}/contents/${folder}`;
+  const res = await fetch(api);
+  if (!res.ok) return []; // no dna folder yet = fine
+  const list = await res.json();
+  return list
+    .filter((f) => f.name.endsWith(".md"))
+    .map((f) => ({
+      name: f.name,
+      title: f.name.replace(/\.md$/, "").replace(/-/g, " ").replace(/dna/i, "DNA"),
+      downloadUrl: f.download_url,
+    }));
+}
+
 // Tiny markdown -> HTML (enough for task outputs; no deps so it imports cleanly into Lovable)
 export function mdToHtml(s) {
   return s
