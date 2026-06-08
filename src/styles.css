@@ -202,6 +202,9 @@ h1 {
 .path,
 .buildcard,
 .resource,
+.recommendation,
+.diagnosticform,
+.signalgrid article,
 .supportbox,
 .dnagrid a {
   background: var(--surface);
@@ -212,6 +215,57 @@ h1 {
 .current {
   border-radius: 14px;
   padding: 22px;
+}
+
+.diagnosticgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, .65fr);
+  gap: 14px;
+}
+
+.diagnosticform {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.diagnosticform label {
+  display: grid;
+  gap: 6px;
+}
+
+.diagnosticform span {
+  color: var(--mut);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.recommendation {
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.recommendation h3 {
+  margin: 14px 0 8px;
+  font-size: 20px;
+}
+
+.recommendation p,
+.recommendation li {
+  color: var(--mut);
+  font-size: 14px;
+}
+
+.recommendation ol {
+  padding-left: 20px;
+}
+
+.heroactions.compact {
+  margin-top: 14px;
 }
 
 .currenttop,
@@ -609,6 +663,42 @@ textarea {
   letter-spacing: .06em;
 }
 
+.signalgrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.signalgrid article {
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.signalbar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface2);
+}
+
+.signalbar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent2);
+}
+
+.signalgrid h3 {
+  margin: 12px 0 8px;
+  font-size: 16px;
+}
+
+.signalgrid p {
+  margin: 0;
+  color: var(--mut);
+  font-size: 13px;
+}
+
 .dnagrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -807,6 +897,16 @@ textarea {
   color: var(--mut);
 }
 
+.generated ol {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.generated li {
+  color: var(--mut);
+  margin: 4px 0;
+}
+
 footer {
   max-width: 1160px;
   margin: 0 auto;
@@ -818,13 +918,15 @@ footer {
 
 @media (max-width: 900px) {
   .hero,
+  .diagnosticgrid,
   .split {
     grid-template-columns: 1fr;
   }
 
   .pathgrid,
   .trackgrid,
-  .adaptgrid {
+  .adaptgrid,
+  .signalgrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -859,7 +961,9 @@ footer {
   .trackgrid,
   .filters,
   .twocol,
-  .adaptgrid {
+  .adaptgrid,
+  .diagnosticform,
+  .signalgrid {
     grid-template-columns: 1fr;
   }
 

@@ -220,6 +220,27 @@ const SHOWCASE = [
   },
 ];
 
+const GOALS = [
+  { id: "sales", label: "Improve sales or follow-up", build: "Month 5" },
+  { id: "time", label: "Get time back", build: "Month 3" },
+  { id: "strategy", label: "Clarify the plan", build: "Month 2" },
+  { id: "marketing", label: "Create reusable content", build: "Month 4" },
+  { id: "personal", label: "Build for life or legacy", build: "Month 1" },
+];
+
+const COMFORT_LEVELS = [
+  { id: "starter", label: "I need a simple path", depth: "Minimum Win" },
+  { id: "builder", label: "I can follow the workshop", depth: "Full Build" },
+  { id: "power", label: "Give me the advanced lane", depth: "Power-Up" },
+];
+
+const STUCK_POINTS = [
+  { id: "context", label: "My AI gives generic output", fix: "Add better DNA, examples, and success criteria before prompting." },
+  { id: "setup", label: "Tool or connector setup breaks", fix: "Use fallback files first, then troubleshoot the connector separately." },
+  { id: "adaptation", label: "I cannot adapt it to my situation", fix: "Start with the Make It Mine plan before rebuilding the system." },
+  { id: "finish", label: "I start but do not finish", fix: "Use the Minimum Win path and stop before the power-up." },
+];
+
 const OUTCOMES = ["all", "sales", "time", "marketing", "strategy", "setup", "advanced"];
 const MONTH_FILTERS = ["all", ...MONTH_BUILDS.map((build) => build.month), "Resource", "Ongoing", "Vault"];
 const RUNG_FILTERS = ["all", ...RUNGS.map((rung) => rung.id)];
@@ -268,6 +289,24 @@ function pathName(pathId) {
   return PATHS.find((path) => path.id === pathId)?.short || pathId;
 }
 
+function getDiagnosticPlan(diagnostic) {
+  const goal = GOALS.find((item) => item.id === diagnostic.goal) || GOALS[0];
+  const comfort = COMFORT_LEVELS.find((item) => item.id === diagnostic.comfort) || COMFORT_LEVELS[0];
+  const stuck = STUCK_POINTS.find((item) => item.id === diagnostic.stuck) || STUCK_POINTS[0];
+  const build = MONTH_BUILDS.find((item) => item.month === goal.build) || MONTH_BUILDS[4];
+  return {
+    goal,
+    comfort,
+    stuck,
+    build,
+    steps: [
+      `Start with ${build.month}: ${build.title}.`,
+      `Use the ${comfort.depth} version before adding anything else.`,
+      stuck.fix,
+    ],
+  };
+}
+
 export default function App() {
   const [cards, setCards] = useState([]);
   const [dna, setDna] = useState([]);
@@ -284,6 +323,12 @@ export default function App() {
   const [makeMineOpen, setMakeMineOpen] = useState(false);
   const [stuckOpen, setStuckOpen] = useState(false);
   const [dark, setDark] = useState(() => localStorage.getItem("hub-theme") === "dark");
+  const [diagnostic, setDiagnostic] = useState({
+    path: "business",
+    goal: "sales",
+    comfort: "builder",
+    stuck: "adaptation",
+  });
 
   useEffect(() => {
     loadVault(CONFIG.githubRepo, CONFIG.vaultFolder)
@@ -324,6 +369,7 @@ export default function App() {
 
   const activePath = PATHS.find((path) => path.id === selectedPath);
   const pathResources = resources.filter((resource) => resource.path.includes(selectedPath)).length;
+  const diagnosticPlan = getDiagnosticPlan(diagnostic);
 
   return (
     <div className="app">
@@ -334,6 +380,7 @@ export default function App() {
         </div>
         <div className="navtabs">
           <a href="#month">This Month</a>
+          <a href="#diagnostic">Diagnostic</a>
           <a href="#builds">Build Pages</a>
           <a href="#paths">Paths</a>
           <a href="#library">Library</a>
@@ -376,6 +423,81 @@ export default function App() {
               <span>{CURRENT_BUILD.nextAction}</span>
             </div>
           </aside>
+        </section>
+
+        <section className="section diagnostic" id="diagnostic">
+          <div className="sechead">
+            <h2>Member Diagnostic</h2>
+            <span className="secblurb">Five quick choices turn the hub into a guided starting point.</span>
+          </div>
+          <div className="diagnosticgrid">
+            <div className="diagnosticform">
+              <label>
+                <span>Use case</span>
+                <select
+                  value={diagnostic.path}
+                  onChange={(e) => {
+                    setDiagnostic((state) => ({ ...state, path: e.target.value }));
+                    setSelectedPath(e.target.value);
+                  }}
+                >
+                  {PATHS.map((path) => (
+                    <option key={path.id} value={path.id}>{path.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Main goal</span>
+                <select
+                  value={diagnostic.goal}
+                  onChange={(e) => setDiagnostic((state) => ({ ...state, goal: e.target.value }))}
+                >
+                  {GOALS.map((goal) => (
+                    <option key={goal.id} value={goal.id}>{goal.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Comfort</span>
+                <select
+                  value={diagnostic.comfort}
+                  onChange={(e) => setDiagnostic((state) => ({ ...state, comfort: e.target.value }))}
+                >
+                  {COMFORT_LEVELS.map((level) => (
+                    <option key={level.id} value={level.id}>{level.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Likely blocker</span>
+                <select
+                  value={diagnostic.stuck}
+                  onChange={(e) => setDiagnostic((state) => ({ ...state, stuck: e.target.value }))}
+                >
+                  {STUCK_POINTS.map((point) => (
+                    <option key={point.id} value={point.id}>{point.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <aside className="recommendation">
+              <div className="currenttop">
+                <span>Recommended start</span>
+                <span className={`rung ${diagnosticPlan.build.rung}`}>{diagnosticPlan.build.rung}</span>
+              </div>
+              <h3>{diagnosticPlan.build.title}</h3>
+              <p>{diagnosticPlan.build.output}</p>
+              <ol>
+                {diagnosticPlan.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+              <div className="heroactions compact">
+                <button className="primary" onClick={() => setBuildOpen(diagnosticPlan.build)}>Open Plan</button>
+                <button className="secondary" onClick={() => setMakeMineOpen(true)}>Adapt It</button>
+              </div>
+            </aside>
+          </div>
         </section>
 
         <section className="section tracks">
@@ -433,7 +555,10 @@ export default function App() {
               <button
                 className={`path ${selectedPath === path.id ? "on" : ""}`}
                 key={path.id}
-                onClick={() => setSelectedPath(path.id)}
+                onClick={() => {
+                  setSelectedPath(path.id);
+                  setDiagnostic((state) => ({ ...state, path: path.id }));
+                }}
               >
                 <span>{path.label}</span>
                 <small>{path.signal}</small>
@@ -542,12 +667,36 @@ export default function App() {
             </div>
             <div className="showcase">
               {SHOWCASE.map((item) => (
-                <button key={item.title} onClick={() => setSelectedPath(item.path)}>
+                <button
+                  key={item.title}
+                  onClick={() => {
+                    setSelectedPath(item.path);
+                    setDiagnostic((state) => ({ ...state, path: item.path }));
+                  }}
+                >
                   <span>{item.label}</span>
                   <strong>{item.title}</strong>
                 </button>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="section supportinsights">
+          <div className="sechead">
+            <h2>Catch-Up Planning Signals</h2>
+            <span className="secblurb">Stuck Desk submissions become facilitation priorities.</span>
+          </div>
+          <div className="signalgrid">
+            {STUCK_POINTS.map((point, index) => (
+              <article key={point.id}>
+                <div className="signalbar">
+                  <span style={{ width: `${86 - index * 14}%` }} />
+                </div>
+                <h3>{point.label}</h3>
+                <p>{point.fix}</p>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -685,6 +834,20 @@ function ResourceModal({ resource, onClose }) {
 
 function MakeMineModal({ selectedPath, onClose }) {
   const path = PATHS.find((item) => item.id === selectedPath);
+  const [inputs, setInputs] = useState({
+    useCase: "I want to turn this month's build into a system for my real situation.",
+    context: "I have transcripts, notes, client DNA, examples, and a few rough outputs.",
+    output: "A report, proposal, checklist, weekly digest, or reusable skill.",
+  });
+  const update = (key) => (event) => setInputs((state) => ({ ...state, [key]: event.target.value }));
+  const plan = [
+    `Path: ${path.label}. ${path.signal}`,
+    `Use case: ${inputs.useCase}`,
+    `Context to load first: ${inputs.context}`,
+    `Finished output: ${inputs.output}`,
+    "Minimum Win: create the smallest useful artifact from one real input.",
+    "Power-Up: package the workflow as a reusable prompt chain or Claude skill after the first win works.",
+  ];
   return (
     <div className="modal" onClick={(e) => e.target.className === "modal" && onClose()}>
       <div className="panel">
@@ -699,20 +862,24 @@ function MakeMineModal({ selectedPath, onClose }) {
         <div className="formgrid">
           <label>
             <span>What are you trying to use this for?</span>
-            <textarea defaultValue="I want to turn this month's build into..." />
+            <textarea value={inputs.useCase} onChange={update("useCase")} />
           </label>
           <label>
             <span>What context or files do you already have?</span>
-            <textarea defaultValue="I have transcripts, notes, client DNA, examples..." />
+            <textarea value={inputs.context} onChange={update("context")} />
           </label>
           <label>
             <span>What should the finished system produce?</span>
-            <textarea defaultValue="A report, proposal, checklist, weekly digest..." />
+            <textarea value={inputs.output} onChange={update("output")} />
           </label>
         </div>
         <div className="generated">
-          <strong>Preview output</strong>
-          <p>Customized implementation plan, adapted prompts, minimum win, and optional power-up for this path.</p>
+          <strong>Generated adaptation plan</strong>
+          <ol>
+            {plan.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
         </div>
       </div>
     </div>
@@ -720,6 +887,20 @@ function MakeMineModal({ selectedPath, onClose }) {
 }
 
 function StuckModal({ onClose }) {
+  const [ticket, setTicket] = useState({
+    build: "Meeting Command Center for my current use case",
+    worked: "The project setup worked, but the output still feels too generic.",
+    broke: "Step 2 produced generic output / connector failed / prompt drifted.",
+    success: "I want the output to be usable enough to share with a client, teammate, or family member.",
+  });
+  const update = (key) => (event) => setTicket((state) => ({ ...state, [key]: event.target.value }));
+  const summary = [
+    `Build: ${ticket.build}`,
+    `Known good: ${ticket.worked}`,
+    `Broken point: ${ticket.broke}`,
+    `Success target: ${ticket.success}`,
+    "Next prompt to try: Compare the weak output to the success target, identify missing context, then rewrite only the next smallest step.",
+  ];
   return (
     <div className="modal" onClick={(e) => e.target.className === "modal" && onClose()}>
       <div className="panel">
@@ -734,24 +915,28 @@ function StuckModal({ onClose }) {
         <div className="formgrid">
           <label>
             <span>What are you building?</span>
-            <input defaultValue="Meeting Command Center for..." />
+            <input value={ticket.build} onChange={update("build")} />
           </label>
           <label>
             <span>What worked?</span>
-            <textarea defaultValue="The project setup worked, but..." />
+            <textarea value={ticket.worked} onChange={update("worked")} />
           </label>
           <label>
             <span>Where did it break?</span>
-            <textarea defaultValue="Step 2 produced generic output / connector failed / prompt drifted..." />
+            <textarea value={ticket.broke} onChange={update("broke")} />
           </label>
           <label>
             <span>What would success look like?</span>
-            <textarea defaultValue="I want the output to be usable enough to..." />
+            <textarea value={ticket.success} onChange={update("success")} />
           </label>
         </div>
         <div className="generated">
-          <strong>Ticket generated for office hours</strong>
-          <p>Includes a self-debug checklist, likely cause, next prompt to try, and facilitator-ready summary.</p>
+          <strong>Generated office-hours ticket</strong>
+          <ol>
+            {summary.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
         </div>
       </div>
     </div>
