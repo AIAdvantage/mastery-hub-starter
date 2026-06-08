@@ -205,6 +205,7 @@ h1 {
 .recommendation,
 .diagnosticform,
 .signalgrid article,
+.submissiongrid article,
 .supportbox,
 .dnagrid a {
   background: var(--surface);
@@ -699,6 +700,93 @@ textarea {
   font-size: 13px;
 }
 
+.communitytop {
+  display: grid;
+  grid-template-columns: minmax(260px, .65fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.supportbox h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.lanegrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lanegrid button {
+  display: grid;
+  gap: 6px;
+  min-height: 104px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--txt);
+  text-align: left;
+  cursor: pointer;
+}
+
+.lanegrid span {
+  color: var(--mut);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.submissiongrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.submissiongrid article {
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.submissiontop {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--accent2);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.submissiongrid h3 {
+  margin: 12px 0 8px;
+  font-size: 17px;
+  line-height: 1.18;
+}
+
+.submissiongrid p {
+  margin: 0;
+  color: var(--mut);
+  font-size: 13px;
+}
+
+.submissionactions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.submissionactions .secondary {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
 .dnagrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -919,6 +1007,7 @@ footer {
 @media (max-width: 900px) {
   .hero,
   .diagnosticgrid,
+  .communitytop,
   .split {
     grid-template-columns: 1fr;
   }
@@ -926,7 +1015,9 @@ footer {
   .pathgrid,
   .trackgrid,
   .adaptgrid,
-  .signalgrid {
+  .signalgrid,
+  .lanegrid,
+  .submissiongrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -963,7 +1054,9 @@ footer {
   .twocol,
   .adaptgrid,
   .diagnosticform,
-  .signalgrid {
+  .signalgrid,
+  .lanegrid,
+  .submissiongrid {
     grid-template-columns: 1fr;
   }
 

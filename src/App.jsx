@@ -220,6 +220,60 @@ const SHOWCASE = [
   },
 ];
 
+const CHALLENGE_SUBMISSIONS = [
+  {
+    title: "Listing Call Follow-Up Engine",
+    memberType: "Business",
+    month: "Month 5",
+    path: "business",
+    outcome: "Sales transcript to seller recap, next steps, and referral ask.",
+    artifact: "Reusable meeting follow-up skill",
+    winner: "Best real estate adaptation",
+  },
+  {
+    title: "Legacy Interview Chapter Builder",
+    memberType: "Personal",
+    month: "Month 5",
+    path: "personal",
+    outcome: "Family interview to story beats, chapter outline, and follow-up questions.",
+    artifact: "Personal-use transcript workflow",
+    winner: "Best personal-use adaptation",
+  },
+  {
+    title: "VP-Ready Meeting Brief",
+    memberType: "Corporate",
+    month: "Month 5",
+    path: "stuck",
+    outcome: "Internal sales call to crisp executive recap and risk flags.",
+    artifact: "Promotion-proof recap template",
+    winner: "Best corporate adaptation",
+  },
+  {
+    title: "Proposal Skill Pack",
+    memberType: "Advanced",
+    month: "Month 5",
+    path: "advanced",
+    outcome: "Transcript dispatcher that produces proposals for different client types.",
+    artifact: "Installable Claude skill",
+    winner: "Best advanced build",
+  },
+];
+
+const ADVANCED_BUILDER_LANES = [
+  {
+    title: "Packaged Skills",
+    signal: "Turn a one-off prompt chain into something another member can install.",
+  },
+  {
+    title: "Multi-Tool Workflows",
+    signal: "Connect transcript, document, spreadsheet, and publishing steps into one flow.",
+  },
+  {
+    title: "Client-Facing Products",
+    signal: "Turn a Mastery build into a repeatable service asset or productized deliverable.",
+  },
+];
+
 const GOALS = [
   { id: "sales", label: "Improve sales or follow-up", build: "Month 5" },
   { id: "time", label: "Get time back", build: "Month 3" },
@@ -320,6 +374,8 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(null);
   const [buildOpen, setBuildOpen] = useState(null);
+  const [cloneOpen, setCloneOpen] = useState(null);
+  const [submissionOpen, setSubmissionOpen] = useState(false);
   const [makeMineOpen, setMakeMineOpen] = useState(false);
   const [stuckOpen, setStuckOpen] = useState(false);
   const [dark, setDark] = useState(() => localStorage.getItem("hub-theme") === "dark");
@@ -385,6 +441,7 @@ export default function App() {
           <a href="#paths">Paths</a>
           <a href="#library">Library</a>
           <a href="#support">Support</a>
+          <a href="#community">Community</a>
         </div>
         <button className="themebtn" onClick={() => setDark((d) => !d)} title="Toggle dark mode">
           {dark ? "☀️" : "🌙"}
@@ -700,6 +757,60 @@ export default function App() {
           </div>
         </section>
 
+        <section className="section community" id="community">
+          <div className="sechead">
+            <h2>Challenge Flywheel</h2>
+            <span className="secblurb">Member submissions become examples, reusable assets, and advanced builder signal.</span>
+          </div>
+          <div className="communitytop">
+            <div className="supportbox">
+              <h3>Submission Intake</h3>
+              <p>Collect the artifact, member path, use case, proof of use, and what they would improve next.</p>
+              <button className="secondary" onClick={() => setSubmissionOpen(true)}>Draft Submission</button>
+            </div>
+            <div className="supportbox">
+              <h3>Advanced Builder Lanes</h3>
+              <div className="lanegrid">
+                {ADVANCED_BUILDER_LANES.map((lane) => (
+                  <button key={lane.title} onClick={() => setSelectedPath("advanced")}>
+                    <strong>{lane.title}</strong>
+                    <span>{lane.signal}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="submissiongrid">
+            {CHALLENGE_SUBMISSIONS.map((submission) => (
+              <article key={submission.title}>
+                <div className="submissiontop">
+                  <span>{submission.winner}</span>
+                  <span>{submission.month}</span>
+                </div>
+                <h3>{submission.title}</h3>
+                <p>{submission.outcome}</p>
+                <div className="tags">
+                  <span>{submission.memberType}</span>
+                  <span>{submission.artifact}</span>
+                </div>
+                <div className="submissionactions">
+                  <button className="secondary" onClick={() => setCloneOpen(submission)}>Clone This</button>
+                  <button
+                    className="secondary"
+                    onClick={() => {
+                      setSelectedPath(submission.path);
+                      setDiagnostic((state) => ({ ...state, path: submission.path }));
+                      setMakeMineOpen(true);
+                    }}
+                  >
+                    Adapt To Me
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="section dna">
           <div className="sechead tight">
             <h2>DNA Files</h2>
@@ -719,6 +830,8 @@ export default function App() {
 
       {open && <ResourceModal resource={open} onClose={() => setOpen(null)} />}
       {buildOpen && <BuildModal build={buildOpen} selectedPath={selectedPath} onClose={() => setBuildOpen(null)} />}
+      {cloneOpen && <CloneModal submission={cloneOpen} onClose={() => setCloneOpen(null)} />}
+      {submissionOpen && <SubmissionModal onClose={() => setSubmissionOpen(false)} />}
       {makeMineOpen && <MakeMineModal selectedPath={selectedPath} onClose={() => setMakeMineOpen(false)} />}
       {stuckOpen && <StuckModal onClose={() => setStuckOpen(false)} />}
 
@@ -789,6 +902,102 @@ function BuildModal({ build, selectedPath, onClose }) {
               <li>Troubleshooting prompts for common stuck points.</li>
             </ul>
           </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CloneModal({ submission, onClose }) {
+  const cloneSteps = [
+    `Start from: ${submission.title}.`,
+    `Keep the artifact shape: ${submission.artifact}.`,
+    `Replace the example context with your own ${pathName(submission.path).toLowerCase()} context.`,
+    "Run one real input before expanding the workflow.",
+    "Save the adapted version back into your library as a reusable asset.",
+  ];
+  return (
+    <div className="modal" onClick={(e) => e.target.className === "modal" && onClose()}>
+      <div className="panel">
+        <button className="x" onClick={onClose}>×</button>
+        <div className="phead">
+          <div className="icon big">🧩</div>
+          <div>
+            <h2>Clone This Build</h2>
+            <div className="pmeta">
+              <span>{submission.winner}</span>
+              <span>{submission.month}</span>
+            </div>
+          </div>
+        </div>
+        <div className="generated">
+          <strong>Clone plan</strong>
+          <ol>
+            {cloneSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SubmissionModal({ onClose }) {
+  const [submission, setSubmission] = useState({
+    title: "My adapted Meeting Command Center",
+    path: "business",
+    proof: "I used it on one real transcript and changed the follow-up I sent.",
+    improve: "Next I would add better examples and package the prompts.",
+  });
+  const update = (key) => (event) => setSubmission((state) => ({ ...state, [key]: event.target.value }));
+  const summary = [
+    `Artifact: ${submission.title}`,
+    `Path: ${pathName(submission.path)}`,
+    `Proof of use: ${submission.proof}`,
+    `Next improvement: ${submission.improve}`,
+    "Library action: tag by path, month, rung, artifact type, and likely stuck point.",
+  ];
+  return (
+    <div className="modal" onClick={(e) => e.target.className === "modal" && onClose()}>
+      <div className="panel">
+        <button className="x" onClick={onClose}>×</button>
+        <div className="phead">
+          <div className="icon big">🏆</div>
+          <div>
+            <h2>Draft Challenge Submission</h2>
+            <div className="pmeta"><span>Turns a member win into a reusable example.</span></div>
+          </div>
+        </div>
+        <div className="formgrid">
+          <label>
+            <span>Artifact title</span>
+            <input value={submission.title} onChange={update("title")} />
+          </label>
+          <label>
+            <span>Member path</span>
+            <select value={submission.path} onChange={update("path")}>
+              {PATHS.map((path) => (
+                <option key={path.id} value={path.id}>{path.label}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Proof of use</span>
+            <textarea value={submission.proof} onChange={update("proof")} />
+          </label>
+          <label>
+            <span>What would you improve next?</span>
+            <textarea value={submission.improve} onChange={update("improve")} />
+          </label>
+        </div>
+        <div className="generated">
+          <strong>Generated library card</strong>
+          <ol>
+            {summary.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
         </div>
       </div>
     </div>
