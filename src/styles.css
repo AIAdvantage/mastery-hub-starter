@@ -1,26 +1,42 @@
-:root {
+:root, :root[data-theme="light"] {
   --bg: #fbfbfd; --surface: #ffffff; --line: #e7e7ec; --txt: #1d1d1f; --mut: #86868b;
-  --accent: #0071e3; --soft: #f5f5f7;
+  --accent: #0071e3; --soft: #f5f5f7; --navbg: rgba(251,251,253,.8); --shadow: rgba(0,0,0,.08);
   --r1:#8e8e93; --r2:#0a84ff; --r3:#34c759; --r4:#ff9f0a; --r5:#ff375f;
 }
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #1c1c1e; --line: #2c2c2e; --txt: #f5f5f7; --mut: #8e8e93;
+  --accent: #0a84ff; --soft: #2c2c2e; --navbg: rgba(0,0,0,.7); --shadow: rgba(0,0,0,.5);
+  --r1:#8e8e93; --r2:#0a84ff; --r3:#30d158; --r4:#ff9f0a; --r5:#ff375f;
+}
+html { background: var(--bg); }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--txt);
   font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased; }
 
 /* NAV BAR — minimal, translucent */
-.nav { position: sticky; top: 0; z-index: 5; display:flex; align-items:center; gap:20px;
-  padding: 0 22px; height: 52px; background: rgba(251,251,253,.8); backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid var(--line); }
+.nav { position: sticky; top: 0; z-index: 5; display:flex; align-items:center; gap:16px;
+  padding: 0 22px; height: 52px; background: var(--navbg); backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--line); transition: background .2s; }
 .brand { display:flex; align-items:center; gap:8px; font-weight:600; font-size:15px; letter-spacing:-.01em; }
 .brand .logo { color: var(--accent); font-size:15px; }
 .navtabs { display:flex; gap:2px; flex:1; flex-wrap:wrap; }
+.navitem { position:relative; }
 .navtabs button { background:transparent; border:none; color:var(--mut); font:inherit; font-size:14px;
-  font-weight:500; padding:6px 12px; border-radius:980px; cursor:pointer; display:flex; align-items:center; gap:6px;
+  font-weight:500; padding:6px 12px; border-radius:980px; cursor:pointer; display:flex; align-items:center; gap:5px;
   transition:.15s; }
 .navtabs button:hover { color:var(--txt); }
 .navtabs button.on { color:var(--txt); background:var(--soft); }
 .navtabs .ct { font-size:11px; color:var(--mut); }
+.caret { font-size:10px; opacity:.5; margin-left:-1px; }
+.dropdown { position:absolute; top:100%; left:0; margin-top:6px; min-width:230px; z-index:30;
+  background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:6px;
+  box-shadow:0 12px 40px var(--shadow); }
+.dropitem { display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:transparent;
+  border:none; color:var(--txt); font:inherit; font-size:14px; padding:9px 11px; border-radius:9px; cursor:pointer; }
+.dropitem:hover { background:var(--soft); }
+.themebtn { background:var(--soft); border:none; width:32px; height:32px; border-radius:50%; cursor:pointer;
+  font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center; }
 .repo { color:var(--mut); font-size:13px; text-decoration:none; white-space:nowrap; }
 .repo:hover { color:var(--accent); }
 
@@ -58,15 +74,15 @@ h1 { font-size: 38px; margin: 6px 0 4px; font-weight: 700; letter-spacing:-.022e
 .dot.R4{background:var(--r4)} .dot.R5{background:var(--r5)}
 .sched { font-size:11.5px; color:var(--mut); }
 
-/* DNA repository */
-.dnagrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
-.dnacard { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line);
-  border-radius:14px; padding:14px 16px; }
-.dnaicon { font-size:22px; }
+/* DNA download list (inside modal) */
+.dnalist { display:flex; flex-direction:column; gap:8px; }
+.dnarow { display:flex; align-items:center; gap:12px; background:var(--soft); border:1px solid var(--line);
+  border-radius:12px; padding:12px 14px; }
+.dnaicon { font-size:20px; }
 .dnatitle { flex:1; font-size:14px; font-weight:600; text-transform:capitalize; letter-spacing:-.01em; }
-.dnabtn { background:var(--soft); border:none; color:var(--accent); font:inherit; font-size:13px; font-weight:600;
-  padding:6px 13px; border-radius:980px; cursor:pointer; white-space:nowrap; transition:.15s; }
-.dnabtn:hover { background:var(--accent); color:#fff; }
+.dnabtn { background:var(--surface); border:1px solid var(--line); color:var(--accent); font:inherit; font-size:13px;
+  font-weight:600; padding:6px 13px; border-radius:980px; cursor:pointer; white-space:nowrap; transition:.15s; }
+.dnabtn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
 
 .empty { text-align:center; color:var(--mut); padding:60px 20px; border:1px solid var(--line);
   background:var(--surface); border-radius:20px; }
