@@ -110,11 +110,11 @@ export default function App() {
                       const rung = (c.fm.rung || "").toUpperCase();
                       return (
                         <button className="tile" key={i} onClick={() => setOpen(c)}>
-                          <div className={`icon ${rung}`}>{c.fm.emoji || "📄"}</div>
+                          <div className="icon">{c.fm.emoji || "📄"}</div>
                           <div className="tiletitle">{c.fm.title || c.file}</div>
                           <div className="tilemeta">
-                            {rung && <span className={`chip ${rung}`}>{rung}</span>}
-                            {c.fm.schedule && <span className="sched">⏰ {c.fm.schedule}</span>}
+                            {rung && <span className={`dot ${rung}`} title={`Rung ${rung[1]}`}></span>}
+                            {c.fm.schedule && <span className="sched">{c.fm.schedule}</span>}
                           </div>
                         </button>
                       );
@@ -131,13 +131,13 @@ export default function App() {
           <div className="panel">
             <button className="x" onClick={() => setOpen(null)}>×</button>
             <div className="phead">
-              <div className={`icon big ${(open.fm.rung || "").toUpperCase()}`}>{open.fm.emoji || "📄"}</div>
+              <div className="icon big">{open.fm.emoji || "📄"}</div>
               <div>
                 <h2>{open.fm.title || open.file}</h2>
                 <div className="pmeta">
-                  {open.fm.rung && <span className={`chip ${(open.fm.rung || "").toUpperCase()}`}>{open.fm.rung}</span>}
-                  {open.fm.schedule && <span className="sched">⏰ {open.fm.schedule}</span>}
-                  {open.fm.updated && <span className="sched">updated {open.fm.updated}</span>}
+                  {open.fm.rung && <><span className={`dot ${(open.fm.rung || "").toUpperCase()}`}></span><span className="sched">{open.fm.rung}</span></>}
+                  {open.fm.schedule && <span className="sched">· {open.fm.schedule}</span>}
+                  {open.fm.updated && <span className="sched">· updated {open.fm.updated}</span>}
                 </div>
               </div>
             </div>
