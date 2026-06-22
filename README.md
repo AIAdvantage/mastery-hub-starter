@@ -1,38 +1,97 @@
-# My AI Hub — Starter
+# AI Mastery Hub
 
-Your personal command center. It reads the markdown files your **Claude Cowork**
-scheduled tasks commit to your **GitHub vault**, and shows them as a clean dashboard.
+Member platform shell for AI Mastery. This replaces the Notion resource hub pattern with a Vercel-hosted React app at `https://mastery.aiadvantage.com`.
 
-## 3-step setup (no terminal)
+## Project map
 
-1. **Remix this in Lovable** (or clone the repo).
-2. Open **`src/config.js`** and change two things:
-   - `ownerName` → your name
-   - `githubRepo` → `"your-username/your-vault-repo"`
-3. **Publish.** Your Hub is live. Done.
+- Live site: `https://mastery.aiadvantage.com`
+- Vercel project: `mastery-hub-starter`
+- GitHub repo: `AIAdvantage/mastery-hub-starter`
+- Local source: `curriculum-development/mastery-hub-starter/`
+- Demo vault repo: `AIAdvantage/mastery-hub-demo`
 
-That's it. Every time a Cowork task commits a new `.md` file to your vault,
-it shows up here automatically.
+The app repo is `AIAdvantage/mastery-hub-starter`. Give collaborators access there if they need to edit the live Mastery Hub. The demo vault repo is separate sample data only.
 
-## How a vault file looks
-Your tasks save files like this — the frontmatter controls the card:
-```markdown
----
-title: Daily AI News Brief
-emoji: 📰
-rung: R4
-updated: 2026-06-07
-schedule: daily 7am
----
-# Today's AI News
-...your task's output...
+## Domain setup
+
+`mastery.aiadvantage.com` is attached to the Vercel project and verified.
+
+DNS record:
+
+```text
+Type: CNAME
+Name / Host: mastery
+Value / Target: cname.vercel-dns.com
+TTL: Auto
+Proxy: DNS only / grey cloud if using Cloudflare
 ```
 
-## The ladder
-Cards are tagged by rung so you can see your system climb:
-**R1** Prompt · **R2** Saved Prompt · **R3** App · **R4** Pipeline · **R5** Self-improving
+## What is included
 
-## Later (optional)
-Supabase is pre-wired but off by default. When a future month needs a real
-database, paste your Supabase URL + key into `src/config.js` and it switches on.
-No code changes needed.
+- Premium AI Mastery visual direction using a dark, gold, serif-led interface.
+- Routed top navigation for Home, Monthly Hubs, Challenge Archive, Submit, and Tutorial.
+- June through December monthly hub shells.
+- Month 6 June template preview for the resource structure: guide, prompt pack, challenge document, and challenge winner slot.
+- Plan 2 V1 direction: Launch Base plus the working Challenge OS foundation.
+- Challenge archive foundation that shows recent submission rows.
+- Challenge submission form with local preview storage and Supabase handoff.
+- Tutorial page structure for member onboarding.
+- Clerk-ready sign-in/status area for the next authentication pass.
+- Plan 3 roadmap in `PLAN_3_ROADMAP.md`.
+
+## GitHub vault data
+
+The starter can read markdown outputs from a public GitHub vault. Configure the vault in `src/config.js`:
+
+```js
+export const CONFIG = {
+  ownerName: "Igor",
+  githubRepo: "AIAdvantage/mastery-hub-demo",
+  vaultFolder: "",
+  supabaseUrl: "",
+  supabaseAnonKey: "",
+};
+```
+
+Cowork scheduled tasks can commit `.md` files to that vault. The hub reads them through the GitHub contents API and renders them as member-facing cards.
+
+## Challenge submissions
+
+The form works immediately in preview by saving recent submissions to local storage. To send submissions to Supabase, add the project URL and anon key in `src/config.js`, then create this table:
+
+```sql
+create table mastery_challenge_submissions (
+  id uuid primary key,
+  month text not null,
+  member_name text not null,
+  title text not null,
+  share_link text not null,
+  notes text,
+  status text not null default 'Submitted for review',
+  created_at timestamptz not null default now()
+);
+```
+
+## Local commands
+
+```bash
+npm install
+npm run dev
+npm run build
+```
+
+## Routes
+
+- `/`
+- `/monthly-hubs`
+- `/challenge-archive`
+- `/submit`
+- `/tutorial`
+
+## Next integrations
+
+- Replace the Clerk-ready placeholder with real Clerk components and membership claims.
+- Add Clerk membership claims and protected routes.
+- Feed monthly hub content from markdown or database records.
+- Add archive filters once real submissions exist.
+- Build the Plan 3 Mastery Campus roadmap.
