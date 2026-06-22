@@ -259,6 +259,7 @@ button {
   font-size: 14px;
   text-align: left;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .account-dropdown a:hover,
@@ -266,7 +267,7 @@ button {
 .account-dropdown a:focus-visible,
 .account-dropdown button:focus-visible {
   background: rgba(247, 239, 227, 0.76);
-  color: var(--surface);
+  color: var(--ink);
 }
 
 .status-dot {
