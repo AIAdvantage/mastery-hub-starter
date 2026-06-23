@@ -823,7 +823,6 @@ function MonthResourcesMenu({ month, segment, navigate }) {
         <a className="resource-card resource-card-link" href={MONTH6_CONTENT.replayUrl} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Replay</span>
-            <small>New tab</small>
           </div>
           <h4>{recordingsTitle}</h4>
           <p>Watch the live session replay before or during the guide walkthrough.</p>
@@ -831,7 +830,6 @@ function MonthResourcesMenu({ month, segment, navigate }) {
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/june/guide")}>
           <div className="resource-card-top">
             <span>Guide</span>
-            <small>Subpage</small>
           </div>
           <h4>{guideTitle}</h4>
           <p>Open the full step-by-step guide with screenshots and the materials download.</p>
@@ -839,7 +837,6 @@ function MonthResourcesMenu({ month, segment, navigate }) {
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/june/prompts")}>
           <div className="resource-card-top">
             <span>Live materials</span>
-            <small>Subpage</small>
           </div>
           <h4>Live Materials</h4>
           <p>Copy the prompts for following along with the replay and running the workflow.</p>
@@ -1744,7 +1741,6 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
           <div className="resource-card-top">
             <span>Challenge guide</span>
-            <small>Subpage</small>
           </div>
           <h4>Mastery Challenge #6</h4>
           <p>Read the full mission, rules, deliverables, deadline, and judging notes for June.</p>
