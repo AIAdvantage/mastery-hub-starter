@@ -30,8 +30,9 @@ Proxy: DNS only / grey cloud if using Cloudflare
 
 - Premium AI Mastery visual direction using a dark, gold, serif-led interface.
 - Routed top navigation for Home, Monthly Hubs, Challenge Archive, Submit, and Tutorial.
-- June through December monthly hub shells.
-- Month 6 June template preview for the resource structure: guide, prompt pack, challenge document, and challenge winner slot.
+- July through December monthly hub shells, with July set as the current member month.
+- July prerequisite page for the first member release: GitHub, Lovable, Mastery Hub, Claude Desktop, and active Claude Pro/Max/Team access.
+- June content is kept in source as the old Month 6 template, but hidden from the live month picker and redirected away from member-facing routes.
 - Plan 2 V1 direction: Launch Base plus the working Challenge OS foundation.
 - Challenge archive foundation that shows recent submission rows.
 - Challenge submission form with local preview storage and Supabase handoff.
