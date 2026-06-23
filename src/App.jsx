@@ -9,28 +9,28 @@ const MONTHS = [
   {
     id: "jun",
     label: "June",
-    number: "Month 6",
+    number: "June",
     status: "Hidden",
     hidden: true,
     focus: "Your AI Handles the Paperwork",
     outcome: "By the end of this month, you will have a paperwork system that fills forms, shows what is missing, and gets smarter after each run.",
     image: {
       src: "/month6/alternates/month6-paperwork-alt-1.png",
-      alt: "A paperwork form preview used for Month 6",
+      alt: "A paperwork form preview used for June",
       kicker: "Current month",
-      title: "Month 6: Paperwork",
+      title: "June: Paperwork",
       caption: "Replay, guide, session prompts, and challenge in one path.",
     },
     resources: [
       {
         type: "Guide",
-        title: "Guide 6: Fill Any Form with Claude",
+        title: "June Guide",
         description: "Complete the Paperwork workflow from workspace setup through skill installation.",
         status: "Start here",
       },
       {
         type: "Prompt Pack",
-        title: "Paperwork Prompts",
+        title: "Live Materials",
         description: "Copy the setup, form-filling, and reset prompts directly into Claude Cowork.",
         status: "Use with guide",
       },
@@ -42,8 +42,8 @@ const MONTHS = [
       },
       {
         type: "Replay",
-        title: "Month 6 Replay",
-        description: "Watch the Month 6 replay in the AI Advantage Community.",
+        title: "June Recordings",
+        description: "Watch the June replay in the AI Advantage Community.",
         status: "Watch replay",
         url: MONTH6_CONTENT.replayUrl,
       },
@@ -52,7 +52,7 @@ const MONTHS = [
   {
     id: "jul",
     label: "July",
-    number: "Month 7",
+    number: "July",
     status: "Current hub",
     focus: "July Guide Prep",
     upstream: "Get the accounts and tools ready before the guide opens.",
@@ -61,21 +61,21 @@ const MONTHS = [
       src: "/mastery-hero.png",
       alt: "Mastery Hub workspace preview for the current month",
       kicker: "Current month",
-      title: "Month 7: July Guide Prep",
+      title: "July Guide Prep",
       caption: "Prerequisites now. Full guide coming soon.",
     },
     resources: [
-      { type: "Prerequisites", title: "July Guide Prerequisites", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
-      { type: "Guide", title: "July Guide", description: "The full July guide will appear here when the training materials are ready.", status: "Coming soon" },
-      { type: "Prompt Pack", title: "July Prompts", description: "The session prompts will unlock with the July guide.", status: "Coming soon" },
-      { type: "Challenge Document", title: "Month 7 Challenge", description: "The July challenge will unlock after the guide is published.", status: "Coming soon" },
+      { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
+      { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
+      { type: "Recordings", title: "July Recordings", description: "The July recordings will unlock after the live session.", status: "Coming soon" },
+      { type: "Challenge Document", title: "July Challenge", description: "The July challenge will unlock after the guide is published.", status: "Coming soon" },
     ],
   },
-  { id: "aug", label: "August", number: "Month 8", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
-  { id: "sep", label: "September", number: "Month 9", status: "Upcoming", focus: "AI Email Command Center", upstream: "Communication as leverage.", outcome: "Draft, triage, and summarize email so you only touch what matters.", resources: [] },
-  { id: "oct", label: "October", number: "Month 10", status: "Upcoming", focus: "Monthly Implementation", upstream: "Build one useful business system at a time.", outcome: "Create a repeatable workflow you can keep using after the live session ends.", resources: [] },
-  { id: "nov", label: "November", number: "Month 11", status: "Upcoming", focus: "Member Resources", upstream: "Turn learning into practical tools.", outcome: "Collect the guide, prompts, challenge, and winner showcase for the month in one place.", resources: [] },
-  { id: "dec", label: "December", number: "Month 12", status: "Upcoming", focus: "Year-End Mastery", upstream: "Review what worked and turn it into leverage for the next year.", outcome: "Use AI to review, summarize, and systemize your strongest wins from the year.", resources: [] },
+  { id: "aug", label: "August", number: "August", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
+  { id: "sep", label: "September", number: "September", status: "Upcoming", focus: "AI Email Command Center", upstream: "Communication as leverage.", outcome: "Draft, triage, and summarize email so you only touch what matters.", resources: [] },
+  { id: "oct", label: "October", number: "October", status: "Upcoming", focus: "Monthly Implementation", upstream: "Build one useful business system at a time.", outcome: "Create a repeatable workflow you can keep using after the live session ends.", resources: [] },
+  { id: "nov", label: "November", number: "November", status: "Upcoming", focus: "Member Resources", upstream: "Turn learning into practical tools.", outcome: "Collect the guide, prompts, challenge, and winner showcase for the month in one place.", resources: [] },
+  { id: "dec", label: "December", number: "December", status: "Upcoming", focus: "Year-End Mastery", upstream: "Review what worked and turn it into leverage for the next year.", outcome: "Use AI to review, summarize, and systemize your strongest wins from the year.", resources: [] },
 ];
 
 const VISIBLE_MONTHS = MONTHS.filter((month) => !month.hidden);
@@ -105,7 +105,7 @@ const HUB_FEATURES = [
 const HOME_VISUALS = [
   {
     src: "/month6/paperwork-folder-structure.png",
-    alt: "Paperwork folder structure created for Month 6",
+    alt: "Paperwork folder structure created for June",
     label: "Workspace",
     title: "Clean folder system",
   },
@@ -124,7 +124,7 @@ const HOME_VISUALS = [
 ];
 
 const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "Month 7 Challenge", status: "Coming soon" },
+  { month: "July", type: "Challenge", title: "July Challenge", status: "Coming soon" },
   { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
   { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
 ];
@@ -185,10 +185,18 @@ const JULY_PREREQUISITES = [
   },
 ];
 
+function monthGuideTitle(month) {
+  return `${month.label} Guide`;
+}
+
+function monthRecordingsTitle(month) {
+  return `${month.label} Recordings`;
+}
+
 
 const STEP_SUBHEADLINES = {
   "Step 1: Create Your Paperwork Folder + Connect Cowork": "Connect Claude Cowork to one clean workspace so it can create, read, and update your paperwork files.",
-  "Step 2: Get Your Materials Bundle": "Download the Month 6 materials and let Claude unpack the exact folder structure for the workflow.",
+  "Step 2: Get Your Materials Bundle": "Download the June materials and let Claude unpack the exact folder structure for the workflow.",
   "Step 3: Paperwork Setup": "Use Igor's demo DNA to generate the first paperwork profile Claude will use to fill forms.",
   "Step 4: Review the Files": "Open the generated profile so you can see the kind of reusable information the system stores.",
   "Step 5: Fill Your Form": "Run the form-filling prompt and produce a completed W-8BEN from the profile Claude just built.",
@@ -215,7 +223,7 @@ const BEFORE_START_ITEMS = [
     linkLabel: "Download Claude Desktop",
   },
   {
-    label: "Month 6 Materials Bundle ZIP",
+    label: "June Materials Bundle ZIP",
     detail: "Download the ZIP before Step 2. You will move it into your Paperwork folder and let Claude unpack it.",
     link: MONTH6_CONTENT.materialsUrl,
     linkLabel: "Download Materials Bundle ZIP",
@@ -584,7 +592,7 @@ function HomePage({ navigate }) {
               <span>{currentMonth.image.kicker}</span>
               <strong>{currentMonth.image.title}</strong>
               <small>{currentMonth.image.caption}</small>
-              <button type="button" onClick={() => navigate("/monthly-resources/july")}>Open Month 7</button>
+              <button type="button" onClick={() => navigate("/monthly-resources/july")}>Open July</button>
             </div>
           </div>
         </div>
@@ -678,7 +686,7 @@ function LayoutPreview({ layout, navigate }) {
           </div>
           <div className="command-preview-panel">
             <span>Current month</span>
-            <strong>Month 6: Paperwork</strong>
+            <strong>June: Paperwork</strong>
             <small>Replay, guide, session prompts, and challenge in one path.</small>
           </div>
         </div>
@@ -694,7 +702,7 @@ function LayoutPreview({ layout, navigate }) {
         <LayoutIntro layout={layout} />
         <div className="path-preview">
           <div>
-            <p className="section-kicker">Month 6</p>
+            <p className="section-kicker">June</p>
             <h2>Your AI Handles the Paperwork</h2>
             <p>Follow the month in order. Watch the session, use the guide, copy the prompts, then submit the challenge.</p>
           </div>
@@ -794,8 +802,11 @@ function MonthResourcesMenu({ month, segment, navigate }) {
     return <UpcomingMonth month={month} navigate={navigate} />;
   }
 
+  const guideTitle = monthGuideTitle(month);
+  const recordingsTitle = monthRecordingsTitle(month);
+
   return (
-    <section className="section page-section month-section" aria-label="Month 6 paperwork resources">
+    <section className="section page-section month-section" aria-label={`${month.label} paperwork resources`}>
       <Breadcrumbs
         items={[
           { label: "Monthly Resources", path: "/monthly-resources" },
@@ -814,7 +825,7 @@ function MonthResourcesMenu({ month, segment, navigate }) {
             <span>Replay</span>
             <small>New tab</small>
           </div>
-          <h4>Month 6 Recording</h4>
+          <h4>{recordingsTitle}</h4>
           <p>Watch the live session replay before or during the guide walkthrough.</p>
         </a>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/june/guide")}>
@@ -822,15 +833,15 @@ function MonthResourcesMenu({ month, segment, navigate }) {
             <span>Guide</span>
             <small>Subpage</small>
           </div>
-          <h4>Guide 6: Fill Any Form with Claude</h4>
+          <h4>{guideTitle}</h4>
           <p>Open the full step-by-step guide with screenshots and the materials download.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/june/prompts")}>
           <div className="resource-card-top">
-            <span>Session prompts</span>
+            <span>Live materials</span>
             <small>Subpage</small>
           </div>
-          <h4>Paperwork Prompts</h4>
+          <h4>Live Materials</h4>
           <p>Copy the prompts for following along with the replay and running the workflow.</p>
         </button>
       </div>
@@ -839,8 +850,11 @@ function MonthResourcesMenu({ month, segment, navigate }) {
 }
 
 function JulyResourcesMenu({ month, navigate }) {
+  const guideTitle = monthGuideTitle(month);
+  const recordingsTitle = monthRecordingsTitle(month);
+
   return (
-    <section className="section page-section month-section" aria-label="Month 7 July resources">
+    <section className="section page-section month-section" aria-label="July resources">
       <Breadcrumbs
         items={[
           { label: "Monthly Resources", path: "/monthly-resources" },
@@ -856,27 +870,27 @@ function JulyResourcesMenu({ month, navigate }) {
       <div className="resource-grid resource-grid-three">
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
           <div className="resource-card-top">
-            <span>Prerequisites</span>
+            <span>Guide</span>
             <small>Start here</small>
           </div>
-          <h4>July Guide Prerequisites</h4>
+          <h4>{guideTitle}</h4>
           <p>Confirm GitHub, Lovable, Mastery Hub, Claude Desktop, and your Claude plan before the guide opens.</p>
         </button>
         <article className="resource-card">
           <div className="resource-card-top">
-            <span>Guide</span>
+            <span>Live materials</span>
             <small>Coming soon</small>
           </div>
-          <h4>July Guide</h4>
-          <p>The full July walkthrough will appear here once the training materials are ready.</p>
+          <h4>Live Materials</h4>
+          <p>The slides, prompts, and downloads from the live session will appear here when they are ready.</p>
         </article>
         <article className="resource-card">
           <div className="resource-card-top">
-            <span>Session prompts</span>
+            <span>Recordings</span>
             <small>Coming soon</small>
           </div>
-          <h4>July Prompts</h4>
-          <p>The prompt pack will unlock with the full July guide.</p>
+          <h4>{recordingsTitle}</h4>
+          <p>The July live session recording will appear here after the session is complete.</p>
         </article>
       </div>
     </section>
@@ -930,7 +944,7 @@ function GuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Guide</p>
-            <h1 id="guide-title" className="page-title">Guide 6: Fill Any Form with Claude</h1>
+            <h1 id="guide-title" className="page-title">June Guide: Fill Any Form with Claude</h1>
             <p>Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.</p>
           </div>
           <LinkButton href={MONTH6_CONTENT.materialsUrl}>Download Materials</LinkButton>
@@ -1242,7 +1256,7 @@ function SessionPromptsPage({ navigate }) {
         items={[
           { label: "Monthly Resources", path: "/monthly-resources" },
           { label: "June", path: "/monthly-resources/june" },
-          { label: "Session Prompts" },
+          { label: "Live Materials" },
         ]}
         navigate={navigate}
       />
@@ -1250,7 +1264,7 @@ function SessionPromptsPage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Prompts</p>
-            <h1 id="prompts-title" className="page-title">Month 6 Session Prompts</h1>
+            <h1 id="prompts-title" className="page-title">June Live Materials</h1>
             <p>Use these prompts while following the replay. Copy each prompt into Claude Cowork at the matching step.</p>
           </div>
           <LinkButton href={MONTH6_CONTENT.materialsUrl}>Download Materials</LinkButton>
@@ -1454,7 +1468,7 @@ async function copyText(text) {
 
 function buildModHelpMessage(step, stepNumber) {
   return [
-    "Hi mods, I need help with the Month 6 Paperwork guide.",
+    "Hi mods, I need help with the June Paperwork guide.",
     "",
     `Guide link: ${GUIDE_HELP_URL}`,
     `Current location: Step ${stepNumber}: ${step.shortTitle}`,
@@ -1471,7 +1485,7 @@ function buildAiHelpMessage(guide, step, stepNumber) {
     .join("\n");
 
   return [
-    "You are helping me complete the AI Mastery Month 6 Paperwork guide.",
+    "You are helping me complete the AI Mastery June Paperwork guide.",
     "",
     "Overall guide goal:",
     "Build a paperwork system that fills forms from my DNA, shows what is missing, and gets smarter every time I run it.",
@@ -1733,7 +1747,7 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
             <small>Subpage</small>
           </div>
           <h4>Mastery Challenge #6</h4>
-          <p>Read the full mission, rules, deliverables, deadline, and judging notes for Month 6.</p>
+          <p>Read the full mission, rules, deliverables, deadline, and judging notes for June.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submit")}>
           <div className="resource-card-top">
@@ -1797,7 +1811,7 @@ function ChallengeGuidePage({ navigate }) {
           <div>
             <p className="section-kicker">Challenge guide</p>
             <h1 id="archive-title" className="page-title">Mastery Challenge #6: Build a Self-Improving Skill</h1>
-            <p>Use this guide to complete the Month 6 challenge and submit the strongest version of your work.</p>
+            <p>Use this guide to complete the June challenge and submit the strongest version of your work.</p>
           </div>
         </div>
         <MarkdownDocument content={MONTH6_CONTENT.challenge} />
