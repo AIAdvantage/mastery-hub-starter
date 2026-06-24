@@ -1327,6 +1327,19 @@ function SessionPromptsPage({
             <PromptCard key={prompt.title} prompt={prompt} />
           ))}
         </div>
+        {content.skill && (
+          <article className="resource-card" style={{ marginTop: "1.25rem" }}>
+            <div className="resource-card-top">
+              <span>Skill</span>
+              <small>Install &amp; run</small>
+            </div>
+            <h4>{content.skill.title}</h4>
+            <p>{content.skill.description}</p>
+            <a className="link-button" href={content.skill.file} download={content.skill.filename}>
+              Download .skill
+            </a>
+          </article>
+        )}
       </section>
     </section>
   );
