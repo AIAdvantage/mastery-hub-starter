@@ -1340,6 +1340,11 @@ function SessionPromptsPage({
             </a>
           </article>
         )}
+        {content.glossary && (
+          <div className="glossary-block" id="glossary" style={{ marginTop: "2rem" }}>
+            <MarkdownDocument content={content.glossary} />
+          </div>
+        )}
       </section>
     </section>
   );
