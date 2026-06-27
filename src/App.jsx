@@ -1323,6 +1323,7 @@ function SessionPromptsPage({
           )}
         </div>
         <div className="prompt-list">
+          {content.glossary && <GlossaryCard glossary={content.glossary} />}
           {content.prompts.map((prompt) => (
             <PromptCard key={prompt.title} prompt={prompt} />
           ))}
@@ -1339,11 +1340,6 @@ function SessionPromptsPage({
               Download .skill
             </a>
           </article>
-        )}
-        {content.glossary && (
-          <div className="glossary-block" id="glossary" style={{ marginTop: "2rem" }}>
-            <MarkdownDocument content={content.glossary} />
-          </div>
         )}
       </section>
     </section>
@@ -1441,6 +1437,19 @@ function PromptCard({ prompt }) {
         <button type="button" onClick={copyPrompt}>{copied ? "Copied" : "Copy prompt"}</button>
       </div>
       <pre>{prompt.text}</pre>
+    </details>
+  );
+}
+
+function GlossaryCard({ glossary }) {
+  if (!glossary) return null;
+  return (
+    <details className="prompt-card" id="glossary">
+      <summary>
+        <span>📖 Glossary: plain-English terms</span>
+        <small>Open glossary</small>
+      </summary>
+      <MarkdownDocument content={glossary} />
     </details>
   );
 }
