@@ -70,7 +70,7 @@ const MONTHS = [
       { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
       { type: "Recordings", title: "July Recordings", description: "The July recordings will unlock after the live session.", status: "Coming soon" },
-      { type: "Challenge Document", title: "July Challenge", description: "The July challenge will unlock after the guide is published.", status: "Coming soon" },
+      { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
   { id: "aug", label: "August", number: "August", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
@@ -93,7 +93,7 @@ const HUB_FEATURES = [
   {
     name: "Challenges",
     tag: "Apply",
-    summary: "The July challenge will open after the guide is published. Until then, use this area to see what is ready.",
+    summary: "The July challenge is open: redesign your Hub\u2019s look, mobile-first, with the function frozen.",
     includes: ["Monthly status", "Prereq link", "Guide unlock", "Challenge unlock"],
   },
   {
@@ -126,7 +126,7 @@ const HOME_VISUALS = [
 ];
 
 const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "July Challenge", status: "Coming soon" },
+  { month: "July", type: "Challenge", title: "Build a UI for the AgentHub", status: "Open" },
   { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
   { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
 ];
@@ -1812,76 +1812,25 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
     );
   }
 
-  return <CurrentChallengeComingSoon month={CURRENT_MONTH} navigate={navigate} />;
-
-  if (child === "guide") {
-    return <ChallengeGuidePage navigate={navigate} />;
-  }
-
+  if (child === "guide") return <JulyChallengeGuidePage navigate={navigate} />;
   if (child === "submit") {
     return (
       <SubmitPage
         breadcrumbs={[
           { label: "Challenges", path: "/challenges" },
-          { label: "June", path: "/challenges/june" },
+          { label: "July", path: "/challenges/july" },
           { label: "Submit" },
         ]}
         handleSubmit={handleSubmit}
         navigate={navigate}
         submissionStatus={submissionStatus}
         submissions={submissions}
+        defaultMonth="July"
       />
     );
   }
-
-  if (child === "submissions") {
-    return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} />;
-  }
-
-  return (
-    <section className="section page-section archive-section" aria-labelledby="june-challenge-title">
-      <Breadcrumbs
-        items={[
-          { label: "Challenges", path: "/challenges" },
-          { label: "June" },
-        ]}
-        navigate={navigate}
-      />
-      <div className="section-heading section-heading-compact">
-        <h1 id="june-challenge-title" className="page-title">Build a Self-Improving Skill</h1>
-      </div>
-      <MonthVisualCard
-        month={MONTHS[0]}
-        actionLabel="Open Challenge Guide"
-        onAction={() => navigate("/challenges/june/guide")}
-      />
-      <div className="resource-grid resource-grid-three">
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
-          <div className="resource-card-top">
-            <span>Challenge guide</span>
-          </div>
-          <h4>Mastery Challenge #6</h4>
-          <p>Read the full mission, rules, deliverables, deadline, and judging notes for June.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submit")}>
-          <div className="resource-card-top">
-            <span>Submit</span>
-            <small>Form</small>
-          </div>
-          <h4>Submit Your Challenge</h4>
-          <p>Send your project link, title, and notes for the team to review.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submissions")}>
-          <div className="resource-card-top">
-            <span>Submissions</span>
-            <small>Review</small>
-          </div>
-          <h4>Recent Submissions</h4>
-          <p>See recent submissions saved in this browser and the monthly challenge collection.</p>
-        </button>
-      </div>
-    </section>
-  );
+  if (child === "submissions") return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} monthLabel="July" />;
+  return <JulyChallengeLanding navigate={navigate} />;
 }
 
 function CurrentChallengeComingSoon({ month, navigate }) {
@@ -1901,6 +1850,74 @@ function CurrentChallengeComingSoon({ month, navigate }) {
       </div>
       <div className="hero-actions">
         <button type="button" onClick={() => navigate("/monthly-resources/july/guide")}>Open July Prerequisites</button>
+      </div>
+    </section>
+  );
+}
+
+function JulyChallengeLanding({ navigate }) {
+  return (
+    <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
+      <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "July" }]} navigate={navigate} />
+      <div className="section-heading section-heading-compact">
+        <h1 id="july-challenge-title" className="page-title">Build a UI for the AgentHub</h1>
+      </div>
+      <MonthVisualCard
+        month={CURRENT_MONTH}
+        actionLabel="Open Challenge Guide"
+        onAction={() => navigate("/challenges/july/guide")}
+      />
+      <div className="resource-grid resource-grid-three">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/guide")}>
+          <div className="resource-card-top">
+            <span>Challenge guide</span>
+          </div>
+          <h4>Month 7 Challenge</h4>
+          <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submit")}>
+          <div className="resource-card-top">
+            <span>Submit</span>
+            <small>Form</small>
+          </div>
+          <h4>Submit Your Challenge</h4>
+          <p>Send your before and after, your direction, and your design brief for review.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submissions")}>
+          <div className="resource-card-top">
+            <span>Submissions</span>
+            <small>Review</small>
+          </div>
+          <h4>Recent Submissions</h4>
+          <p>See recent submissions saved in this browser and the monthly challenge collection.</p>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function JulyChallengeGuidePage({ navigate }) {
+  const tocItems = useMemo(() => markdownTocItems(JULY_CONTENT.challenge), []);
+  return (
+    <section className="section page-section archive-section has-hover-toc" aria-labelledby="archive-title">
+      <HoverTableOfContents title="Challenge contents" items={tocItems} />
+      <Breadcrumbs
+        items={[
+          { label: "Challenges", path: "/challenges" },
+          { label: "July", path: "/challenges/july" },
+          { label: "Challenge Guide" },
+        ]}
+        navigate={navigate}
+      />
+      <div className="resource-section">
+        <div className="resource-section-head">
+          <div>
+            <p className="section-kicker">Challenge guide</p>
+            <h1 id="archive-title" className="page-title">Month 7 Challenge: Build a UI for the AgentHub</h1>
+            <p>Use this guide to complete the July challenge and submit the strongest version of your work.</p>
+          </div>
+        </div>
+        <MarkdownDocument content={JULY_CONTENT.challenge} />
       </div>
     </section>
   );
@@ -1934,20 +1951,20 @@ function ChallengeGuidePage({ navigate }) {
   );
 }
 
-function ChallengeSubmissionsPage({ archiveRows, navigate }) {
+function ChallengeSubmissionsPage({ archiveRows, navigate, monthLabel = "June" }) {
   return (
     <section className="section page-section archive-section" aria-labelledby="archive-title">
       <Breadcrumbs
         items={[
           { label: "Challenges", path: "/challenges" },
-          { label: "June", path: "/challenges/june" },
+          { label: monthLabel, path: `/challenges/${monthLabel.toLowerCase()}` },
           { label: "Submissions" },
         ]}
         navigate={navigate}
       />
       <div className="section-heading">
         <p className="section-kicker">Submissions</p>
-        <h1 id="archive-title" className="page-title">June challenge submissions.</h1>
+        <h1 id="archive-title" className="page-title">{monthLabel} challenge submissions.</h1>
         <p className="muted">Use the archive to revisit past challenges, review your own work, and learn from standout member examples.</p>
       </div>
       <div className="archive-table" role="table" aria-label="Challenge archive">
@@ -1970,7 +1987,7 @@ function ChallengeSubmissionsPage({ archiveRows, navigate }) {
   );
 }
 
-function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" }, { label: "Submit" }], handleSubmit, navigate, submissionStatus, submissions }) {
+function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" }, { label: "Submit" }], handleSubmit, navigate, submissionStatus, submissions, defaultMonth = "June" }) {
   return (
     <section className="section page-section" aria-labelledby="submit-title">
       <Breadcrumbs items={breadcrumbs} navigate={navigate} />
@@ -1985,7 +2002,7 @@ function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" 
         <form className="submission-card" onSubmit={handleSubmit}>
           <label>
             Challenge month
-            <select name="month" defaultValue="June">
+            <select name="month" defaultValue={defaultMonth}>
               {MONTHS.map((month) => (
                 <option key={month.id}>{month.label}</option>
               ))}
