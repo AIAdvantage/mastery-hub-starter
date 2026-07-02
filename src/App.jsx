@@ -252,23 +252,23 @@ const TUTORIAL_QUICK_ACCESS = [
 const TUTORIAL_FAQS = [
   {
     question: "Where should I start if I just opened the site?",
-    answer: "Start with the current Monthly Resources page. For July, that means the July Resources page. It keeps the guide, prerequisites, live materials, recordings link, and challenge path in one place so you are not hunting around.",
+    answer: "Start with the current [Monthly Resources page](https://mastery.aiadvantage.com/monthly-resources). For July, that means the [July Resources page](https://mastery.aiadvantage.com/monthly-resources/july). It keeps the guide, prerequisites, live materials, recordings link, and challenge path in one place so you are not hunting around.",
   },
   {
     question: "Where are the replays and upcoming live sessions?",
-    answer: "Those live inside the AI Advantage Club Mastery area, not inside this Hub. Think of this site as your materials shelf. The Club is where the live rooms, replays, event posts, and community conversations happen.",
+    answer: "Those live inside the [AI Advantage Club Mastery replays](https://community.aiadvantage.com/c/mastery-replays/) and the [Mastery calendar](https://community.aiadvantage.com/c/mastery-calendar/), not inside this Hub. Think of this site as your materials shelf. The Club is where the live rooms, replays, event posts, and community conversations happen.",
   },
   {
     question: "Where do I find the current challenge?",
-    answer: "Go to Challenges, then open July. That page has the challenge guide, the submission path, the deadline, and the link into the challenge submissions space.",
+    answer: "Go to [Challenges](https://mastery.aiadvantage.com/challenges), then open [July](https://mastery.aiadvantage.com/challenges/july). That page has the challenge guide, the submission path, the deadline, and the link into the [Challenge Submissions](https://community.aiadvantage.com/c/challenge-submissions/) space.",
   },
   {
     question: "Where can I see past challenge submissions?",
-    answer: "Use the June challenge archive. This is where old month submissions should live, so you can learn from real examples without confusing them with the current challenge.",
+    answer: "Use the [June challenge archive](https://mastery.aiadvantage.com/archive/june). This is where old month submissions should live, so you can learn from real examples without confusing them with the current challenge.",
   },
   {
     question: "What if I am behind or missed last month?",
-    answer: "Totally fine. Start with the current month first, then use the past month archive when you want context or examples. You do not need to perfectly finish every old piece before you can participate now.",
+    answer: "Totally fine. Start with the [current month](https://mastery.aiadvantage.com/monthly-resources/july) first, then use the [past month archive](https://mastery.aiadvantage.com/archive/june) when you want context or examples. You do not need to perfectly finish every old piece before you can participate now.",
   },
 ];
 
@@ -2640,7 +2640,7 @@ function TutorialPage({ navigate }) {
           {TUTORIAL_FAQS.map((item) => (
             <details key={item.question}>
               <summary>{item.question}</summary>
-              <p>{item.answer}</p>
+              <p>{renderInlineMarkdown(item.answer)}</p>
             </details>
           ))}
         </div>
