@@ -460,8 +460,9 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <button className="brand" onClick={() => navigate("/")} aria-label="AI Mastery home">
-          <span className="brand-mark">AI</span>
-          <span>Mastery Hub</span>
+          <span className="brand-word">AI</span>
+          <span className="brand-bolt" aria-hidden="true">⚡</span>
+          <span className="brand-word brand-word-long">Mastery Hub</span>
         </button>
 
         <nav className="nav" aria-label="Primary navigation">

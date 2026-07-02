@@ -76,7 +76,7 @@ button {
   gap: 18px;
   min-height: 64px;
   padding: 10px clamp(18px, 4vw, 46px);
-  background: rgba(246, 240, 231, 0.86);
+  background: rgba(246, 240, 231, 0.84);
   border-bottom: 1px solid var(--line-soft);
   box-shadow: 0 10px 26px rgba(65, 48, 31, 0.06);
   backdrop-filter: blur(18px);
@@ -85,33 +85,39 @@ button {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--cream);
-  background: transparent;
-  border: 0;
-  padding: 0;
-  letter-spacing: 0.08em;
+  background: rgba(255, 253, 248, 0.78);
+  border: 1px solid rgba(182, 138, 59, 0.32);
+  border-radius: var(--r-pill);
+  padding: 9px 18px;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   white-space: nowrap;
   min-height: 44px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 24px rgba(65, 48, 31, 0.05);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--gold-deep);
-  background: #fffaf1;
-  color: var(--gold-2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+.brand:hover,
+.brand:focus-visible {
+  border-color: rgba(182, 138, 59, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 14px 30px rgba(65, 48, 31, 0.09);
+  transform: translateY(-1px);
 }
 
-.brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.brand-word {
+  font-size: 13px;
   font-weight: 800;
-  font-size: 12px;
+  line-height: 1;
+}
+
+.brand-bolt {
+  color: var(--gold-2);
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0;
+  transform: translateY(-1px);
 }
 
 .nav {
@@ -400,6 +406,11 @@ main {
   isolation: isolate;
   --map-glow-x: 62%;
   --map-glow-y: 34%;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.52), rgba(246, 240, 231, 0.84)),
+    var(--bg);
+  border-bottom: 1px solid rgba(222, 210, 193, 0.72);
+  box-shadow: inset 0 -58px 72px rgba(238, 228, 215, 0.62);
 }
 
 .hero-bg,
@@ -411,8 +422,8 @@ main {
 
 .hero-bg {
   background: url("/mastery-hero.png") center / cover no-repeat;
-  opacity: 0.08;
-  filter: saturate(0.38) sepia(0.14);
+  opacity: 0.18;
+  filter: saturate(0.52) sepia(0.12) contrast(0.96);
 }
 
 .map-glow {
@@ -433,9 +444,10 @@ main {
 .hero-overlay {
   z-index: 0;
   background:
-    linear-gradient(90deg, rgba(246, 240, 231, 0.99), rgba(246, 240, 231, 0.93) 47%, rgba(238, 228, 215, 0.86)),
-    linear-gradient(180deg, transparent 0, rgba(235, 226, 213, 0.76) 100%);
-  box-shadow: inset 0 -90px 90px rgba(246, 240, 231, 0.98);
+    linear-gradient(90deg, rgba(246, 240, 231, 0.98), rgba(246, 240, 231, 0.9) 43%, rgba(238, 228, 215, 0.78)),
+    radial-gradient(circle at 16% 92%, rgba(182, 138, 59, 0.12), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 253, 248, 0.4) 0, rgba(235, 226, 213, 0.7) 100%);
+  box-shadow: inset 0 -88px 90px rgba(246, 240, 231, 0.95);
 }
 
 .hero-inner {
@@ -473,9 +485,7 @@ main {
   overflow: hidden;
   border: 1px solid rgba(255, 250, 241, 0.48);
   border-radius: var(--r-card);
-  background:
-    linear-gradient(180deg, rgba(29, 22, 17, 0.08), rgba(24, 17, 12, 0.64)),
-    var(--month-image, url("/month6/alternates/month6-paperwork-alt-1.png")) center top / cover;
+  background: var(--month-image, url("/month6/alternates/month6-paperwork-alt-1.png")) center top / cover;
   color: #fff8ec;
   box-shadow: 0 30px 72px rgba(65, 48, 31, 0.2);
   isolation: isolate;
@@ -487,8 +497,9 @@ main {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(circle at 68% 18%, rgba(237, 193, 111, 0.2), transparent 14rem),
-    linear-gradient(90deg, rgba(20, 14, 11, 0.08), rgba(20, 14, 11, 0.18));
+    linear-gradient(90deg, rgba(19, 13, 10, 0.9) 0%, rgba(19, 13, 10, 0.7) 36%, rgba(19, 13, 10, 0.24) 70%, rgba(19, 13, 10, 0.1) 100%),
+    linear-gradient(180deg, rgba(19, 13, 10, 0.08) 0%, rgba(19, 13, 10, 0.56) 100%),
+    radial-gradient(circle at 76% 18%, rgba(237, 193, 111, 0.2), transparent 15rem);
   pointer-events: none;
 }
 
@@ -503,7 +514,7 @@ main {
 }
 
 .hero-current-copy span {
-  color: rgba(255, 239, 209, 0.86);
+  color: rgba(238, 194, 112, 0.9);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -525,6 +536,9 @@ main {
 }
 
 .hero-current-copy button {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
   width: fit-content;
   min-height: 44px;
   margin-top: 10px;
@@ -532,9 +546,22 @@ main {
   border-radius: var(--r-pill);
   background: rgba(255, 253, 248, 0.92);
   color: var(--cream);
-  padding: 10px 15px;
-  font-weight: 900;
+  padding: 10px 18px;
+  font-weight: 750;
   text-shadow: none;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.hero-current-copy button::after {
+  content: "→";
+  color: var(--gold-2);
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.hero-current-copy button:hover::after {
+  transform: translateX(3px);
 }
 
 .hero-visual {
@@ -618,7 +645,7 @@ main {
 .eyebrow,
 .section-kicker {
   margin: 0;
-  color: var(--mut);
+  color: var(--gold-2);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -659,20 +686,48 @@ h1 {
 
 .hero-actions button,
 .submission-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
   border: 1px solid var(--cream);
   border-radius: var(--r-pill);
-  padding: 13px 20px;
+  padding: 13px 22px;
   color: var(--surface);
   background: var(--cream);
-  font-weight: 800;
-  box-shadow: 0 14px 30px rgba(49, 40, 32, 0.16);
+  font-weight: 750;
+  box-shadow: 0 14px 30px rgba(49, 40, 32, 0.14);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.hero-actions button::after {
+  content: "→";
+  color: rgba(255, 230, 184, 0.88);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.hero-actions button:hover,
+.submission-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(49, 40, 32, 0.18);
+}
+
+.hero-actions button:hover::after {
+  transform: translateX(3px);
 }
 
 .hero-actions .secondary {
   color: var(--cream);
   background: rgba(255, 253, 248, 0.68);
   border: 1px solid var(--line);
-  box-shadow: none;
+  box-shadow: 0 12px 24px rgba(65, 48, 31, 0.06);
+}
+
+.hero-actions .secondary::after {
+  color: var(--gold-2);
 }
 
 .focus-section {
@@ -1526,15 +1581,26 @@ h1 {
 }
 
 .month-visual-copy button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin-top: 22px;
   border: 1px solid var(--cream);
   border-radius: var(--r-pill);
   background: var(--cream);
   color: var(--surface);
-  padding: 11px 16px;
+  padding: 11px 18px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 750;
   box-shadow: 0 14px 28px rgba(49, 40, 32, 0.14);
+}
+
+.month-visual-copy button::after {
+  content: "→";
+  color: rgba(255, 230, 184, 0.88);
+  font-size: 17px;
+  line-height: 1;
 }
 
 .month-image-panel {
@@ -1555,9 +1621,9 @@ h1 {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(circle at 74% 18%, rgba(237, 193, 111, 0.16), transparent 13rem),
-    linear-gradient(180deg, rgba(24, 17, 12, 0.02), rgba(24, 17, 12, 0.74)),
-    linear-gradient(90deg, rgba(24, 17, 12, 0.14), rgba(24, 17, 12, 0.26));
+    linear-gradient(90deg, rgba(24, 17, 12, 0.84) 0%, rgba(24, 17, 12, 0.56) 34%, rgba(24, 17, 12, 0.2) 72%, rgba(24, 17, 12, 0.08) 100%),
+    linear-gradient(180deg, rgba(24, 17, 12, 0.02), rgba(24, 17, 12, 0.7)),
+    radial-gradient(circle at 74% 18%, rgba(237, 193, 111, 0.16), transparent 13rem);
   pointer-events: none;
 }
 
@@ -1586,7 +1652,7 @@ h1 {
 }
 
 .month-image-panel figcaption span {
-  color: rgba(255, 236, 195, 0.84);
+  color: rgba(238, 194, 112, 0.88);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -3021,7 +3087,7 @@ h1 {
 
 @media (max-width: 620px) {
   .topbar {
-    grid-template-columns: 44px 44px;
+    grid-template-columns: auto 44px;
     justify-content: space-between;
     gap: 10px;
     padding: 10px 14px 8px;
@@ -3031,15 +3097,21 @@ h1 {
 
   .brand {
     min-width: 44px;
+    padding: 0 12px;
+    gap: 6px;
+    letter-spacing: 0;
   }
 
-  .brand span:last-child {
+  .brand-word-long {
     display: none;
   }
 
-  .brand-mark {
-    width: 44px;
-    height: 44px;
+  .brand-word {
+    font-size: 12px;
+  }
+
+  .brand-bolt {
+    font-size: 16px;
   }
 
   .signin {
