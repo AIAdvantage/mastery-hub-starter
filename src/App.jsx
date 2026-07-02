@@ -1163,6 +1163,35 @@ function blocksWithHeadingIds(content) {
   });
 }
 
+function groupedMarkdownSections(content) {
+  const blocks = blocksWithHeadingIds(content);
+  const sections = [];
+  let current = null;
+
+  blocks.forEach((block) => {
+    if (block.type === "h3" || block.type === "h4") {
+      current = {
+        title: block.text,
+        blocks: [block],
+      };
+      sections.push(current);
+      return;
+    }
+
+    if (!current) {
+      current = {
+        title: "Intro",
+        blocks: [],
+      };
+      sections.push(current);
+    }
+
+    current.blocks.push(block);
+  });
+
+  return sections.filter((section) => section.blocks.some((block) => block.type !== "space"));
+}
+
 function MarkdownHeading({ block }) {
   const Tag = block.type;
 
@@ -1564,6 +1593,25 @@ function MarkdownDocument({ content }) {
   );
 }
 
+function MarkdownSectionCards({ content }) {
+  const sections = useMemo(() => groupedMarkdownSections(content), [content]);
+
+  return (
+    <div className="workbench-layout challenge-workbench-layout">
+      <div className="workbench-stack">
+        {sections.map((section, index) => (
+          <article className="workbench-step challenge-guide-card" key={`${section.title}-${index}`}>
+            <div className="workbench-step-top">
+              <small>{String(index + 1).padStart(2, "0")}</small>
+            </div>
+            <MarkdownBlocks blocks={section.blocks} />
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function getGuideModel(content) {
   const sections = splitGuideSections(content);
   const introTitles = new Set(["What You'll Have When Done", "Before You Start"]);
@@ -1772,7 +1820,7 @@ function buildMarkdownBlocks(content) {
 function MarkdownBlock({ block }) {
   if (block.type === "space") return <div className="md-space" />;
   if (block.type === "rule") return <hr className="md-rule" />;
-  if (block.type === "code") return <pre className="md-code">{block.text}</pre>;
+  if (block.type === "code") return <CopyableCodeBlock text={block.text} />;
   if (block.type === "image") {
     return (
       <figure className="md-figure">
@@ -1787,6 +1835,28 @@ function MarkdownBlock({ block }) {
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function CopyableCodeBlock({ text }) {
+  const [copied, setCopied] = useState(false);
+
+  async function onCopy() {
+    await copyText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  return (
+    <div className="md-code-wrap">
+      <div className="md-code-actions">
+        <span>Prompt</span>
+        <button type="button" onClick={onCopy}>
+          {copied ? "Copied" : "Copy prompt"}
+        </button>
+      </div>
+      <pre className="md-code">{text}</pre>
+    </div>
+  );
 }
 
 function renderInlineMarkdown(text = "") {
@@ -2033,7 +2103,7 @@ function JulyChallengeGuidePage({ navigate }) {
             <p>Use this guide to complete the July challenge and submit the strongest version of your work.</p>
           </div>
         </div>
-        <MarkdownDocument content={JULY_CONTENT.challenge} />
+        <MarkdownSectionCards content={JULY_CONTENT.challenge} />
       </div>
     </section>
   );
@@ -2061,7 +2131,7 @@ function ChallengeGuidePage({ navigate }) {
             <p>Use this guide to complete the June challenge and submit the strongest version of your work.</p>
           </div>
         </div>
-        <MarkdownDocument content={MONTH6_CONTENT.challenge} />
+        <MarkdownSectionCards content={MONTH6_CONTENT.challenge} />
       </div>
     </section>
   );

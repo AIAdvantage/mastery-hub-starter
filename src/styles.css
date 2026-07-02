@@ -1791,13 +1791,54 @@ h1 {
   background: linear-gradient(90deg, transparent, rgba(182, 138, 59, 0.28), transparent);
 }
 
-.md-code {
-  overflow: auto;
+.md-code-wrap {
   margin: 8px 0;
-  padding: 18px;
   border: 1px solid #2d251f;
   border-radius: 10px;
   background: #050403;
+  overflow: hidden;
+}
+
+.md-code-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(246, 234, 215, 0.12);
+  padding: 10px 12px;
+}
+
+.md-code-actions span {
+  color: rgba(246, 234, 215, 0.68);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.md-code-actions button {
+  border: 1px solid rgba(246, 234, 215, 0.28);
+  border-radius: var(--r-pill);
+  background: rgba(246, 234, 215, 0.1);
+  color: #f6ead7;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.md-code-actions button:hover,
+.md-code-actions button:focus-visible {
+  background: #f6ead7;
+  color: #050403;
+}
+
+.md-code {
+  overflow: auto;
+  margin: 0;
+  padding: 18px;
+  border: 0;
+  background: transparent;
   color: #f6ead7;
   font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   white-space: pre;
