@@ -155,6 +155,7 @@ const GUIDE_HELP_URL = "https://mastery.alfredos.app/monthly-resources/june/guid
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
+const CHALLENGE_SUBMISSIONS_URL = "https://community.aiadvantage.com/c/challenge-submissions/";
 
 const JULY_PREREQUISITES = [
   {
@@ -1947,22 +1948,22 @@ function JulyChallengeLanding({ navigate }) {
           <h4>Month 7 Challenge</h4>
           <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
         </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submit")}>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Submit</span>
-            <small>Form</small>
+            <small>Community</small>
           </div>
           <h4>Submit Your Challenge</h4>
-          <p>Send your before and after, your direction, and your design brief for review.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submissions")}>
+          <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
+        </a>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Submissions</span>
-            <small>Review</small>
+            <small>Community</small>
           </div>
           <h4>Recent Submissions</h4>
-          <p>See recent submissions saved in this browser and the monthly challenge collection.</p>
-        </button>
+          <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
+        </a>
       </div>
     </section>
   );
@@ -1988,22 +1989,22 @@ function JuneChallengeLanding({ month, navigate }) {
           <h4>Month 6 Challenge</h4>
           <p>Read the full mission, rules, deliverables, deadline, and self-improving Skill workflow.</p>
         </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submit")}>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Submit</span>
-            <small>Form</small>
+            <small>Community</small>
           </div>
           <h4>Submit Your Challenge</h4>
-          <p>Send your Skill file, project notes, and proof of what improved for review.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submissions")}>
+          <p>Post your Skill file, project notes, and proof of what improved in the Challenge Submissions space.</p>
+        </a>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Submissions</span>
-            <small>Review</small>
+            <small>Community</small>
           </div>
           <h4>Recent Submissions</h4>
-          <p>See June submissions saved in this browser and the monthly challenge collection.</p>
-        </button>
+          <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
+        </a>
       </div>
     </section>
   );
