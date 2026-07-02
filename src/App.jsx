@@ -11,6 +11,7 @@ const MONTHS = [
     id: "jun",
     label: "June",
     number: "June",
+    topic: "Paperwork",
     status: "Available",
     available: true,
     focus: "Your AI Handles the Paperwork",
@@ -54,6 +55,7 @@ const MONTHS = [
     id: "jul",
     label: "July",
     number: "July",
+    topic: "AI Hub",
     status: "Current hub",
     available: true,
     focus: "Build Your AI Hub",
@@ -73,11 +75,66 @@ const MONTHS = [
       { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
-  { id: "aug", label: "August", number: "August", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
-  { id: "sep", label: "September", number: "September", status: "Upcoming", focus: "AI Email Command Center", upstream: "Communication as leverage.", outcome: "Draft, triage, and summarize email so you only touch what matters.", resources: [] },
-  { id: "oct", label: "October", number: "October", status: "Upcoming", focus: "Monthly Implementation", upstream: "Build one useful business system at a time.", outcome: "Create a repeatable workflow you can keep using after the live session ends.", resources: [] },
-  { id: "nov", label: "November", number: "November", status: "Upcoming", focus: "Member Resources", upstream: "Turn learning into practical tools.", outcome: "Collect the guide, prompts, challenge, and winner showcase for the month in one place.", resources: [] },
-  { id: "dec", label: "December", number: "December", status: "Upcoming", focus: "Year-End Mastery", upstream: "Review what worked and turn it into leverage for the next year.", outcome: "Use AI to review, summarize, and systemize your strongest wins from the year.", resources: [] },
+  {
+    id: "aug",
+    label: "August",
+    number: "August",
+    topic: "To be announced",
+    status: "Upcoming",
+    focus: "To be announced",
+    upstream: "Monthly direction will be announced in the community calendar.",
+    outcome: "The guide, prompts, and challenge details will appear when the month opens.",
+    calendarUrl: "https://community.aiadvantage.com/c/mastery-calendar/august-2026-mastery-workshop",
+    resources: [],
+  },
+  {
+    id: "sep",
+    label: "September",
+    number: "September",
+    topic: "To be announced",
+    status: "Upcoming",
+    focus: "To be announced",
+    upstream: "Monthly direction will be announced in the community calendar.",
+    outcome: "The guide, prompts, and challenge details will appear when the month opens.",
+    calendarUrl: "https://community.aiadvantage.com/c/mastery-calendar/sept-2026-mastery-workshop",
+    resources: [],
+  },
+  {
+    id: "oct",
+    label: "October",
+    number: "October",
+    topic: "To be announced",
+    status: "Upcoming",
+    focus: "To be announced",
+    upstream: "Monthly direction will be announced in the community calendar.",
+    outcome: "The guide, prompts, and challenge details will appear when the month opens.",
+    calendarUrl: "https://community.aiadvantage.com/c/mastery-calendar/oct-2026-mastery-workshop",
+    resources: [],
+  },
+  {
+    id: "nov",
+    label: "November",
+    number: "November",
+    topic: "To be announced",
+    status: "Upcoming",
+    focus: "To be announced",
+    upstream: "Monthly direction will be announced in the community calendar.",
+    outcome: "The guide, prompts, and challenge details will appear when the month opens.",
+    calendarUrl: "https://community.aiadvantage.com/c/mastery-calendar/nov-2026-mastery-workshop",
+    resources: [],
+  },
+  {
+    id: "dec",
+    label: "December",
+    number: "December",
+    topic: "To be announced",
+    status: "Upcoming",
+    focus: "To be announced",
+    upstream: "Monthly direction will be announced in the community calendar.",
+    outcome: "The guide, prompts, and challenge details will appear when the month opens.",
+    calendarUrl: "https://community.aiadvantage.com/c/mastery-calendar/dec-2026-mastery-workshop",
+    resources: [],
+  },
 ];
 
 const VISIBLE_MONTHS = MONTHS.filter((month) => !month.hidden);
@@ -1490,21 +1547,29 @@ function MonthChoiceGrid({ months = VISIBLE_MONTHS, activeId, basePath, navigate
     <div className="month-choice-grid" aria-label="Mastery months">
       {months.map((month) => {
         const isActive = month.id === activeId;
-        const isOpen = isActive || month.available;
+        const isOpen = isActive || month.available || month.calendarUrl;
+        const statusLabel = isActive ? "Current" : month.available ? "Open" : "Calendar";
+        function openMonth() {
+          if (month.calendarUrl && !month.available && !isActive) {
+            window.location.assign(month.calendarUrl);
+            return;
+          }
+          navigate(`${basePath}/${month.label.toLowerCase()}`);
+        }
         return (
           <button
             key={month.id}
             type="button"
             className={`month-choice ${isActive ? "active" : isOpen ? "" : "disabled"}`}
             disabled={!isOpen}
-            onClick={() => navigate(`${basePath}/${month.label.toLowerCase()}`)}
+            onClick={openMonth}
           >
             {month.image && (
               <img className="month-choice-image" src={month.image.src} alt="" loading="lazy" />
             )}
             <span>{month.label}</span>
-            <small>{month.number}</small>
-            <strong>{isActive ? "Current" : isOpen ? "Open" : "Coming soon"}</strong>
+            <small>{month.topic || month.focus}</small>
+            <strong>{statusLabel}</strong>
           </button>
         );
       })}
