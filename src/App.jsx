@@ -764,7 +764,6 @@ function HomePage({ navigate }) {
             <article className="plan-card" key={feature.name}>
               <div className="plan-topline">
                 <span>{feature.tag}</span>
-                <small>{feature.includes.length} parts</small>
               </div>
               <h3>{feature.name}</h3>
               <p>{feature.summary}</p>
