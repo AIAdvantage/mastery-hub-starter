@@ -6,6 +6,8 @@ import { JULY_CONTENT } from "./julyContent.js";
 import { CHALLENGE_ARCHIVE } from "./data/challengeArchive.js";
 
 const CURRENT_MONTH_ID = "jul";
+const JULY_PREREQUISITES_VIDEO_URL = "https://vimeo.com/1204164726?tq=mastery%20July#t=0";
+const JULY_PREREQUISITES_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1204164726?title=0&byline=0&portrait=0";
 
 const MONTHS = [
   {
@@ -1511,6 +1513,24 @@ function JulyPrerequisitesPage({ navigate }) {
             </div>
           ))}
         </div>
+        <article className="prerequisites-video resource-card">
+          <div className="resource-card-top">
+            <span>Walkthrough video</span>
+            <small>July prep</small>
+          </div>
+          <h4>Watch the setup walkthrough</h4>
+          <p>Use this video at the end if you want to follow the July setup visually before opening the guide.</p>
+          <div className="video-embed" aria-label="July prerequisites walkthrough video">
+            <iframe
+              title="July prerequisites walkthrough"
+              src={JULY_PREREQUISITES_VIDEO_EMBED_URL}
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+          <LinkButton href={JULY_PREREQUISITES_VIDEO_URL}>Open video</LinkButton>
+        </article>
       </section>
     </section>
   );
