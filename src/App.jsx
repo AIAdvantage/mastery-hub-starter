@@ -6,7 +6,6 @@ import { JULY_CONTENT } from "./julyContent.js";
 import { CHALLENGE_ARCHIVE } from "./data/challengeArchive.js";
 
 const CURRENT_MONTH_ID = "jul";
-const JULY_PREREQUISITES_VIDEO_URL = "https://vimeo.com/1204164726?tq=mastery%20July#t=0";
 const JULY_PREREQUISITES_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1204164726?title=0&byline=0&portrait=0";
 
 const MONTHS = [
@@ -1547,7 +1546,6 @@ function JulyPrerequisitesPage({ navigate }) {
               allowFullScreen
             />
           </div>
-          <LinkButton href={JULY_PREREQUISITES_VIDEO_URL}>Open video</LinkButton>
         </article>
       </section>
     </section>
