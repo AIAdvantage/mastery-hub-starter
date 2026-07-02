@@ -69,7 +69,7 @@ const MONTHS = [
     resources: [
       { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
-      { type: "Recordings", title: "July Recordings", description: "The July recordings will unlock after the live session.", status: "Coming soon" },
+      { type: "Recordings", title: "July Recordings", description: "Watch the July recordings in the AI Advantage Community.", status: "Watch replay" },
       { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
@@ -155,6 +155,7 @@ const GUIDE_HELP_URL = "https://mastery.alfredos.app/monthly-resources/june/guid
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
+const MASTERY_REPLAYS_URL = "https://community.aiadvantage.com/c/mastery-replays/";
 const CHALLENGE_SUBMISSIONS_URL = "https://community.aiadvantage.com/c/challenge-submissions/";
 
 const JULY_PREREQUISITES = [
@@ -927,14 +928,14 @@ function JulyResourcesMenu({ month, navigate }) {
           <h4>Live Materials</h4>
           <p>Copy the Lovable setup, Cowork connect, and CLAUDE.md prompts into Claude Cowork.</p>
         </button>
-        <article className="resource-card">
+        <a className="resource-card resource-card-link" href={MASTERY_REPLAYS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Recordings</span>
-            <small>Coming soon</small>
+            <small>Community</small>
           </div>
           <h4>{recordingsTitle}</h4>
-          <p>The July live session recording will appear here after the session is complete.</p>
-        </article>
+          <p>Watch the July session recordings directly in the Mastery Replays space.</p>
+        </a>
       </div>
     </section>
   );
