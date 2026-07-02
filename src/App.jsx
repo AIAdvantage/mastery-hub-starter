@@ -70,10 +70,10 @@ const MONTHS = [
       caption: "Step-by-step guide, screenshots, and the Lovable + Cowork prompts.",
     },
     resources: [
-      { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Resources access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
-      { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
-      { type: "Recordings", title: "July Recordings", description: "Watch the July recordings in the AI Advantage Community.", status: "Watch replay" },
-      { type: "Challenge Document", title: "July Challenge", description: "Paint your AI Hub: a mobile-first restyle with the function frozen.", status: "Open" },
+      { type: "Guide", title: "July Guide", description: "Follow the full walkthrough to build your Hub and connect the main pieces.", status: "Start here" },
+      { type: "Materials", title: "Live Materials", description: "Copy the prompts and workshop materials when the guide tells you to use them.", status: "Use with guide" },
+      { type: "Recordings", title: "July Recordings", description: "Rewatch the July workshop sessions whenever you want to follow along again.", status: "Watch replay" },
+      { type: "Challenge Document", title: "July Challenge", description: "Use what you built this month, submit your version, and see what other members made.", status: "Open" },
     ],
   },
   {
@@ -1040,7 +1040,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Start here</small>
           </div>
           <h4>Before You Start</h4>
-          <p>Check GitHub, Lovable, Mastery Resources access, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
+          <p>Make sure the accounts, apps, and files you need for the July workshop are ready.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
           <div className="resource-card-top">
@@ -1048,7 +1048,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Step by step</small>
           </div>
           <h4>{guideTitle}</h4>
-          <p>Open the full step-by-step guide with screenshots, from the Lovable build to CLAUDE.md and the daily briefing.</p>
+          <p>Follow the full walkthrough to build your Hub and connect the main pieces.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prompts")}>
           <div className="resource-card-top">
@@ -1056,7 +1056,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Use with guide</small>
           </div>
           <h4>Live Materials</h4>
-          <p>Copy the Lovable setup, Cowork connect, and CLAUDE.md prompts into Claude Cowork.</p>
+          <p>Copy the prompts and workshop materials when the guide tells you to use them.</p>
         </button>
         <a className="resource-card resource-card-link" href={MASTERY_REPLAYS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
@@ -1064,7 +1064,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Community</small>
           </div>
           <h4>{recordingsTitle}</h4>
-          <p>Watch the July session recordings directly in the Mastery Replays space.</p>
+          <p>Rewatch the July workshop sessions whenever you want to follow along again.</p>
         </a>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july")}>
           <div className="resource-card-top">
@@ -1072,7 +1072,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Apply it</small>
           </div>
           <h4>July Challenge</h4>
-          <p>Open the Month 7 challenge guide, submit your work, and browse member submissions.</p>
+          <p>Use what you built this month, submit your version, and see what other members made.</p>
         </button>
       </div>
     </section>
