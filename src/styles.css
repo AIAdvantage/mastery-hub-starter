@@ -1756,6 +1756,18 @@ h1 {
   border-left: 2px solid rgba(182, 138, 59, 0.28);
 }
 
+.md-quote {
+  margin: 2px 0;
+  border-left: 3px solid var(--gold-2);
+  border-radius: 0 8px 8px 0;
+  background: rgba(182, 138, 59, 0.08);
+  color: var(--cream);
+  padding: 10px 14px;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.4;
+}
+
 .md-check {
   display: flex;
   align-items: flex-start;
@@ -3033,6 +3045,7 @@ h1 {
   .markdown-document p,
   .md-bullet,
   .md-step,
+  .md-quote,
   .md-check {
     font-size: 16px;
     line-height: 1.65;

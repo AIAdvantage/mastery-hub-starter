@@ -1371,6 +1371,18 @@ function RedirectRoute({ to, navigate }) {
   );
 }
 
+function ExternalRedirectRoute({ to }) {
+  useEffect(() => {
+    window.location.replace(to);
+  }, [to]);
+
+  return (
+    <section className="section page-section">
+      <p className="muted">Opening Challenge Submissions...</p>
+    </section>
+  );
+}
+
 function JulyPrerequisitesPage({ navigate }) {
   return (
     <section className="section page-section month-section" aria-labelledby="july-prerequisites-title">
@@ -1894,6 +1906,7 @@ function buildMarkdownBlocks(content) {
     if (trimmed.startsWith("### ")) blocks.push({ type: "h5", text: trimmed.replace(/^### /, "") });
     else if (trimmed.startsWith("## ")) blocks.push({ type: "h4", text: trimmed.replace(/^## /, "") });
     else if (trimmed.startsWith("# ")) blocks.push({ type: "h3", text: trimmed.replace(/^# /, "") });
+    else if (trimmed.startsWith("> ")) blocks.push({ type: "quote", text: trimmed.replace(/^> /, "") });
     else if (trimmed.startsWith("- [ ] ")) blocks.push({ type: "check", text: trimmed.replace("- [ ] ", "") });
     else if (trimmed.startsWith("- ")) blocks.push({ type: "bullet", text: trimmed.replace("- ", "") });
     else if (/^\d+\./.test(trimmed)) blocks.push({ type: "step", text: trimmed });
@@ -1920,6 +1933,7 @@ function MarkdownBlock({ block }) {
   }
   if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
@@ -2047,23 +2061,7 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
   }
 
   if (child === "guide") return <JulyChallengeGuidePage navigate={navigate} />;
-  if (child === "submit") {
-    return (
-      <SubmitPage
-        breadcrumbs={[
-          { label: "Challenges", path: "/challenges" },
-          { label: "July", path: "/challenges/july" },
-          { label: "Submit" },
-        ]}
-        handleSubmit={handleSubmit}
-        navigate={navigate}
-        submissionStatus={submissionStatus}
-        submissions={submissions}
-        defaultMonth="July"
-      />
-    );
-  }
-  if (child === "submissions") return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} monthLabel="July" />;
+  if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
   return <JulyChallengeLanding navigate={navigate} />;
 }
 
@@ -2114,7 +2112,7 @@ function JulyChallengeLanding({ navigate }) {
             <span>Submit</span>
             <small>Community</small>
           </div>
-          <h4>Submit Your Challenge</h4>
+          <h4>Post to Challenge Submissions</h4>
           <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
         </a>
         <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
