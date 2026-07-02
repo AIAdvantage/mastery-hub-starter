@@ -160,35 +160,35 @@ const CHALLENGE_SUBMISSIONS_URL = "https://community.aiadvantage.com/c/challenge
 
 const JULY_PREREQUISITES = [
   {
-    label: "GitHub account created and logged in",
-    detail: "Open GitHub and make sure you can access your account before the July guide.",
+    label: "GitHub account ready",
+    detail: "Create a free GitHub account and make sure you are signed in before you start the guide.",
     link: GITHUB_URL,
     linkLabel: "Open GitHub",
   },
   {
-    label: "Lovable account created and logged in",
-    detail: "Open Lovable and confirm you can start from your workspace.",
+    label: "Lovable account ready",
+    detail: "Create a free Lovable account and make sure you are signed in with GitHub connected.",
     link: LOVABLE_URL,
     linkLabel: "Open Lovable",
   },
   {
-    label: "Mastery Hub account created and logged in",
-    detail: "Use the same email or Google account connected to your AI Mastery access.",
-    link: "/sign-in",
-    linkLabel: "Sign in to Mastery Hub",
-    internal: true,
+    label: "Claude Pro, Max, or Team plan",
+    detail: "Cowork is required for this workflow, so make sure you are signed into a Claude plan that includes it.",
+    link: "https://claude.com/settings/billing",
+    linkLabel: "Check Claude plan",
   },
   {
-    label: "Claude Desktop installed",
-    detail: "Install Claude Desktop on your computer so you are ready for the workflow when the guide opens.",
+    label: "Claude Desktop app installed",
+    detail: "Install the desktop app before Step 6, then open the Cowork tab inside Claude.",
     link: CLAUDE_DESKTOP_URL,
     linkLabel: "Download Claude Desktop",
   },
   {
-    label: "Claude Pro, Max, or Team active",
-    detail: "Confirm your Claude plan is active and that you are signed into the account you plan to use during the guide.",
-    link: "https://claude.com/settings/billing",
-    linkLabel: "Check Claude plan",
+    label: "July Live Materials ready",
+    detail: "Open the July Live Materials page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
+    link: "/monthly-resources/july/prompts",
+    linkLabel: "Open Live Materials",
+    internal: true,
   },
 ];
 
@@ -912,10 +912,18 @@ function JulyResourcesMenu({ month, navigate }) {
         onAction={() => navigate("/monthly-resources/july/guide")}
       />
       <div className="resource-grid resource-grid-three">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prerequisites")}>
+          <div className="resource-card-top">
+            <span>Prerequisites</span>
+            <small>Start here</small>
+          </div>
+          <h4>Before You Start</h4>
+          <p>Check GitHub, Lovable, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
+        </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
           <div className="resource-card-top">
             <span>Guide</span>
-            <small>Start here</small>
+            <small>Step by step</small>
           </div>
           <h4>{guideTitle}</h4>
           <p>Open the full step-by-step guide with screenshots, from the Lovable build to CLAUDE.md and the daily briefing.</p>
@@ -936,6 +944,14 @@ function JulyResourcesMenu({ month, navigate }) {
           <h4>{recordingsTitle}</h4>
           <p>Watch the July session recordings directly in the Mastery Replays space.</p>
         </a>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july")}>
+          <div className="resource-card-top">
+            <span>Challenge</span>
+            <small>Apply it</small>
+          </div>
+          <h4>July Challenge</h4>
+          <p>Open the Month 7 challenge guide, submit your work, and browse member submissions.</p>
+        </button>
       </div>
     </section>
   );
@@ -1006,7 +1022,7 @@ function GuidePage({
       <div className="workbench-layout">
         <div className="workbench-stack">
           {guide.introSections.map((section) => (
-            <IntroSectionCard section={section} key={section.title} />
+            <IntroSectionCard section={section} monthSlug={monthSlug} navigate={navigate} key={section.title} />
           ))}
           {guide.steps.map((step, index) => (
             <article className="workbench-step" id={step.id} key={step.id}>
@@ -1202,8 +1218,12 @@ function MarkdownHeading({ block }) {
   );
 }
 
-function IntroSectionCard({ section }) {
+function IntroSectionCard({ section, monthSlug = "june", navigate }) {
   const isBeforeStart = section.title === "Before You Start";
+  const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS;
+  const checklistSubtitle = monthSlug === "july"
+    ? "Get these five setup pieces ready before you start building your AI Hub."
+    : "Get these four pieces ready before you start the Paperwork workflow.";
 
   if (!isBeforeStart) {
     return (
@@ -1226,25 +1246,29 @@ function IntroSectionCard({ section }) {
         <div>
           <h3>{section.title}</h3>
           <p className="workbench-step-subtitle">
-            Get these four pieces ready before you start the Paperwork workflow.
+            {checklistSubtitle}
           </p>
         </div>
       </div>
-      <BeforeStartChecklist />
+      <BeforeStartChecklist items={checklistItems} navigate={navigate} />
     </article>
   );
 }
 
-function BeforeStartChecklist() {
+function BeforeStartChecklist({ items = BEFORE_START_ITEMS, navigate }) {
   return (
     <div className="before-start-checklist">
-      {BEFORE_START_ITEMS.map((item) => (
+      {items.map((item) => (
         <div className="before-start-item" key={item.label}>
           <span className="before-start-check" aria-hidden="true" />
           <div>
             <strong>{item.label}</strong>
             <p>{item.detail}</p>
-            {item.link && (
+            {item.internal && item.link ? (
+              <button type="button" className="link-button" onClick={() => navigate(item.link)}>
+                {item.linkLabel}
+              </button>
+            ) : item.link && (
               <LinkButton href={item.link}>{item.linkLabel}</LinkButton>
             )}
           </div>
@@ -1305,8 +1329,8 @@ function JulyPrerequisitesPage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">July guide prep</p>
-            <h1 id="july-prerequisites-title" className="page-title">Get ready before the July guide opens.</h1>
-            <p>Complete these setup steps now so you can jump straight into the workflow when the full guide is published.</p>
+            <h1 id="july-prerequisites-title" className="page-title">Before You Start</h1>
+            <p>Complete these setup steps so you can jump straight into the July AI Hub workflow.</p>
           </div>
         </div>
         <div className="before-start-checklist">
