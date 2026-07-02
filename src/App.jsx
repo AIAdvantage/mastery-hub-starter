@@ -1574,7 +1574,7 @@ function MonthChoiceGrid({ months = VISIBLE_MONTHS, activeId, basePath, navigate
           <button
             key={month.id}
             type="button"
-            className={`month-choice ${isActive ? "active" : isOpen ? "" : "disabled"}`}
+            className={`month-choice ${month.image ? "has-image" : ""} ${isActive ? "active" : isOpen ? "" : "disabled"}`}
             disabled={!isOpen}
             onClick={openMonth}
           >
