@@ -63,8 +63,8 @@ const MONTHS = [
     upstream: "Build the website where everything your AI creates shows up.",
     outcome: "Build your own private AI Hub website where everything your AI creates shows up, with Lovable, GitHub, and Claude Cowork wired together, plus a daily briefing and an ideas board.",
     image: {
-      src: "/july/july-ai-hub-card.png",
-      alt: "July AI Hub architecture map showing connected systems",
+      src: "/july/july-ai-hub-card-relatable-3.png",
+      alt: "A warm home-office desk with a tablet, phone, checklist, coffee, and papers for the July AI Hub",
       kicker: "Current month",
       title: "July: Build Your AI Hub",
       caption: "Step-by-step guide, screenshots, and the Lovable + Cowork prompts.",
