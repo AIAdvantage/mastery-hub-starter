@@ -487,6 +487,7 @@ export default function App() {
 
         <AuthStatus navigate={navigate} />
       </header>
+      {!isAuthPath && path !== "/" && <QuickNavRail navigate={navigate} />}
 
       <main>
         {isAuthPath && <AuthPage mode={path === "/sign-up" ? "signUp" : "signIn"} navigate={navigate} />}
@@ -513,6 +514,23 @@ export default function App() {
         {!isAuthPath && path === "/tutorial" && <TutorialPage navigate={navigate} />}
         {!isAuthPath && !isLayoutLabPath && !path.startsWith("/monthly-resources") && !path.startsWith("/challenges") && !path.startsWith("/archive") && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
+    </div>
+  );
+}
+
+function QuickNavRail({ navigate }) {
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  return (
+    <div className="quick-nav-rail" aria-label="Quick navigation">
+      <button type="button" onClick={scrollToTop} aria-label="Back to top" title="Back to top">
+        <span aria-hidden="true">↑</span>
+      </button>
+      <button type="button" onClick={() => navigate("/")} aria-label="Go home" title="Go home">
+        <span aria-hidden="true">⌂</span>
+      </button>
     </div>
   );
 }
