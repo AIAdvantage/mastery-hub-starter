@@ -194,13 +194,6 @@ const ARCHIVE_ITEMS = [
 
 const SUBMISSION_STORAGE_KEY = "mastery-hub-submissions";
 
-const TUTORIAL_STEPS = [
-  "Start with the current month hub.",
-  "Watch the tutorial and live training replays.",
-  "Submit the monthly challenge from the submissions page.",
-  "Browse the archive to learn from past member work.",
-];
-
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
   { path: "/monthly-resources", label: "Monthly Resources" },
@@ -214,7 +207,64 @@ const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
 const MASTERY_REPLAYS_URL = "https://community.aiadvantage.com/c/mastery-replays/";
+const MASTERY_CALENDAR_URL = "https://community.aiadvantage.com/c/mastery-calendar/";
 const CHALLENGE_SUBMISSIONS_URL = "https://community.aiadvantage.com/c/challenge-submissions/";
+
+const TUTORIAL_QUICK_ACCESS = [
+  {
+    eyebrow: "Monthly Resources",
+    title: "Start with July resources",
+    description: "This is the current month hub. Start here for the prerequisites, guide, live materials, recordings, and the July challenge card.",
+    url: "https://mastery.aiadvantage.com/monthly-resources/july",
+    action: "Open July resources",
+  },
+  {
+    eyebrow: "AI Advantage Club",
+    title: "Replays, events, and community live in the Club",
+    description: "The Hub holds the materials. The AI Advantage Club is where you find replays, upcoming Mastery events, and the community conversation around the work.",
+    url: MASTERY_REPLAYS_URL,
+    action: "Open Mastery replays",
+    secondaryUrl: MASTERY_CALENDAR_URL,
+    secondaryAction: "Open upcoming events",
+  },
+  {
+    eyebrow: "Current Challenge",
+    title: "Open the July challenge",
+    description: "This is where the active challenge lives. Use it when you are ready to build your July Hub redesign and follow the submission steps.",
+    url: "https://mastery.aiadvantage.com/challenges/july",
+    action: "Open July challenge",
+  },
+  {
+    eyebrow: "Past Challenge Archive",
+    title: "Browse June submissions",
+    description: "This is the archive for last month. Use it to see what members submitted, study examples, and borrow ideas for your own build.",
+    url: "https://mastery.aiadvantage.com/challenges/june",
+    action: "Open June archive",
+  },
+];
+
+const TUTORIAL_FAQS = [
+  {
+    question: "Where should I start if I just opened the site?",
+    answer: "Start with the current Monthly Resources page. For July, that means the July Resources page. It keeps the guide, prerequisites, live materials, recordings link, and challenge path in one place so you are not hunting around.",
+  },
+  {
+    question: "Where are the replays and upcoming live sessions?",
+    answer: "Those live inside the AI Advantage Club Mastery area, not inside this Hub. Think of this site as your materials shelf. The Club is where the live rooms, replays, event posts, and community conversations happen.",
+  },
+  {
+    question: "Where do I find the current challenge?",
+    answer: "Go to Challenges, then open July. That page has the challenge guide, the submission path, the deadline, and the link into the challenge submissions space.",
+  },
+  {
+    question: "Where can I see past challenge submissions?",
+    answer: "Use the June challenge archive. This is where old month submissions should live, so you can learn from real examples without confusing them with the current challenge.",
+  },
+  {
+    question: "What if I am behind or missed last month?",
+    answer: "Totally fine. Start with the current month first, then use the past month archive when you want context or examples. You do not need to perfectly finish every old piece before you can participate now.",
+  },
+];
 
 const JULY_PREREQUISITES = [
   {
@@ -444,7 +494,7 @@ export default function App() {
           />
         )}
         {!isAuthPath && path.startsWith("/archive") && <ArchivePage path={path} navigate={navigate} />}
-        {!isAuthPath && path === "/tutorial" && <TutorialPage />}
+        {!isAuthPath && path === "/tutorial" && <TutorialPage navigate={navigate} />}
         {!isAuthPath && !isLayoutLabPath && !path.startsWith("/monthly-resources") && !path.startsWith("/challenges") && !path.startsWith("/archive") && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
     </div>
@@ -2459,21 +2509,67 @@ function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" 
   );
 }
 
-function TutorialPage() {
+function TutorialPage({ navigate }) {
+  function openTutorialUrl(event, url) {
+    const destination = new URL(url, window.location.origin);
+    const isMasteryHub = destination.hostname === window.location.hostname || destination.hostname === "mastery.aiadvantage.com";
+
+    if (isMasteryHub) {
+      event.preventDefault();
+      navigate(`${destination.pathname}${destination.search}${destination.hash}`);
+    }
+  }
+
   return (
     <section className="section page-section tutorial-section" aria-labelledby="tutorial-title">
       <div className="section-heading">
         <p className="section-kicker">Tutorial</p>
-        <h1 id="tutorial-title" className="page-title">Start here when you open the hub.</h1>
-        <p className="muted">Follow this short path whenever a new month opens so you can move from training to implementation quickly.</p>
+        <h1 id="tutorial-title" className="page-title">Start here when you open the Hub.</h1>
+        <p className="muted">Use these shortcuts whenever you need the right place fast. Materials live here. Replays, live events, and community conversation live inside the AI Advantage Club.</p>
       </div>
       <div className="tutorial-grid">
-        {TUTORIAL_STEPS.map((step, index) => (
-          <article key={step}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <p>{step}</p>
-          </article>
-        ))}
+        {TUTORIAL_QUICK_ACCESS.map((item, index) => {
+          const primaryUrl = new URL(item.url, window.location.origin);
+          const primaryIsHubUrl = primaryUrl.hostname === window.location.hostname || primaryUrl.hostname === "mastery.aiadvantage.com";
+
+          return (
+            <article key={item.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <small>{item.eyebrow}</small>
+              <h2>{item.title}</h2>
+              <p>{item.description}</p>
+              <div className="tutorial-card-actions">
+                <a
+                  href={item.url}
+                  onClick={(event) => openTutorialUrl(event, item.url)}
+                  target={primaryIsHubUrl ? undefined : "_blank"}
+                  rel={primaryIsHubUrl ? undefined : "noreferrer"}
+                >
+                  {item.action}
+                </a>
+                {item.secondaryUrl && (
+                  <a href={item.secondaryUrl} target="_blank" rel="noreferrer">
+                    {item.secondaryAction}
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <div className="tutorial-faq" aria-labelledby="tutorial-faq-title">
+        <div className="section-heading compact">
+          <p className="section-kicker">FAQ</p>
+          <h2 id="tutorial-faq-title">The questions we get most often.</h2>
+        </div>
+        <div className="tutorial-faq-list">
+          {TUTORIAL_FAQS.map((item) => (
+            <details key={item.question}>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );
