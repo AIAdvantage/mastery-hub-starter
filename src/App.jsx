@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { SignIn, SignUp, useClerk, useUser } from "@clerk/clerk-react";
 import { supabase } from "./lib/supabase.js";
 import { MONTH6_CONTENT } from "./month6Content.js";
+import { JULY_CONTENT } from "./julyContent.js";
 
 const CURRENT_MONTH_ID = "jul";
 
@@ -10,8 +11,8 @@ const MONTHS = [
     id: "jun",
     label: "June",
     number: "June",
-    status: "Hidden",
-    hidden: true,
+    status: "Available",
+    available: true,
     focus: "Your AI Handles the Paperwork",
     outcome: "By the end of this month, you will have a paperwork system that fills forms, shows what is missing, and gets smarter after each run.",
     image: {
@@ -54,21 +55,22 @@ const MONTHS = [
     label: "July",
     number: "July",
     status: "Current hub",
-    focus: "July Guide Prep",
-    upstream: "Get the accounts and tools ready before the guide opens.",
-    outcome: "Create and sign into the core accounts, install Claude Desktop, and confirm your Claude plan is ready for the July guide.",
+    available: true,
+    focus: "Build Your AI Hub",
+    upstream: "Build the website where everything your AI creates shows up.",
+    outcome: "Build your own private AI Hub website where everything your AI creates shows up, with Lovable, GitHub, and Claude Cowork wired together, plus a daily briefing and an ideas board.",
     image: {
       src: "/mastery-hero.png",
       alt: "Mastery Hub workspace preview for the current month",
       kicker: "Current month",
-      title: "July Guide Prep",
-      caption: "Prerequisites now. Full guide coming soon.",
+      title: "July: Build Your AI Hub",
+      caption: "Step-by-step guide, screenshots, and the Lovable + Cowork prompts.",
     },
     resources: [
       { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
       { type: "Recordings", title: "July Recordings", description: "The July recordings will unlock after the live session.", status: "Coming soon" },
-      { type: "Challenge Document", title: "July Challenge", description: "The July challenge will unlock after the guide is published.", status: "Coming soon" },
+      { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
   { id: "aug", label: "August", number: "August", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
@@ -91,7 +93,7 @@ const HUB_FEATURES = [
   {
     name: "Challenges",
     tag: "Apply",
-    summary: "The July challenge will open after the guide is published. Until then, use this area to see what is ready.",
+    summary: "The July challenge is open: redesign your Hub\u2019s look, mobile-first, with the function frozen.",
     includes: ["Monthly status", "Prereq link", "Guide unlock", "Challenge unlock"],
   },
   {
@@ -124,7 +126,7 @@ const HOME_VISUALS = [
 ];
 
 const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "July Challenge", status: "Coming soon" },
+  { month: "July", type: "Challenge", title: "Build a UI for the AgentHub", status: "Open" },
   { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
   { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
 ];
@@ -205,6 +207,16 @@ const STEP_SUBHEADLINES = {
   "Step 8: Install the Paperwork Skill": "Turn the workflow into an installed Claude skill so you can launch it from Cowork without pasting prompts.",
   "Step 9: Add YOUR DNA + Run the Skill": "Swap in your own DNA, run the skill, answer missing fields, and grow your paperwork profile.",
   "Step 10: Run the Skill Again (See the Compounding)": "Run a second form to watch the missing-info list shrink as your profile gets sharper.",
+  "Step 1: Create Your GitHub and Lovable Accounts": "Create the free GitHub and Lovable accounts your Hub is built on.",
+  "Step 2: Set Up Lovable": "Paste the setup prompt and let Lovable build your Hub.",
+  "Step 3: Connect Lovable to GitHub": "Connect Lovable to GitHub so it can create your private repository.",
+  "Step 4: Generate Your GitHub Token": "Generate a fine-grained GitHub token so your Hub and Claude can reach your repo.",
+  "Step 5: Hand the Token and the Repository Name to Lovable": "Paste your token and repo name into Lovable to clear the 401 error.",
+  "Step 6: Set Up Your AgentHub Folder in Cowork": "Set up a Cowork folder and give it the token it needs to talk to GitHub.",
+  "Step 7: Connect Cowork to Your Repository": "Connect Cowork to your repository and watch new cards appear on the Hub.",
+  "Step 8: Create CLAUDE.md (The Standing Rule)": "Let Claude write CLAUDE.md with the card-emitter standing rule inside.",
+  "Step 9: Create a New Card for Daily Briefing": "Create a scheduled task, run it once, and watch it appear in your Hub.",
+  "Step 10: Use the Ideas + Wins Board": "Drop an idea on the kanban, drag it to Done, watch it become a Win.",
 };
 
 const BEFORE_START_ITEMS = [
@@ -766,16 +778,40 @@ function MonthlyResourcesPage({ currentMonth, path, navigate }) {
     );
   }
 
-  if (path.startsWith("/monthly-resources/june")) {
-    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
+  if (path === "/monthly-resources/july/guide") {
+    return (
+      <GuidePage
+        navigate={navigate}
+        content={JULY_CONTENT}
+        monthLabel="July"
+        monthSlug="july"
+        pageTitle="July Guide: Build Your AI Hub"
+        pageIntro="Build your own private AI Hub website where everything your AI creates shows up — Lovable, GitHub, and Claude Cowork wired together."
+        showMaterials={false}
+      />
+    );
   }
 
-  if (path === "/monthly-resources/july/guide" || path === "/monthly-resources/july/prerequisites") {
+  if (path === "/monthly-resources/july/prerequisites") {
     return <JulyPrerequisitesPage navigate={navigate} />;
   }
 
   if (path.startsWith("/monthly-resources/july/guide/")) {
     return <RedirectRoute to="/monthly-resources/july/guide" navigate={navigate} />;
+  }
+
+  if (path === "/monthly-resources/july/prompts") {
+    return (
+      <SessionPromptsPage
+        navigate={navigate}
+        content={JULY_CONTENT}
+        monthLabel="July"
+        monthSlug="july"
+        pageTitle="July Live Materials"
+        lead="Copy each prompt into Claude Cowork at the matching step of the guide."
+        showMaterials={false}
+      />
+    );
   }
 
   if (path === "/monthly-resources/june/guide") {
@@ -861,7 +897,7 @@ function JulyResourcesMenu({ month, navigate }) {
       />
       <MonthVisualCard
         month={month}
-        actionLabel="Open Prerequisites"
+        actionLabel="Open the Guide"
         onAction={() => navigate("/monthly-resources/july/guide")}
       />
       <div className="resource-grid resource-grid-three">
@@ -871,16 +907,16 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Start here</small>
           </div>
           <h4>{guideTitle}</h4>
-          <p>Confirm GitHub, Lovable, Mastery Hub, Claude Desktop, and your Claude plan before the guide opens.</p>
+          <p>Open the full step-by-step guide with screenshots, from the Lovable build to CLAUDE.md and the daily briefing.</p>
         </button>
-        <article className="resource-card">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prompts")}>
           <div className="resource-card-top">
             <span>Live materials</span>
-            <small>Coming soon</small>
+            <small>Use with guide</small>
           </div>
           <h4>Live Materials</h4>
-          <p>The slides, prompts, and downloads from the live session will appear here when they are ready.</p>
-        </article>
+          <p>Copy the Lovable setup, Cowork connect, and CLAUDE.md prompts into Claude Cowork.</p>
+        </button>
         <article className="resource-card">
           <div className="resource-card-top">
             <span>Recordings</span>
@@ -923,8 +959,16 @@ function MonthVisualCard({ month = CURRENT_MONTH, actionLabel, onAction }) {
   );
 }
 
-function GuidePage({ navigate }) {
-  const guide = useMemo(() => getGuideModel(MONTH6_CONTENT.guide), []);
+function GuidePage({
+  navigate,
+  content = MONTH6_CONTENT,
+  monthLabel = "June",
+  monthSlug = "june",
+  pageTitle = "June Guide: Fill Any Form with Claude",
+  pageIntro = "Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.",
+  showMaterials = true,
+}) {
+  const guide = useMemo(() => getGuideModel(content.guide), [content]);
 
   return (
     <section className="section page-section month-section has-hover-toc" aria-labelledby="guide-title">
@@ -932,7 +976,7 @@ function GuidePage({ navigate }) {
       <Breadcrumbs
         items={[
           { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: "June", path: "/monthly-resources/june" },
+          { label: monthLabel, path: `/monthly-resources/${monthSlug}` },
           { label: "Guide" },
         ]}
         navigate={navigate}
@@ -941,10 +985,12 @@ function GuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Guide</p>
-            <h1 id="guide-title" className="page-title">June Guide: Fill Any Form with Claude</h1>
-            <p>Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.</p>
+            <h1 id="guide-title" className="page-title">{pageTitle}</h1>
+            <p>{pageIntro}</p>
           </div>
-          <LinkButton href={MONTH6_CONTENT.materialsUrl}>Download Materials</LinkButton>
+          {showMaterials && content.materialsUrl && (
+            <LinkButton href={content.materialsUrl}>Download Materials</LinkButton>
+          )}
       </div>
       <div className="workbench-layout">
         <div className="workbench-stack">
@@ -1246,13 +1292,21 @@ function JulyPrerequisitesPage({ navigate }) {
   );
 }
 
-function SessionPromptsPage({ navigate }) {
+function SessionPromptsPage({
+  navigate,
+  content = MONTH6_CONTENT,
+  monthLabel = "June",
+  monthSlug = "june",
+  pageTitle = "June Live Materials",
+  lead = "Use these prompts while following the replay. Copy each prompt into Claude Cowork at the matching step.",
+  showMaterials = true,
+}) {
   return (
     <section className="section page-section month-section" aria-labelledby="prompts-title">
       <Breadcrumbs
         items={[
           { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: "June", path: "/monthly-resources/june" },
+          { label: monthLabel, path: `/monthly-resources/${monthSlug}` },
           { label: "Live Materials" },
         ]}
         navigate={navigate}
@@ -1261,16 +1315,32 @@ function SessionPromptsPage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Prompts</p>
-            <h1 id="prompts-title" className="page-title">June Live Materials</h1>
-            <p>Use these prompts while following the replay. Copy each prompt into Claude Cowork at the matching step.</p>
+            <h1 id="prompts-title" className="page-title">{pageTitle}</h1>
+            <p>{lead}</p>
           </div>
-          <LinkButton href={MONTH6_CONTENT.materialsUrl}>Download Materials</LinkButton>
+          {showMaterials && content.materialsUrl && (
+            <LinkButton href={content.materialsUrl}>Download Materials</LinkButton>
+          )}
         </div>
         <div className="prompt-list">
-          {MONTH6_CONTENT.prompts.map((prompt) => (
+          {content.glossary && <GlossaryCard glossary={content.glossary} />}
+          {content.prompts.map((prompt) => (
             <PromptCard key={prompt.title} prompt={prompt} />
           ))}
         </div>
+        {content.skill && (
+          <article className="resource-card" style={{ marginTop: "1.25rem" }}>
+            <div className="resource-card-top">
+              <span>Skill</span>
+              <small>Install &amp; run</small>
+            </div>
+            <h4>{content.skill.title}</h4>
+            <p>{content.skill.description}</p>
+            <a className="link-button" href={content.skill.file} download={content.skill.filename}>
+              Download .skill
+            </a>
+          </article>
+        )}
       </section>
     </section>
   );
@@ -1318,12 +1388,13 @@ function MonthChoiceGrid({ activeId, basePath, navigate }) {
     <div className="month-choice-grid" aria-label="Mastery months">
       {VISIBLE_MONTHS.map((month) => {
         const isActive = month.id === activeId;
+        const isOpen = isActive || month.available;
         return (
           <button
             key={month.id}
             type="button"
-            className={`month-choice ${isActive ? "active" : "disabled"}`}
-            disabled={!isActive}
+            className={`month-choice ${isActive ? "active" : isOpen ? "" : "disabled"}`}
+            disabled={!isOpen}
             onClick={() => navigate(`${basePath}/${month.label.toLowerCase()}`)}
           >
             {month.image && (
@@ -1331,7 +1402,7 @@ function MonthChoiceGrid({ activeId, basePath, navigate }) {
             )}
             <span>{month.label}</span>
             <small>{month.number}</small>
-            <strong>{isActive ? "Current" : "Coming soon"}</strong>
+            <strong>{isActive ? "Current" : isOpen ? "Open" : "Coming soon"}</strong>
           </button>
         );
       })}
@@ -1367,6 +1438,46 @@ function PromptCard({ prompt }) {
       </div>
       <pre>{prompt.text}</pre>
     </details>
+  );
+}
+
+function GlossaryCard({ glossary }) {
+  if (!glossary) return null;
+  return (
+    <details className="prompt-card" id="glossary">
+      <summary>
+        <span>📖 Glossary: plain-English terms</span>
+        <small>Open glossary</small>
+      </summary>
+      <MarkdownDocument content={glossary} />
+    </details>
+  );
+}
+
+function CopyPromptButton({ promptNumber }) {
+  const [copied, setCopied] = useState(false);
+  const prompt = (JULY_CONTENT.prompts || []).find((p) => (p.title || "").startsWith(`Prompt ${promptNumber}:`));
+  if (!prompt) return null;
+  async function onCopy() {
+    await copyText(prompt.text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      className="guide-copy-prompt"
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "8px",
+        margin: "4px 0 16px", padding: "11px 18px", border: "none",
+        borderRadius: "10px", background: copied ? "#1f7a4d" : "#1d1d1f",
+        color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer",
+        transition: "background .15s",
+      }}
+    >
+      {copied ? "✓ Copied to clipboard" : `📋 Copy ${prompt.title}`}
+    </button>
   );
 }
 
@@ -1587,6 +1698,12 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
+    const copyPromptMatch = trimmed.match(/^\[\[copy-prompt:(\d+)\]\]$/);
+    if (copyPromptMatch) {
+      blocks.push({ type: "copy-prompt", prompt: Number(copyPromptMatch[1]) });
+      continue;
+    }
+
     if (trimmed.startsWith("### ")) blocks.push({ type: "h5", text: trimmed.replace(/^### /, "") });
     else if (trimmed.startsWith("## ")) blocks.push({ type: "h4", text: trimmed.replace(/^## /, "") });
     else if (trimmed.startsWith("# ")) blocks.push({ type: "h3", text: trimmed.replace(/^# /, "") });
@@ -1609,11 +1726,12 @@ function MarkdownBlock({ block }) {
   if (block.type === "image") {
     return (
       <figure className="md-figure">
-        <img className="md-image" src={block.src} alt={block.alt} loading="eager" />
+        <img className="md-image" src={block.src} alt={block.alt} loading="lazy" />
         {block.alt && <figcaption>{block.alt}</figcaption>}
       </figure>
     );
   }
+  if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
@@ -1694,76 +1812,25 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
     );
   }
 
-  return <CurrentChallengeComingSoon month={CURRENT_MONTH} navigate={navigate} />;
-
-  if (child === "guide") {
-    return <ChallengeGuidePage navigate={navigate} />;
-  }
-
+  if (child === "guide") return <JulyChallengeGuidePage navigate={navigate} />;
   if (child === "submit") {
     return (
       <SubmitPage
         breadcrumbs={[
           { label: "Challenges", path: "/challenges" },
-          { label: "June", path: "/challenges/june" },
+          { label: "July", path: "/challenges/july" },
           { label: "Submit" },
         ]}
         handleSubmit={handleSubmit}
         navigate={navigate}
         submissionStatus={submissionStatus}
         submissions={submissions}
+        defaultMonth="July"
       />
     );
   }
-
-  if (child === "submissions") {
-    return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} />;
-  }
-
-  return (
-    <section className="section page-section archive-section" aria-labelledby="june-challenge-title">
-      <Breadcrumbs
-        items={[
-          { label: "Challenges", path: "/challenges" },
-          { label: "June" },
-        ]}
-        navigate={navigate}
-      />
-      <div className="section-heading section-heading-compact">
-        <h1 id="june-challenge-title" className="page-title">Build a Self-Improving Skill</h1>
-      </div>
-      <MonthVisualCard
-        month={MONTHS[0]}
-        actionLabel="Open Challenge Guide"
-        onAction={() => navigate("/challenges/june/guide")}
-      />
-      <div className="resource-grid resource-grid-three">
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
-          <div className="resource-card-top">
-            <span>Challenge guide</span>
-          </div>
-          <h4>Mastery Challenge #6</h4>
-          <p>Read the full mission, rules, deliverables, deadline, and judging notes for June.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submit")}>
-          <div className="resource-card-top">
-            <span>Submit</span>
-            <small>Form</small>
-          </div>
-          <h4>Submit Your Challenge</h4>
-          <p>Send your project link, title, and notes for the team to review.</p>
-        </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submissions")}>
-          <div className="resource-card-top">
-            <span>Submissions</span>
-            <small>Review</small>
-          </div>
-          <h4>Recent Submissions</h4>
-          <p>See recent submissions saved in this browser and the monthly challenge collection.</p>
-        </button>
-      </div>
-    </section>
-  );
+  if (child === "submissions") return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} monthLabel="July" />;
+  return <JulyChallengeLanding navigate={navigate} />;
 }
 
 function CurrentChallengeComingSoon({ month, navigate }) {
@@ -1783,6 +1850,74 @@ function CurrentChallengeComingSoon({ month, navigate }) {
       </div>
       <div className="hero-actions">
         <button type="button" onClick={() => navigate("/monthly-resources/july/guide")}>Open July Prerequisites</button>
+      </div>
+    </section>
+  );
+}
+
+function JulyChallengeLanding({ navigate }) {
+  return (
+    <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
+      <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "July" }]} navigate={navigate} />
+      <div className="section-heading section-heading-compact">
+        <h1 id="july-challenge-title" className="page-title">Build a UI for the AgentHub</h1>
+      </div>
+      <MonthVisualCard
+        month={CURRENT_MONTH}
+        actionLabel="Open Challenge Guide"
+        onAction={() => navigate("/challenges/july/guide")}
+      />
+      <div className="resource-grid resource-grid-three">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/guide")}>
+          <div className="resource-card-top">
+            <span>Challenge guide</span>
+          </div>
+          <h4>Month 7 Challenge</h4>
+          <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submit")}>
+          <div className="resource-card-top">
+            <span>Submit</span>
+            <small>Form</small>
+          </div>
+          <h4>Submit Your Challenge</h4>
+          <p>Send your before and after, your direction, and your design brief for review.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/submissions")}>
+          <div className="resource-card-top">
+            <span>Submissions</span>
+            <small>Review</small>
+          </div>
+          <h4>Recent Submissions</h4>
+          <p>See recent submissions saved in this browser and the monthly challenge collection.</p>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function JulyChallengeGuidePage({ navigate }) {
+  const tocItems = useMemo(() => markdownTocItems(JULY_CONTENT.challenge), []);
+  return (
+    <section className="section page-section archive-section has-hover-toc" aria-labelledby="archive-title">
+      <HoverTableOfContents title="Challenge contents" items={tocItems} />
+      <Breadcrumbs
+        items={[
+          { label: "Challenges", path: "/challenges" },
+          { label: "July", path: "/challenges/july" },
+          { label: "Challenge Guide" },
+        ]}
+        navigate={navigate}
+      />
+      <div className="resource-section">
+        <div className="resource-section-head">
+          <div>
+            <p className="section-kicker">Challenge guide</p>
+            <h1 id="archive-title" className="page-title">Month 7 Challenge: Build a UI for the AgentHub</h1>
+            <p>Use this guide to complete the July challenge and submit the strongest version of your work.</p>
+          </div>
+        </div>
+        <MarkdownDocument content={JULY_CONTENT.challenge} />
       </div>
     </section>
   );
@@ -1816,20 +1951,20 @@ function ChallengeGuidePage({ navigate }) {
   );
 }
 
-function ChallengeSubmissionsPage({ archiveRows, navigate }) {
+function ChallengeSubmissionsPage({ archiveRows, navigate, monthLabel = "June" }) {
   return (
     <section className="section page-section archive-section" aria-labelledby="archive-title">
       <Breadcrumbs
         items={[
           { label: "Challenges", path: "/challenges" },
-          { label: "June", path: "/challenges/june" },
+          { label: monthLabel, path: `/challenges/${monthLabel.toLowerCase()}` },
           { label: "Submissions" },
         ]}
         navigate={navigate}
       />
       <div className="section-heading">
         <p className="section-kicker">Submissions</p>
-        <h1 id="archive-title" className="page-title">June challenge submissions.</h1>
+        <h1 id="archive-title" className="page-title">{monthLabel} challenge submissions.</h1>
         <p className="muted">Use the archive to revisit past challenges, review your own work, and learn from standout member examples.</p>
       </div>
       <div className="archive-table" role="table" aria-label="Challenge archive">
@@ -1852,7 +1987,7 @@ function ChallengeSubmissionsPage({ archiveRows, navigate }) {
   );
 }
 
-function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" }, { label: "Submit" }], handleSubmit, navigate, submissionStatus, submissions }) {
+function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" }, { label: "Submit" }], handleSubmit, navigate, submissionStatus, submissions, defaultMonth = "June" }) {
   return (
     <section className="section page-section" aria-labelledby="submit-title">
       <Breadcrumbs items={breadcrumbs} navigate={navigate} />
@@ -1867,7 +2002,7 @@ function SubmitPage({ breadcrumbs = [{ label: "Challenges", path: "/challenges" 
         <form className="submission-card" onSubmit={handleSubmit}>
           <label>
             Challenge month
-            <select name="month" defaultValue="June">
+            <select name="month" defaultValue={defaultMonth}>
               {MONTHS.map((month) => (
                 <option key={month.id}>{month.label}</option>
               ))}
