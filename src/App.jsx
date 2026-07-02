@@ -3,6 +3,7 @@ import { SignIn, SignUp, useClerk, useUser } from "@clerk/clerk-react";
 import { supabase } from "./lib/supabase.js";
 import { MONTH6_CONTENT } from "./month6Content.js";
 import { JULY_CONTENT } from "./julyContent.js";
+import { CHALLENGE_ARCHIVE } from "./data/challengeArchive.js";
 
 const CURRENT_MONTH_ID = "jul";
 
@@ -19,9 +20,9 @@ const MONTHS = [
     image: {
       src: "/month6/alternates/month6-paperwork-alt-1.png",
       alt: "A paperwork form preview used for June",
-      kicker: "Current month",
+      kicker: "Past month",
       title: "June: Paperwork",
-      caption: "Replay, guide, session prompts, and challenge in one path.",
+      caption: "Archive, guide, session prompts, and challenge in one path.",
     },
     resources: [
       {
@@ -307,7 +308,7 @@ const BEFORE_START_ITEMS = [
 function getPath() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
   if (path === "/monthly-hubs") return "/monthly-resources";
-  if (path === "/challenge-archive") return "/challenges";
+  if (path === "/challenge-archive") return "/archive";
   if (path === "/submit") return "/challenges/july";
   return path;
 }
@@ -442,8 +443,9 @@ export default function App() {
             submissions={submissions}
           />
         )}
+        {!isAuthPath && path.startsWith("/archive") && <ArchivePage path={path} navigate={navigate} />}
         {!isAuthPath && path === "/tutorial" && <TutorialPage />}
-        {!isAuthPath && !isLayoutLabPath && !path.startsWith("/monthly-resources") && !path.startsWith("/challenges") && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
+        {!isAuthPath && !isLayoutLabPath && !path.startsWith("/monthly-resources") && !path.startsWith("/challenges") && !path.startsWith("/archive") && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
     </div>
   );
@@ -1993,6 +1995,168 @@ function renderInlineMarkdown(text = "") {
   return nodes;
 }
 
+function ArchivePage({ path, navigate }) {
+  const archiveMonths = CHALLENGE_ARCHIVE.months;
+  const segment = path.split("/")[2] || "";
+  const selectedMonth = archiveMonths.find((month) => month.label.toLowerCase() === segment || month.id === segment);
+
+  if (path === "/archive" || !selectedMonth) {
+    return (
+      <section className="section page-section archive-section" aria-labelledby="archive-home-title">
+        <Breadcrumbs items={[{ label: "Archive" }]} navigate={navigate} />
+        <div className="section-heading">
+          <p className="section-kicker">Archive</p>
+          <h1 id="archive-home-title" className="page-title">Choose an archive month.</h1>
+          <p className="muted">June is loaded with the Month 6 Challenge submissions archive. Future months will join this view after their challenge closes.</p>
+        </div>
+        <ArchiveMonthGrid months={archiveMonths} navigate={navigate} />
+      </section>
+    );
+  }
+
+  return <ArchiveMonthPage month={selectedMonth} navigate={navigate} />;
+}
+
+function ArchiveMonthGrid({ months, navigate }) {
+  return (
+    <div className="archive-month-grid" aria-label="Archive months">
+      {months.map((month) => {
+        const hasSubmissions = month.submissionCount > 0;
+        return (
+          <button
+            key={month.id}
+            type="button"
+            className={`archive-month-card ${hasSubmissions ? "ready" : "empty"}`}
+            onClick={() => navigate(`/archive/${month.label.toLowerCase()}`)}
+          >
+            <span>{month.label}</span>
+            <strong>{month.theme}</strong>
+            <small>{hasSubmissions ? `${month.submissionCount} submissions` : "Ready after this challenge closes"}</small>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ArchiveMonthPage({ month, navigate }) {
+  const [activeInterest, setActiveInterest] = useState("All");
+  const [query, setQuery] = useState("");
+
+  const visibleSubmissions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return month.submissions.filter((submission) => {
+      const matchesInterest = activeInterest === "All" || submission.interests.includes(activeInterest);
+      if (!matchesInterest) return false;
+      if (!q) return true;
+      return [submission.title, submission.author, submission.summary, ...(submission.interests || [])]
+        .join(" ")
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [activeInterest, month.submissions, query]);
+
+  const hasSubmissions = month.submissionCount > 0;
+
+  return (
+    <section className="section page-section archive-section archive-detail" aria-labelledby="archive-month-title">
+      <Breadcrumbs
+        items={[
+          { label: "Archive", path: "/archive" },
+          { label: month.label },
+        ]}
+        navigate={navigate}
+      />
+      <div className="archive-hero">
+        <div>
+          <p className="section-kicker">{month.label} archive</p>
+          <h1 id="archive-month-title" className="page-title">{month.title}</h1>
+          <p className="muted">{month.description}</p>
+        </div>
+        <div className="archive-stats" aria-label={`${month.label} archive stats`}>
+          <span><strong>{month.submissionCount}</strong> submissions</span>
+          <span><strong>{month.rawPostCount}</strong> Circle posts checked</span>
+          <span><strong>{month.excludedPostCount}</strong> excluded</span>
+        </div>
+      </div>
+
+      {!hasSubmissions && (
+        <div className="archive-empty">
+          <h2>{month.label} is ready for submissions.</h2>
+          <p>The monthly archive shell is in place. When this challenge closes, run the Circle scrape and add the month dataset here.</p>
+        </div>
+      )}
+
+      {hasSubmissions && (
+        <>
+          <div className="archive-controls" aria-label="Archive filters">
+            <label>
+              Search submissions
+              <input
+                type="search"
+                value={query}
+                placeholder="Search title, author, summary..."
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <div className="archive-filter-chips" aria-label="Interest filters">
+              {month.interestCategories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  className={category === activeInterest ? "active" : ""}
+                  onClick={() => setActiveInterest(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="archive-submission-grid" aria-live="polite">
+            {visibleSubmissions.map((submission) => (
+              <ArchiveSubmissionCard submission={submission} key={submission.id} />
+            ))}
+          </div>
+
+          {visibleSubmissions.length === 0 && (
+            <p className="archive-no-results">No submissions match that filter yet.</p>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function ArchiveSubmissionCard({ submission }) {
+  const preview = submission.displayImages?.[0];
+
+  return (
+    <article className="archive-submission-card">
+      {preview ? (
+        <img className="archive-submission-image" src={preview.src} alt={preview.alt} loading="eager" />
+      ) : (
+        <div className="archive-submission-image archive-submission-placeholder">
+          <span>{submission.author?.slice(0, 1) || "M"}</span>
+        </div>
+      )}
+      <div className="archive-submission-body">
+        <h2>{submission.title}</h2>
+        <p className="archive-author">{submission.author}</p>
+        <p>{submission.summary}</p>
+        <div className="archive-interest-row">
+          {submission.interests.map((interest) => (
+            <span key={interest}>{interest}</span>
+          ))}
+        </div>
+        <a className="archive-source-link" href={submission.url} target="_blank" rel="noreferrer">
+          Open Circle post
+        </a>
+      </div>
+    </article>
+  );
+}
+
 function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionStatus, submissions }) {
   const segment = path.split("/")[2] || "";
   const child = path.split("/")[3] || "";
@@ -2020,23 +2184,7 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
   if (segment === "june") {
     const juneMonth = MONTHS.find((item) => item.id === "jun") || MONTHS[0];
     if (child === "guide") return <ChallengeGuidePage navigate={navigate} />;
-    if (child === "submit") {
-      return (
-        <SubmitPage
-          breadcrumbs={[
-            { label: "Challenges", path: "/challenges" },
-            { label: "June", path: "/challenges/june" },
-            { label: "Submit" },
-          ]}
-          handleSubmit={handleSubmit}
-          navigate={navigate}
-          submissionStatus={submissionStatus}
-          submissions={submissions}
-          defaultMonth="June"
-        />
-      );
-    }
-    if (child === "submissions") return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} monthLabel="June" />;
+    if (child === "submit" || child === "submissions") return <RedirectRoute to="/archive/june" navigate={navigate} />;
     return <JuneChallengeLanding month={juneMonth} navigate={navigate} />;
   }
 
@@ -2137,10 +2285,18 @@ function JuneChallengeLanding({ month, navigate }) {
       </div>
       <MonthVisualCard
         month={month}
-        actionLabel="Open Challenge Guide"
-        onAction={() => navigate("/challenges/june/guide")}
+        actionLabel="Open June Archive"
+        onAction={() => navigate("/archive/june")}
       />
-      <div className="resource-grid resource-grid-three">
+      <div className="resource-grid">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/archive/june")}>
+          <div className="resource-card-top">
+            <span>Archive</span>
+            <small>20 submissions</small>
+          </div>
+          <h4>June Challenge Archive</h4>
+          <p>Browse the member submissions from the Self-Improving Skill challenge, with filters, summaries, screenshots, and Circle links.</p>
+        </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
           <div className="resource-card-top">
             <span>Challenge guide</span>
@@ -2148,22 +2304,6 @@ function JuneChallengeLanding({ month, navigate }) {
           <h4>Month 6 Challenge</h4>
           <p>Read the full mission, rules, deliverables, deadline, and self-improving Skill workflow.</p>
         </button>
-        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
-          <div className="resource-card-top">
-            <span>Submit</span>
-            <small>Community</small>
-          </div>
-          <h4>Submit Your Challenge</h4>
-          <p>Post your Skill file, project notes, and proof of what improved in the Challenge Submissions space.</p>
-        </a>
-        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
-          <div className="resource-card-top">
-            <span>Submissions</span>
-            <small>Community</small>
-          </div>
-          <h4>Recent Submissions</h4>
-          <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
-        </a>
       </div>
     </section>
   );

@@ -2405,6 +2405,273 @@ h1 {
   color: var(--cream);
 }
 
+.archive-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.archive-month-card {
+  display: grid;
+  gap: 12px;
+  min-height: 190px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: rgba(255, 253, 248, 0.84);
+  color: var(--txt);
+  text-align: left;
+  box-shadow: 0 14px 30px rgba(65, 48, 31, 0.08);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.archive-month-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(197, 160, 92, 0.66);
+  box-shadow: 0 20px 42px rgba(65, 48, 31, 0.12);
+}
+
+.archive-month-card span {
+  color: var(--gold-2);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.archive-month-card strong {
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.archive-month-card small {
+  align-self: end;
+  color: var(--mut);
+  font-size: 14px;
+}
+
+.archive-month-card.empty {
+  background: rgba(247, 239, 227, 0.62);
+  box-shadow: none;
+}
+
+.archive-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.36fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 26px;
+}
+
+.archive-stats {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: rgba(255, 253, 248, 0.76);
+}
+
+.archive-stats span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--mut);
+  font-size: 14px;
+}
+
+.archive-stats strong {
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.archive-controls {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.35fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: end;
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.archive-controls label {
+  display: grid;
+  gap: 8px;
+  color: var(--gold-2);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.archive-controls input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--txt);
+  padding: 10px 12px;
+  outline: 0;
+}
+
+.archive-controls input:focus {
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.archive-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.archive-filter-chips button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: rgba(247, 239, 227, 0.74);
+  color: var(--mut);
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+.archive-filter-chips button.active,
+.archive-filter-chips button:hover {
+  border-color: var(--cream);
+  background: var(--cream);
+  color: var(--surface);
+}
+
+.archive-submission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.archive-submission-card {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.38fr) minmax(0, 1fr);
+  min-height: 320px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: 0 14px 32px rgba(65, 48, 31, 0.09);
+}
+
+.archive-submission-image {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.archive-submission-placeholder {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid var(--line-soft);
+}
+
+.archive-submission-placeholder span {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--gold-deep);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--gold-2);
+  font-family: var(--serif);
+  font-size: 42px;
+  line-height: 1;
+}
+
+.archive-submission-body {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-width: 0;
+  padding: 20px;
+}
+
+.archive-submission-body h2 {
+  margin: 0;
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.archive-submission-body p {
+  margin: 0;
+  color: var(--mut);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.archive-submission-body .archive-author {
+  color: var(--gold-2);
+  font-weight: 800;
+}
+
+.archive-interest-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.archive-interest-row span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
+  background: rgba(247, 239, 227, 0.72);
+  color: var(--mut);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.archive-source-link {
+  align-self: end;
+  color: var(--cream);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.archive-source-link:hover {
+  color: var(--gold-2);
+}
+
+.archive-empty,
+.archive-no-results {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: rgba(255, 253, 248, 0.74);
+}
+
+.archive-empty h2 {
+  margin: 0 0 8px;
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+}
+
 .split {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(320px, 0.95fr);
@@ -2599,6 +2866,16 @@ h1 {
 
   .guide-path-groups {
     grid-template-columns: 1fr;
+  }
+
+  .archive-hero,
+  .archive-controls,
+  .archive-submission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-month-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -2958,6 +3235,28 @@ h1 {
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--surface);
+  }
+
+  .archive-month-grid,
+  .archive-submission-card {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-month-card {
+    min-height: 160px;
+  }
+
+  .archive-controls {
+    padding: 14px;
+  }
+
+  .archive-submission-image {
+    min-height: 210px;
+  }
+
+  .archive-submission-placeholder {
+    border-right: 0;
+    border-bottom: 1px solid var(--line-soft);
   }
 
   .resource-card {
