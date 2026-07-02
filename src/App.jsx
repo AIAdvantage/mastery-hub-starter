@@ -73,7 +73,7 @@ const MONTHS = [
       { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
       { type: "Recordings", title: "July Recordings", description: "Watch the July recordings in the AI Advantage Community.", status: "Watch replay" },
-      { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
+      { type: "Challenge Document", title: "July Challenge", description: "Paint your AI Hub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
   {
@@ -187,7 +187,7 @@ const HOME_VISUALS = [
 ];
 
 const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "Build a UI for the AgentHub", status: "Open" },
+  { month: "July", type: "Challenge", title: "Paint your AI Hub", status: "Open" },
   { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
   { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
 ];
@@ -1283,7 +1283,7 @@ function markdownTocItems(content) {
   const seen = new Map();
 
   return blocks
-    .filter((block) => block.type === "h3" || block.type === "h4")
+    .filter((block) => block.type === "h3" || block.type === "h4" || block.type === "h5")
     .map((block, index) => {
       const baseId = sectionId(block.text);
       const nextCount = (seen.get(baseId) || 0) + 1;
@@ -1323,7 +1323,7 @@ function groupedMarkdownSections(content) {
   let current = null;
 
   blocks.forEach((block) => {
-    if (block.type === "h3" || block.type === "h4") {
+    if (block.type === "h3" || block.type === "h4" || block.type === "h5") {
       current = {
         title: block.text,
         blocks: [block],
@@ -1742,6 +1742,35 @@ function CopyPromptButton({ promptNumber }) {
   );
 }
 
+function ChallengePromptButton() {
+  const [copied, setCopied] = useState(false);
+  const text = JULY_CONTENT.challengePrompt || "";
+  if (!text) return null;
+
+  async function onCopy() {
+    await copyText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      className="guide-copy-prompt"
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "8px",
+        margin: "4px 0 16px", padding: "11px 18px", border: "none",
+        borderRadius: "10px", background: copied ? "#1f7a4d" : "#1d1d1f",
+        color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer",
+        transition: "background .15s",
+      }}
+    >
+      {copied ? "✓ Copied to clipboard" : "📋 Copy Prompt 1: Your Design Director"}
+    </button>
+  );
+}
+
 function GuideImageGallery({ images = [] }) {
   if (!images.length) return null;
 
@@ -1984,6 +2013,11 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
+    if (trimmed === "[[copy-challenge-prompt]]") {
+      blocks.push({ type: "copy-challenge-prompt" });
+      continue;
+    }
+
     if (trimmed.startsWith("### ")) blocks.push({ type: "h5", text: trimmed.replace(/^### /, "") });
     else if (trimmed.startsWith("## ")) blocks.push({ type: "h4", text: trimmed.replace(/^## /, "") });
     else if (trimmed.startsWith("# ")) blocks.push({ type: "h3", text: trimmed.replace(/^# /, "") });
@@ -2013,6 +2047,7 @@ function MarkdownBlock({ block }) {
     );
   }
   if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
+  if (block.type === "copy-challenge-prompt") return <ChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
@@ -2319,7 +2354,7 @@ function JulyChallengeLanding({ navigate }) {
     <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
       <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "July" }]} navigate={navigate} />
       <div className="section-heading section-heading-compact">
-        <h1 id="july-challenge-title" className="page-title">Build a UI for the AgentHub</h1>
+        <h1 id="july-challenge-title" className="page-title">Paint your AI Hub</h1>
       </div>
       <MonthVisualCard
         month={CURRENT_MONTH}
@@ -2405,7 +2440,7 @@ function JulyChallengeGuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Challenge guide</p>
-            <h1 id="archive-title" className="page-title">Month 7 Challenge: Build a UI for the AgentHub</h1>
+            <h1 id="archive-title" className="page-title">Month 7 Challenge: Paint your AI Hub</h1>
             <p>Use this guide to complete the July challenge and submit the strongest version of your work.</p>
           </div>
         </div>
