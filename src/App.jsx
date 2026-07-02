@@ -1284,7 +1284,7 @@ function markdownTocItems(content) {
   const seen = new Map();
 
   return blocks
-    .filter((block) => block.type === "h3" || block.type === "h4" || block.type === "h5")
+    .filter((block) => block.type === "h3" || block.type === "h4" || isChallengeStepHeading(block))
     .map((block, index) => {
       const baseId = sectionId(block.text);
       const nextCount = (seen.get(baseId) || 0) + 1;
@@ -1301,6 +1301,10 @@ function markdownTocItems(content) {
 
 function challengeTocLabel(label) {
   return label.replace(/^Step\s+\d+\s*[-:–]\s*/i, "").trim();
+}
+
+function isChallengeStepHeading(block) {
+  return block.type === "h5" && /^Step\s+\d+\s*[-:–]/i.test(block.text);
 }
 
 function blocksWithHeadingIds(content) {
@@ -1324,7 +1328,7 @@ function groupedMarkdownSections(content) {
   let current = null;
 
   blocks.forEach((block) => {
-    if (block.type === "h3" || block.type === "h4" || block.type === "h5") {
+    if (block.type === "h3" || block.type === "h4" || isChallengeStepHeading(block)) {
       current = {
         title: block.text,
         blocks: [block],
