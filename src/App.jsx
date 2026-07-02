@@ -1284,18 +1284,22 @@ function markdownTocItems(content) {
 
   return blocks
     .filter((block) => block.type === "h3" || block.type === "h4")
-    .map((block) => {
+    .map((block, index) => {
       const baseId = sectionId(block.text);
       const nextCount = (seen.get(baseId) || 0) + 1;
       seen.set(baseId, nextCount);
       const id = nextCount === 1 ? baseId : `${baseId}-${nextCount}`;
       return {
         id,
-        marker: block.type === "h3" ? "Part" : "Step",
-        label: block.text,
-        level: block.type === "h3" ? 1 : 2,
+        marker: String(index + 1).padStart(2, "0"),
+        label: challengeTocLabel(block.text),
+        level: 1,
       };
     });
+}
+
+function challengeTocLabel(label) {
+  return label.replace(/^Step\s+\d+\s*[-:–]\s*/i, "").trim();
 }
 
 function blocksWithHeadingIds(content) {
