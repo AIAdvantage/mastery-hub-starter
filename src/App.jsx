@@ -1481,6 +1481,33 @@ function CopyPromptButton({ promptNumber }) {
   );
 }
 
+function ChallengePromptButton() {
+  const [copied, setCopied] = useState(false);
+  const text = JULY_CONTENT.challengePrompt || "";
+  if (!text) return null;
+  async function onCopy() {
+    await copyText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      className="guide-copy-prompt"
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "8px",
+        margin: "4px 0 16px", padding: "11px 18px", border: "none",
+        borderRadius: "10px", background: copied ? "#1f7a4d" : "#1d1d1f",
+        color: "#fff", fontSize: "14px", fontWeight: 600, cursor: "pointer",
+        transition: "background .15s",
+      }}
+    >
+      {copied ? "✓ Copied to clipboard" : "📋 Copy Prompt 1: Your Design Director"}
+    </button>
+  );
+}
+
 function GuideImageGallery({ images = [] }) {
   if (!images.length) return null;
 
@@ -1704,6 +1731,11 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
+    if (trimmed === "[[copy-challenge-prompt]]") {
+      blocks.push({ type: "copy-challenge-prompt" });
+      continue;
+    }
+
     if (trimmed.startsWith("### ")) blocks.push({ type: "h5", text: trimmed.replace(/^### /, "") });
     else if (trimmed.startsWith("## ")) blocks.push({ type: "h4", text: trimmed.replace(/^## /, "") });
     else if (trimmed.startsWith("# ")) blocks.push({ type: "h3", text: trimmed.replace(/^# /, "") });
@@ -1732,6 +1764,7 @@ function MarkdownBlock({ block }) {
     );
   }
   if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
+  if (block.type === "copy-challenge-prompt") return <ChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
