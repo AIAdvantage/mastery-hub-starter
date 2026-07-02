@@ -1162,7 +1162,7 @@ function GuidePage({
           {guide.closingSections.map((section) => (
             <article className="workbench-step workbench-close" id={section.id} key={section.title}>
               <div className="workbench-step-top">
-                <span>Finish</span>
+                <span>{section.title.includes("Bonus") ? "Bonus" : "Finish"}</span>
               </div>
               <h3>{section.title}</h3>
               <MarkdownBlocks blocks={section.blocks} />
@@ -1856,7 +1856,12 @@ function MarkdownSectionCards({ content }) {
 function getGuideModel(content) {
   const sections = splitGuideSections(content);
   const introTitles = new Set(["What You'll Have When Done", "Before You Start"]);
-  const closingTitles = new Set(["Next Steps"]);
+  const closingTitles = new Set([
+    "🏆 Bonus: Generate Your Certificate",
+    "🎨 Bonus: Your Own AI Image Studio",
+    "Safety & Security Fixes",
+    "Next Steps",
+  ]);
   const steps = [];
   let phase = "Prep";
 
