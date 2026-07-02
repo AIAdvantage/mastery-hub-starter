@@ -70,7 +70,7 @@ const MONTHS = [
       { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
       { type: "Recordings", title: "July Recordings", description: "The July recordings will unlock after the live session.", status: "Coming soon" },
-      { type: "Challenge Document", title: "July Challenge", description: "Build a UI for your AgentHub: a mobile-first restyle with the function frozen.", status: "Open" },
+      { type: "Challenge Document", title: "July Challenge", description: "Paint your AI Hub: a mobile-first restyle with the function frozen.", status: "Open" },
     ],
   },
   { id: "aug", label: "August", number: "August", status: "Upcoming", focus: "Write Your Book", upstream: "Legacy and knowledge transfer.", outcome: "Turn your expertise or story into a structured manuscript workflow.", resources: [] },
@@ -126,7 +126,7 @@ const HOME_VISUALS = [
 ];
 
 const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "Build a UI for the AgentHub", status: "Open" },
+  { month: "July", type: "Challenge", title: "Paint your AI Hub", status: "Open" },
   { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
   { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
 ];
@@ -1860,7 +1860,7 @@ function JulyChallengeLanding({ navigate }) {
     <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
       <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "July" }]} navigate={navigate} />
       <div className="section-heading section-heading-compact">
-        <h1 id="july-challenge-title" className="page-title">Build a UI for the AgentHub</h1>
+        <h1 id="july-challenge-title" className="page-title">Paint your AI Hub</h1>
       </div>
       <MonthVisualCard
         month={CURRENT_MONTH}
@@ -1913,7 +1913,7 @@ function JulyChallengeGuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Challenge guide</p>
-            <h1 id="archive-title" className="page-title">Month 7 Challenge: Build a UI for the AgentHub</h1>
+            <h1 id="archive-title" className="page-title">Month 7 Challenge: Paint your AI Hub</h1>
             <p>Use this guide to complete the July challenge and submit the strongest version of your work.</p>
           </div>
         </div>
