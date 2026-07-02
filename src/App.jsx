@@ -1334,10 +1334,10 @@ function SessionPromptsPage({
           )}
         </div>
         <div className="prompt-list">
-          {content.glossary && <GlossaryCard glossary={content.glossary} />}
           {content.prompts.map((prompt) => (
             <PromptCard key={prompt.title} prompt={prompt} />
           ))}
+          {content.glossary && <GlossaryCard glossary={content.glossary} />}
         </div>
         {content.skill && (
           <article className="resource-card" style={{ marginTop: "1.25rem" }}>
@@ -1492,13 +1492,14 @@ function PromptCard({ prompt }) {
 
 function GlossaryCard({ glossary }) {
   if (!glossary) return null;
+  const glossaryBody = glossary.replace(/^#\s+.*\n+/, "");
   return (
     <details className="prompt-card" id="glossary">
       <summary>
         <span>📖 Glossary: plain-English terms</span>
         <small>Open glossary</small>
       </summary>
-      <MarkdownDocument content={glossary} />
+      <MarkdownDocument content={glossaryBody} />
     </details>
   );
 }
