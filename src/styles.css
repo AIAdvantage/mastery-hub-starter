@@ -758,6 +758,16 @@ h1 {
   line-height: 1.05;
 }
 
+.section .month-choice-group-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
 .plan-grid,
 .tutorial-grid {
   display: grid;
@@ -1252,6 +1262,25 @@ h1 {
 .breadcrumbs strong {
   color: var(--cream);
   font-weight: 800;
+}
+
+.month-choice-sections {
+  display: grid;
+  gap: 34px;
+}
+
+.month-choice-group {
+  display: grid;
+  gap: 14px;
+}
+
+.month-choice-group-title {
+  margin: 0;
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .month-choice-grid {

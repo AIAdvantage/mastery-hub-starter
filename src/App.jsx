@@ -82,6 +82,9 @@ const MONTHS = [
 
 const VISIBLE_MONTHS = MONTHS.filter((month) => !month.hidden);
 const CURRENT_MONTH = MONTHS.find((month) => month.id === CURRENT_MONTH_ID) || VISIBLE_MONTHS[0] || MONTHS[0];
+const CURRENT_MONTH_INDEX = VISIBLE_MONTHS.findIndex((month) => month.id === CURRENT_MONTH_ID);
+const CURRENT_AND_UPCOMING_MONTHS = VISIBLE_MONTHS.filter((month, index) => index >= CURRENT_MONTH_INDEX);
+const PAST_MONTHS = VISIBLE_MONTHS.filter((month, index) => index < CURRENT_MONTH_INDEX && month.available);
 
 const HUB_FEATURES = [
   {
@@ -773,7 +776,13 @@ function MonthlyResourcesPage({ currentMonth, path, navigate }) {
           <h1 id="months-title" className="page-title">Choose your month.</h1>
           <p className="muted">Open the current month to find the guide prep materials. Future months unlock when they go live.</p>
         </div>
-        <MonthChoiceGrid activeId={CURRENT_MONTH_ID} basePath="/monthly-resources" navigate={navigate} />
+        <MonthChoiceSections
+          activeId={CURRENT_MONTH_ID}
+          basePath="/monthly-resources"
+          navigate={navigate}
+          currentTitle="Current and upcoming months"
+          pastTitle="Past months"
+        />
       </section>
     );
   }
@@ -1383,10 +1392,48 @@ function Breadcrumbs({ items, navigate }) {
   );
 }
 
-function MonthChoiceGrid({ activeId, basePath, navigate }) {
+function MonthChoiceSections({
+  activeId,
+  basePath,
+  navigate,
+  currentTitle = "Current and upcoming months",
+  pastTitle = "Past months",
+}) {
+  return (
+    <div className="month-choice-sections">
+      <MonthChoiceGroup
+        title={currentTitle}
+        months={CURRENT_AND_UPCOMING_MONTHS}
+        activeId={activeId}
+        basePath={basePath}
+        navigate={navigate}
+      />
+      {PAST_MONTHS.length > 0 && (
+        <MonthChoiceGroup
+          title={pastTitle}
+          months={PAST_MONTHS}
+          activeId={activeId}
+          basePath={basePath}
+          navigate={navigate}
+        />
+      )}
+    </div>
+  );
+}
+
+function MonthChoiceGroup({ title, months, activeId, basePath, navigate }) {
+  return (
+    <div className="month-choice-group">
+      <h2 className="month-choice-group-title">{title}</h2>
+      <MonthChoiceGrid months={months} activeId={activeId} basePath={basePath} navigate={navigate} />
+    </div>
+  );
+}
+
+function MonthChoiceGrid({ months = VISIBLE_MONTHS, activeId, basePath, navigate }) {
   return (
     <div className="month-choice-grid" aria-label="Mastery months">
-      {VISIBLE_MONTHS.map((month) => {
+      {months.map((month) => {
         const isActive = month.id === activeId;
         const isOpen = isActive || month.available;
         return (
@@ -1783,13 +1830,38 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
           <h1 id="challenges-title" className="page-title">Choose your challenge month.</h1>
           <p className="muted">Open the current month to find the challenge guide, submit your work, and review submissions. Future challenges unlock when they go live.</p>
         </div>
-        <MonthChoiceGrid activeId={CURRENT_MONTH_ID} basePath="/challenges" navigate={navigate} />
+        <MonthChoiceSections
+          activeId={CURRENT_MONTH_ID}
+          basePath="/challenges"
+          navigate={navigate}
+          currentTitle="Current and upcoming challenges"
+          pastTitle="Past challenges"
+        />
       </section>
     );
   }
 
-  if (path.startsWith("/challenges/june")) {
-    return <RedirectRoute to="/challenges/july" navigate={navigate} />;
+  if (segment === "june") {
+    const juneMonth = MONTHS.find((item) => item.id === "jun") || MONTHS[0];
+    if (child === "guide") return <ChallengeGuidePage navigate={navigate} />;
+    if (child === "submit") {
+      return (
+        <SubmitPage
+          breadcrumbs={[
+            { label: "Challenges", path: "/challenges" },
+            { label: "June", path: "/challenges/june" },
+            { label: "Submit" },
+          ]}
+          handleSubmit={handleSubmit}
+          navigate={navigate}
+          submissionStatus={submissionStatus}
+          submissions={submissions}
+          defaultMonth="June"
+        />
+      );
+    }
+    if (child === "submissions") return <ChallengeSubmissionsPage archiveRows={archiveRows} navigate={navigate} monthLabel="June" />;
+    return <JuneChallengeLanding month={juneMonth} navigate={navigate} />;
   }
 
   if (segment !== "july") {
@@ -1896,6 +1968,47 @@ function JulyChallengeLanding({ navigate }) {
   );
 }
 
+function JuneChallengeLanding({ month, navigate }) {
+  return (
+    <section className="section page-section archive-section" aria-labelledby="june-challenge-title">
+      <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "June" }]} navigate={navigate} />
+      <div className="section-heading section-heading-compact">
+        <h1 id="june-challenge-title" className="page-title">Build a Self-Improving Skill</h1>
+      </div>
+      <MonthVisualCard
+        month={month}
+        actionLabel="Open Challenge Guide"
+        onAction={() => navigate("/challenges/june/guide")}
+      />
+      <div className="resource-grid resource-grid-three">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
+          <div className="resource-card-top">
+            <span>Challenge guide</span>
+          </div>
+          <h4>Month 6 Challenge</h4>
+          <p>Read the full mission, rules, deliverables, deadline, and self-improving Skill workflow.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submit")}>
+          <div className="resource-card-top">
+            <span>Submit</span>
+            <small>Form</small>
+          </div>
+          <h4>Submit Your Challenge</h4>
+          <p>Send your Skill file, project notes, and proof of what improved for review.</p>
+        </button>
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/submissions")}>
+          <div className="resource-card-top">
+            <span>Submissions</span>
+            <small>Review</small>
+          </div>
+          <h4>Recent Submissions</h4>
+          <p>See June submissions saved in this browser and the monthly challenge collection.</p>
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function JulyChallengeGuidePage({ navigate }) {
   const tocItems = useMemo(() => markdownTocItems(JULY_CONTENT.challenge), []);
   return (
@@ -1952,6 +2065,9 @@ function ChallengeGuidePage({ navigate }) {
 }
 
 function ChallengeSubmissionsPage({ archiveRows, navigate, monthLabel = "June" }) {
+  const visibleRows = archiveRows.filter((item) => item.month === monthLabel);
+  const rows = visibleRows.length > 0 ? visibleRows : archiveRows;
+
   return (
     <section className="section page-section archive-section" aria-labelledby="archive-title">
       <Breadcrumbs
@@ -1974,7 +2090,7 @@ function ChallengeSubmissionsPage({ archiveRows, navigate, monthLabel = "June" }
           <span>Collection</span>
           <span>Status</span>
         </div>
-        {archiveRows.map((item) => (
+        {rows.map((item) => (
           <div className="archive-row" role="row" key={`${item.month}-${item.title}`}>
             <span>{item.month}</span>
             <span>{item.type}</span>
