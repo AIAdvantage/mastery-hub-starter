@@ -280,6 +280,13 @@ const JULY_PREREQUISITES = [
     linkLabel: "Open Lovable",
   },
   {
+    label: "Mastery Hub account ready",
+    detail: "Make sure you can sign in here with the same email or Google account connected to your AI Mastery access.",
+    link: "/sign-in",
+    linkLabel: "Sign in to Mastery Hub",
+    internal: true,
+  },
+  {
     label: "Claude Pro, Max, or Team plan",
     detail: "Cowork is required for this workflow, so make sure you are signed into a Claude plan that includes it.",
     link: "https://claude.com/settings/billing",
@@ -1027,7 +1034,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Start here</small>
           </div>
           <h4>Before You Start</h4>
-          <p>Check GitHub, Lovable, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
+          <p>Check GitHub, Lovable, Mastery Hub access, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
           <div className="resource-card-top">
@@ -1349,7 +1356,7 @@ function IntroSectionCard({ section, monthSlug = "june", navigate }) {
   const isBeforeStart = section.title === "Before You Start";
   const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS;
   const checklistSubtitle = monthSlug === "july"
-    ? "Get these five setup pieces ready before you start building your AI Hub."
+    ? "Get these six setup pieces ready before you start building your AI Hub."
     : "Get these four pieces ready before you start the Paperwork workflow.";
 
   if (!isBeforeStart) {
