@@ -1230,24 +1230,42 @@ function HoverTableOfContents({ title = "Contents", items = [] }) {
   );
 }
 
+const GUIDE_TOC_LABELS = {
+  "Create Your GitHub and Lovable Accounts": "Create Accounts",
+  "Set Up Lovable": "Set Up Lovable",
+  "Connect Lovable to GitHub": "Connect GitHub",
+  "Generate Your GitHub Token": "Generate Token",
+  "Hand the Token and the Repository Name to Lovable": "Give Lovable the Token",
+  "Set Up Your AgentHub Folder in Cowork": "Set Up AgentHub",
+  "Connect Cowork to Your Repository": "Connect Cowork",
+  "Create CLAUDE.md (The Standing Rule)": "Create CLAUDE.md",
+  "Create a New Card for Daily Briefing": "Create Daily Briefing",
+  "Use the Ideas + Wins Board": "Use Ideas + Wins",
+  "You Did It! Next Steps": "Next Steps",
+};
+
+function guideTocLabel(label) {
+  return GUIDE_TOC_LABELS[label] || label;
+}
+
 function guideTocItems(guide) {
   return [
     ...guide.introSections.map((section, index) => ({
       id: section.id,
       marker: index === 0 ? "Start" : "Prep",
-      label: section.title,
+      label: guideTocLabel(section.title),
       level: 1,
     })),
     ...guide.steps.map((step) => ({
       id: step.id,
       marker: String(step.stepNumber).padStart(2, "0"),
-      label: step.shortTitle,
+      label: guideTocLabel(step.shortTitle),
       level: 1,
     })),
     ...guide.closingSections.map((section) => ({
       id: section.id,
       marker: "End",
-      label: section.title,
+      label: guideTocLabel(section.title),
       level: 1,
     })),
   ];

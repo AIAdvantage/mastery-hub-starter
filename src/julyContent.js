@@ -35,3 +35,8 @@ export const JULY_CONTENT = {
     }
   ]
 };
+
+JULY_CONTENT.guide = JULY_CONTENT.guide.replace(
+  "4. **Get ready for the challenge.** Real scheduled jobs from your real workflow.",
+  "4. [**Get ready for the July challenge.**](/challenges/july) Give your Hub a mobile-first look that feels like yours, then submit the before and after."
+);
