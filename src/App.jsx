@@ -70,7 +70,7 @@ const MONTHS = [
       caption: "Step-by-step guide, screenshots, and the Lovable + Cowork prompts.",
     },
     resources: [
-      { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Hub access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
+      { type: "Guide", title: "July Guide", description: "Create your GitHub, Lovable, and Mastery Resources access, then make sure Claude Desktop and your Claude plan are ready.", status: "Start here" },
       { type: "Materials", title: "Live Materials", description: "The July live materials will appear here when the training materials are ready.", status: "Coming soon" },
       { type: "Recordings", title: "July Recordings", description: "Watch the July recordings in the AI Advantage Community.", status: "Watch replay" },
       { type: "Challenge Document", title: "July Challenge", description: "Paint your AI Hub: a mobile-first restyle with the function frozen.", status: "Open" },
@@ -147,21 +147,27 @@ const PAST_MONTHS = VISIBLE_MONTHS.filter((month, index) => index < CURRENT_MONT
 const HUB_FEATURES = [
   {
     name: "Monthly Resources",
-    tag: "Learn",
-    summary: "Choose the current month, start with the prerequisite checklist, then return when the full guide and prompts unlock.",
-    includes: ["Month selector", "Prerequisites", "Guide status", "Prompt status"],
+    tag: "Resources",
+    summary: "Open the current month materials, then revisit past months when you need an earlier guide, prompt, replay, or challenge path.",
+    includes: ["Current July resources", "Before You Start checklist", "Guide and live materials", "Past month access"],
+    path: "/monthly-resources",
+    action: "Open Monthly Resources",
   },
   {
     name: "Challenges",
     tag: "Apply",
-    summary: "The July challenge is open: redesign your Hub\u2019s look, mobile-first, with the function frozen.",
-    includes: ["Monthly status", "Prereq link", "Guide unlock", "Challenge unlock"],
+    summary: "Find the active July challenge, follow the guide, submit your work, and browse previous challenge examples.",
+    includes: ["Current July challenge", "Challenge guide", "Submission link", "Past challenge archive"],
+    path: "/challenges",
+    action: "Open Challenges",
   },
   {
-    name: "Member Archive",
-    tag: "Review",
-    summary: "Browse past challenges and featured work so you can learn from what other members are building.",
-    includes: ["Past submissions", "Winner examples", "Monthly collections", "Reusable ideas"],
+    name: "Tutorial",
+    tag: "Quick access",
+    summary: "Use the shortcut page when you need the right place fast: resources, replays, events, challenge pages, and the archive.",
+    includes: ["July resources shortcut", "Mastery replays", "Upcoming events", "Challenge shortcuts"],
+    path: "/tutorial",
+    action: "Open Tutorial",
   },
 ];
 
@@ -280,10 +286,10 @@ const JULY_PREREQUISITES = [
     linkLabel: "Open Lovable",
   },
   {
-    label: "Mastery Hub account ready",
+    label: "Mastery Resources account ready",
     detail: "Make sure you can sign in here with the same email or Google account connected to your AI Mastery access.",
     link: "/sign-in",
-    linkLabel: "Sign in to Mastery Hub",
+    linkLabel: "Sign in to Mastery Resources",
     internal: true,
   },
   {
@@ -459,10 +465,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <button className="brand" onClick={() => navigate("/")} aria-label="AI Mastery home">
+        <button className="brand" onClick={() => navigate("/")} aria-label="AI Mastery Resources home">
           <span className="brand-word">AI</span>
           <span className="brand-bolt" aria-hidden="true">⚡</span>
-          <span className="brand-word brand-word-long">Mastery Hub</span>
+          <span className="brand-word brand-word-long">Mastery Resources</span>
         </button>
 
         <nav className="nav" aria-label="Primary navigation">
@@ -609,10 +615,10 @@ function AuthPage({ mode, navigate }) {
   }, [mode]);
 
   return (
-    <section className="auth-shell" aria-label="Mastery Hub member sign in">
+    <section className="auth-shell" aria-label="Mastery Resources member sign in">
       <div className="auth-copy">
         <p className="section-kicker">Private member platform</p>
-        <h1>{isSignUp ? "Create your Mastery access." : "Sign in to Mastery Hub."}</h1>
+        <h1>{isSignUp ? "Create your Mastery access." : "Sign in to Mastery Resources."}</h1>
         <p>
           Use the email or Google account connected to your AI Mastery access.
         </p>
@@ -706,7 +712,7 @@ function HomePage({ navigate }) {
         <div className="hero-inner">
           <div className="hero-content">
             <p className="eyebrow">Private member platform</p>
-            <h1>Mastery Hub</h1>
+            <h1>AI Mastery Resources</h1>
             <p className="hero-copy">
               Start with the right next step. Monthly resources, challenges, and member examples, organized around what to do this month.
             </p>
@@ -733,11 +739,7 @@ function HomePage({ navigate }) {
       </section>
 
       <section className="section home-system" aria-labelledby="plans-title">
-        <div className="section-heading home-system-heading">
-          <p className="section-kicker">How to use the hub</p>
-          <h2 id="plans-title">Learn the system, apply it, then study what worked.</h2>
-          <p className="muted">July starts with the setup checklist. The full guide, prompts, and challenge will appear here when the training materials are ready.</p>
-        </div>
+        <h2 id="plans-title" className="sr-only">AI Mastery resource tabs</h2>
         <div className="plan-grid">
           {HUB_FEATURES.map((feature) => (
             <article className="plan-card" key={feature.name}>
@@ -752,6 +754,9 @@ function HomePage({ navigate }) {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+              <button className="plan-card-action" type="button" onClick={() => navigate(feature.path)}>
+                {feature.action}
+              </button>
             </article>
           ))}
         </div>
@@ -1035,7 +1040,7 @@ function JulyResourcesMenu({ month, navigate }) {
             <small>Start here</small>
           </div>
           <h4>Before You Start</h4>
-          <p>Check GitHub, Lovable, Mastery Hub access, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
+          <p>Check GitHub, Lovable, Mastery Resources access, Claude, Claude Desktop, and the July Live Materials before you begin.</p>
         </button>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
           <div className="resource-card-top">
