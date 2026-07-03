@@ -1794,7 +1794,7 @@ function GlossaryCard({ glossary }) {
 
 function CopyPromptButton({ promptNumber }) {
   const [copied, setCopied] = useState(false);
-  const prompt = (JULY_CONTENT.prompts || []).find((p) => (p.title || "").startsWith(`Prompt ${promptNumber}:`));
+  const prompt = (JULY_CONTENT.prompts || []).find((p) => (p.title || "").startsWith(`Prompt ${promptNumber}`));
   if (!prompt) return null;
   async function onCopy() {
     await copyText(prompt.text);
@@ -2090,9 +2090,9 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
-    const copyPromptMatch = trimmed.match(/^\[\[copy-prompt:(\d+)\]\]$/);
+    const copyPromptMatch = trimmed.match(/^\[\[copy-prompt:([A-Za-z0-9]+)\]\]$/);
     if (copyPromptMatch) {
-      blocks.push({ type: "copy-prompt", prompt: Number(copyPromptMatch[1]) });
+      blocks.push({ type: "copy-prompt", prompt: copyPromptMatch[1] });
       continue;
     }
 
