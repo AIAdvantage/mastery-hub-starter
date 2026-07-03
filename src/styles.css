@@ -2460,6 +2460,20 @@ h1 {
   line-height: 1.08;
 }
 
+.workbench-step-explainer {
+  max-width: 900px;
+  margin: 10px 0 18px;
+  padding: 14px 16px 14px 18px;
+  border: 1px solid rgba(182, 138, 59, 0.32);
+  border-left: 5px solid var(--gold-2);
+  border-radius: 10px;
+  background: rgba(182, 138, 59, 0.1);
+  color: var(--cream);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
 .workbench-step-subtitle {
   max-width: 860px;
   margin: 0 0 18px;

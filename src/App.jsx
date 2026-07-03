@@ -359,6 +359,19 @@ const STEP_SUBHEADLINES = {
   "Step 10: Use the Ideas + Wins Board": "Drop an idea on the kanban, drag it to Done, watch it become a Win.",
 };
 
+const STEP_EXPLAINERS = {
+  "Step 1: Create Your GitHub and Lovable Accounts": "So basically, this step gets your two main accounts ready so Lovable and GitHub can work together.",
+  "Step 2: Set Up Lovable": "This is where Lovable builds the first version of your Hub, and the scary-looking error is expected for now.",
+  "Step 3: Connect Lovable to GitHub": "Now you connect Lovable to GitHub so your Hub has a private home for its files.",
+  "Step 4: Generate Your GitHub Token": "This step creates the private key your Hub and Claude use to read and write your files safely.",
+  "Step 5: Hand the Token and the Repository Name to Lovable": "Now you paste the key and repo name into Lovable so the Hub can finally load your cards.",
+  "Step 6: Set Up Your AgentHub Folder in Cowork": "This is where you make one clean folder on your computer that Claude can use as its working space.",
+  "Step 7: Connect Cowork to Your Repository": "Now Claude writes your first Hub card into GitHub, and you reload the Hub to see it appear.",
+  "Step 8: Create CLAUDE.md (The Standing Rule)": "This step gives Claude a simple rulebook so it knows how to write Hub cards the same way every time.",
+  "Step 9: Create a New Card for Daily Briefing": "Now you set up your first automatic task, run it once, and watch it publish into your Hub.",
+  "Step 10: Use the Ideas + Wins Board": "This is the quick win: add an idea, move it to Done, and see your Hub turn it into a Win.",
+};
+
 const BEFORE_START_ITEMS = [
   {
     label: "Your DNA files ready",
@@ -1184,8 +1197,13 @@ function GuidePage({
                 <small>{String(index + 1).padStart(2, "0")}</small>
                 <StepHelpActions guide={guide} helpContext={helpContext} step={step} stepNumber={index + 1} />
               </div>
+              {step.explainer && (
+                <p className="workbench-step-explainer">{step.explainer}</p>
+              )}
               <h3>{step.title}</h3>
-              <p className="workbench-step-subtitle">{step.summary}</p>
+              {!step.explainer && step.summary && (
+                <p className="workbench-step-subtitle">{step.summary}</p>
+              )}
               <MarkdownBlocks blocks={step.blocks} />
             </article>
           ))}
@@ -1904,6 +1922,7 @@ function getGuideModel(content) {
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
         summary: STEP_SUBHEADLINES[section.title] || "",
+        explainer: STEP_EXPLAINERS[section.title] || "",
       });
     }
   });
