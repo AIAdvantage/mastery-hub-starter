@@ -209,7 +209,20 @@ const NAV_ITEMS = [
 ];
 
 const MOD_HELP_URL = "https://community.aiadvantage.com/c/ask-answer-questions/";
-const GUIDE_HELP_URL = "https://mastery.alfredos.app/monthly-resources/june/guide";
+const GUIDE_HELP_CONTEXTS = {
+  june: {
+    guideName: "AI Mastery June Paperwork guide",
+    guideLink: "https://mastery.aiadvantage.com/monthly-resources/june/guide",
+    overallGoal: "Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.",
+    aiInstruction: "Help me complete this exact step. Ask me for only the missing information you need. Keep the instructions practical and specific to Claude Cowork and this Paperwork workflow.",
+  },
+  july: {
+    guideName: "AI Mastery July AI Hub guide",
+    guideLink: "https://mastery.aiadvantage.com/monthly-resources/july/guide",
+    overallGoal: "Build my own private AI Hub website where everything my AI creates shows up, with Lovable, GitHub, and Claude Cowork wired together, plus a daily briefing and an ideas board.",
+    aiInstruction: "Help me complete this exact step. Ask me for only the missing information you need. Keep the instructions practical and specific to the July AI Hub workflow, including Lovable, GitHub, GitHub tokens, Claude Cowork, Hub cards, scheduled tasks, Ideas, Wins, Certificate, and Image Studio when relevant.",
+  },
+};
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
@@ -1136,6 +1149,7 @@ function GuidePage({
   showMaterials = true,
 }) {
   const guide = useMemo(() => getGuideModel(content.guide), [content]);
+  const helpContext = GUIDE_HELP_CONTEXTS[monthSlug] || GUIDE_HELP_CONTEXTS.june;
 
   return (
     <section className="section page-section month-section has-hover-toc" aria-labelledby="guide-title">
@@ -1168,7 +1182,7 @@ function GuidePage({
             <article className="workbench-step" id={step.id} key={step.id}>
               <div className="workbench-step-top">
                 <small>{String(index + 1).padStart(2, "0")}</small>
-                <StepHelpActions guide={guide} step={step} stepNumber={index + 1} />
+                <StepHelpActions guide={guide} helpContext={helpContext} step={step} stepNumber={index + 1} />
               </div>
               <h3>{step.title}</h3>
               <p className="workbench-step-subtitle">{step.summary}</p>
@@ -1444,17 +1458,17 @@ function BeforeStartChecklist({ items = BEFORE_START_ITEMS, navigate }) {
   );
 }
 
-function StepHelpActions({ guide, step, stepNumber }) {
+function StepHelpActions({ guide, helpContext, step, stepNumber }) {
   const [status, setStatus] = useState("");
 
   async function handleModHelp() {
-    await copyText(buildModHelpMessage(step, stepNumber));
+    await copyText(buildModHelpMessage(helpContext, step, stepNumber));
     setStatus("Mod message copied");
     window.setTimeout(() => setStatus(""), 1800);
   }
 
   async function handleAiHelp() {
-    await copyText(buildAiHelpMessage(guide, step, stepNumber));
+    await copyText(buildAiHelpMessage(guide, helpContext, step, stepNumber));
     setStatus("AI context copied");
     window.setTimeout(() => setStatus(""), 1800);
   }
@@ -1933,11 +1947,11 @@ async function copyText(text) {
   }
 }
 
-function buildModHelpMessage(step, stepNumber) {
+function buildModHelpMessage(helpContext, step, stepNumber) {
   return [
-    "Hi mods, I need help with the June Paperwork guide.",
+    `Hi mods, I need help with the ${helpContext.guideName}.`,
     "",
-    `Guide link: ${GUIDE_HELP_URL}`,
+    `Guide link: ${helpContext.guideLink}`,
     `Current location: Step ${stepNumber}: ${step.shortTitle}`,
     `What this step is for: ${step.summary}`,
     "",
@@ -1946,16 +1960,16 @@ function buildModHelpMessage(step, stepNumber) {
   ].join("\n");
 }
 
-function buildAiHelpMessage(guide, step, stepNumber) {
+function buildAiHelpMessage(guide, helpContext, step, stepNumber) {
   const stepList = guide.steps
     .map((item, index) => `${index + 1}. ${item.shortTitle}: ${item.summary}`)
     .join("\n");
 
   return [
-    "You are helping me complete the AI Mastery June Paperwork guide.",
+    `You are helping me complete the ${helpContext.guideName}.`,
     "",
     "Overall guide goal:",
-    "Build a paperwork system that fills forms from my DNA, shows what is missing, and gets smarter every time I run it.",
+    helpContext.overallGoal,
     "",
     "All guide steps:",
     stepList,
@@ -1967,7 +1981,7 @@ function buildAiHelpMessage(guide, step, stepNumber) {
     blocksToPlainText(step.blocks),
     "",
     "What I need from you:",
-    "Help me complete this exact step. Ask me for only the missing information you need. Keep the instructions practical and specific to Claude Cowork and this Paperwork workflow.",
+    helpContext.aiInstruction,
     "",
     "My extra context:",
     "[Paste what happened, any error message, or a screenshot description here.]",
