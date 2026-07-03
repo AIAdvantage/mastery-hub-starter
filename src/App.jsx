@@ -1592,6 +1592,9 @@ function SessionPromptsPage({
   lead = "Use these prompts while following the replay. Copy each prompt into Claude Cowork at the matching step.",
   showMaterials = true,
 }) {
+  const helpPrompt = content.prompts.find((prompt) => /^Prompt 5\b/.test(prompt.title || ""));
+  const visiblePrompts = content.prompts.filter((prompt) => !/^Prompt 5\b/.test(prompt.title || ""));
+
   return (
     <section className="section page-section month-section" aria-labelledby="prompts-title">
       <Breadcrumbs
@@ -1614,24 +1617,12 @@ function SessionPromptsPage({
           )}
         </div>
         <div className="prompt-list">
-          {content.prompts.map((prompt) => (
+          {visiblePrompts.map((prompt) => (
             <PromptCard key={prompt.title} prompt={prompt} />
           ))}
           {content.glossary && <GlossaryCard glossary={content.glossary} />}
+          {content.skill && <HelpCard skill={content.skill} prompt={helpPrompt} />}
         </div>
-        {content.skill && (
-          <article className="resource-card" style={{ marginTop: "1.25rem" }}>
-            <div className="resource-card-top">
-              <span>Skill</span>
-              <small>Install &amp; run</small>
-            </div>
-            <h4>{content.skill.title}</h4>
-            <p>{content.skill.description}</p>
-            <a className="link-button" href={content.skill.file} download={content.skill.filename}>
-              Download .skill
-            </a>
-          </article>
-        )}
       </section>
     </section>
   );
@@ -1780,16 +1771,100 @@ function PromptCard({ prompt }) {
 
 function GlossaryCard({ glossary }) {
   if (!glossary) return null;
-  const glossaryBody = glossary.replace(/^#\s+.*\n+/, "");
+  const glossaryModel = parseGlossary(glossary);
   return (
-    <details className="prompt-card" id="glossary">
+    <details className="prompt-card glossary-card" id="glossary">
       <summary>
-        <span>📖 Glossary: plain-English terms</span>
+        <span>{glossaryModel.title}</span>
         <small>Open glossary</small>
       </summary>
-      <MarkdownDocument content={glossaryBody} />
+      <div className="glossary-content">
+        {glossaryModel.intro && <p className="glossary-intro">{renderInlineMarkdown(glossaryModel.intro)}</p>}
+        <div className="glossary-section-grid">
+          {glossaryModel.sections.map((section) => (
+            <section className="glossary-section" key={section.title}>
+              <h3>{section.title}</h3>
+              <div className="glossary-terms">
+                {section.terms.map((term) => (
+                  <article className="glossary-term" key={`${section.title}-${term.name}`}>
+                    <h4>{renderInlineMarkdown(term.name)}</h4>
+                    <p>{renderInlineMarkdown(term.description)}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
     </details>
   );
+}
+
+function HelpCard({ skill, prompt }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyHelpPrompt() {
+    if (!prompt?.text) return;
+    await copyText(prompt.text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  return (
+    <article className="get-help-card">
+      <div className="resource-card-top">
+        <span>Bonus</span>
+        <small>Choose your path</small>
+      </div>
+      <h3>{skill.title}</h3>
+      <p>{skill.description}</p>
+      <div className="get-help-options" aria-label="Get help options">
+        {prompt?.text && (
+          <button type="button" onClick={copyHelpPrompt}>
+            <span>Copy help prompt</span>
+            <small>{copied ? "Copied" : "Paste into Cowork when something breaks"}</small>
+          </button>
+        )}
+        <a href={skill.file} download={skill.filename}>
+          <span>Download Hub Doctor skill</span>
+          <small>Install once, run from Claude's skill menu</small>
+        </a>
+      </div>
+    </article>
+  );
+}
+
+function parseGlossary(glossary) {
+  const lines = glossary.split("\n").map((line) => line.trim()).filter(Boolean);
+  const titleLine = lines.find((line) => line.startsWith("# ")) || "# Glossary";
+  const introLine = lines.find((line) => line.startsWith("*") && line.endsWith("*")) || "";
+  const sections = [];
+  let currentSection = null;
+
+  lines.forEach((line) => {
+    if (line.startsWith("## ")) {
+      currentSection = {
+        title: line.replace(/^##\s+/, ""),
+        terms: [],
+      };
+      sections.push(currentSection);
+      return;
+    }
+
+    const termMatch = line.match(/^-\s+\*\*(.+?)\*\*:\s+(.+)$/);
+    if (termMatch && currentSection) {
+      currentSection.terms.push({
+        name: termMatch[1],
+        description: termMatch[2],
+      });
+    }
+  });
+
+  return {
+    title: titleLine.replace(/^#\s+/, "").replace(/^📖\s*/, ""),
+    intro: introLine.replace(/^\*/, "").replace(/\*$/, ""),
+    sections: sections.filter((section) => section.terms.length),
+  };
 }
 
 function CopyPromptButton({ promptNumber }) {
@@ -2166,7 +2241,7 @@ function CopyableCodeBlock({ text }) {
 
 function renderInlineMarkdown(text = "") {
   const nodes = [];
-  const pattern = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
+  const pattern = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
   let lastIndex = 0;
   let match;
 
@@ -2176,6 +2251,8 @@ function renderInlineMarkdown(text = "") {
 
     if (token.startsWith("**")) {
       nodes.push(<strong key={`${match.index}-strong`}>{token.slice(2, -2)}</strong>);
+    } else if (token.startsWith("*")) {
+      nodes.push(<em key={`${match.index}-em`}>{token.slice(1, -1)}</em>);
     } else if (token.startsWith("`")) {
       nodes.push(<code key={`${match.index}-code`}>{token.slice(1, -1)}</code>);
     } else {

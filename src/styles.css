@@ -2578,6 +2578,162 @@ h1 {
   white-space: pre-wrap;
 }
 
+.glossary-card summary {
+  background: rgba(255, 253, 248, 0.64);
+}
+
+.glossary-content {
+  display: grid;
+  gap: 18px;
+  padding: 0 20px 22px;
+}
+
+.glossary-intro {
+  margin: 0;
+  max-width: 760px;
+  color: var(--mut);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.glossary-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.glossary-section {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  border: 1px solid rgba(182, 138, 59, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 253, 248, 0.72);
+  padding: 16px;
+}
+
+.glossary-section h3 {
+  margin: 0;
+  color: var(--gold-2);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.glossary-terms {
+  display: grid;
+  gap: 10px;
+}
+
+.glossary-term {
+  display: grid;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(65, 48, 31, 0.1);
+}
+
+.glossary-term:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.glossary-term h4 {
+  margin: 0;
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.glossary-term p {
+  margin: 0;
+  color: var(--txt);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.glossary-term code {
+  border: 1px solid rgba(182, 138, 59, 0.18);
+  border-radius: 6px;
+  background: rgba(182, 138, 59, 0.08);
+  color: var(--gold-2);
+  padding: 2px 6px;
+  font-size: 0.92em;
+}
+
+.get-help-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(42, 37, 31, 0.18);
+  border-radius: var(--r-card);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(238, 228, 215, 0.76)),
+    var(--surface);
+  padding: 20px;
+  box-shadow: 0 18px 40px rgba(65, 48, 31, 0.08);
+}
+
+.get-help-card h3 {
+  margin: 0;
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 500;
+  line-height: 1.02;
+}
+
+.get-help-card > p {
+  margin: 0;
+  max-width: 780px;
+  color: var(--mut);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.get-help-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.get-help-options button,
+.get-help-options a {
+  display: grid;
+  gap: 5px;
+  min-height: 96px;
+  align-content: center;
+  border: 1px solid rgba(65, 48, 31, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--cream);
+  padding: 16px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.get-help-options button:hover,
+.get-help-options button:focus-visible,
+.get-help-options a:hover,
+.get-help-options a:focus-visible {
+  border-color: var(--gold-deep);
+  background: var(--surface);
+}
+
+.get-help-options span {
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.get-help-options small {
+  color: var(--mut);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
 .archive-table {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -3516,7 +3672,8 @@ h1 {
   .month-hero > div,
   .resource-section,
   .resource-card,
-  .prompt-card {
+  .prompt-card,
+  .get-help-card {
     min-width: 0;
   }
 
@@ -3636,6 +3793,24 @@ h1 {
     flex: 0 0 auto;
     max-width: 90px;
     text-align: right;
+  }
+
+  .glossary-content {
+    padding: 0 14px 18px;
+  }
+
+  .glossary-section-grid,
+  .get-help-options {
+    grid-template-columns: 1fr;
+  }
+
+  .glossary-section,
+  .get-help-card {
+    padding: 16px;
+  }
+
+  .get-help-card h3 {
+    font-size: 30px;
   }
 
   .prompt-actions button,
