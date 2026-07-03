@@ -20,7 +20,7 @@ export const JULY_CONTENT = {
     },
     {
       "title": "Prompt 2A (Guide Step 6): Create gh-token.txt",
-      "text": "Create a plain text file named gh-token.txt and save it in this AgentHub folder.\n\nDo not ask me for my GitHub token, and do not put any token text into the file yourself.\n\nAfter you create the file, show me the full file path and stop. I will open it, paste my GitHub token manually, and save it."
+      "text": "Create a plain text file named gh-token.txt and save it in the folder."
     },
     {
       "title": "Prompt 2: Claude Cowork Connect",
