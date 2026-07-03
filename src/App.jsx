@@ -1794,7 +1794,10 @@ function GlossaryCard({ glossary }) {
 
 function CopyPromptButton({ promptNumber }) {
   const [copied, setCopied] = useState(false);
-  const prompt = (JULY_CONTENT.prompts || []).find((p) => (p.title || "").startsWith(`Prompt ${promptNumber}`));
+  const prompt = (JULY_CONTENT.prompts || []).find((p) => {
+    const title = p.title || "";
+    return title.startsWith(`Prompt ${promptNumber}:`) || title.startsWith(`Prompt ${promptNumber} (`);
+  });
   if (!prompt) return null;
   async function onCopy() {
     await copyText(prompt.text);
