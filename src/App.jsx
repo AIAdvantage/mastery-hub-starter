@@ -3277,7 +3277,7 @@ function PastSystemsTable() {
           <span role="columnheader">Igor's comment</span>
           <span role="columnheader">Links</span>
         </div>
-        {PAST_SYSTEMS.map((item) => (
+        {PAST_SYSTEMS.slice().reverse().map((item) => (
           <PastSystemRow item={item} key={item.id} />
         ))}
       </div>
