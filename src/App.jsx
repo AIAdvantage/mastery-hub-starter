@@ -3292,7 +3292,6 @@ function PastSystemsTable() {
         <div className="systems-row systems-head" role="row">
           <span role="columnheader">Month</span>
           <span role="columnheader">System</span>
-          <span role="columnheader">Difficulty</span>
           <span role="columnheader">Summary</span>
           <span role="columnheader">Igor's comment</span>
           <span role="columnheader">Links</span>
@@ -3311,19 +3310,17 @@ function PastSystemRow({ item }) {
     <article className={`systems-row system-difficulty-${item.difficulty.toLowerCase()}`} role="row">
       <div className="systems-month" role="cell">
         <strong>{item.month}</strong>
-        <span>{item.date}</span>
-        <small>{item.theme}</small>
       </div>
       <div className="systems-system" role="cell">
         <strong>{item.system}</strong>
         <span>{item.tools}</span>
       </div>
-      <div role="cell">
+      <div className="systems-summary" role="cell">
+        <p>{item.summary}</p>
         <span className={`system-difficulty-pill system-difficulty-pill-${item.difficulty.toLowerCase()}`}>
           {item.difficulty}
         </span>
       </div>
-      <p role="cell">{item.summary}</p>
       <div className="systems-comment" role="cell">
         <p>{item.igorComment}</p>
       </div>

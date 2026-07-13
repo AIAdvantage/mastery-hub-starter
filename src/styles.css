@@ -3339,7 +3339,7 @@ h1 {
 
 .systems-row {
   display: grid;
-  grid-template-columns: minmax(118px, 0.55fr) minmax(170px, 0.9fr) minmax(94px, 0.45fr) minmax(220px, 1.1fr) minmax(260px, 1.25fr) minmax(112px, 0.5fr);
+  grid-template-columns: minmax(96px, 0.42fr) minmax(190px, 0.95fr) minmax(260px, 1.2fr) minmax(280px, 1.25fr) minmax(112px, 0.5fr);
   gap: 16px;
   align-items: start;
   padding: 18px;
@@ -3361,6 +3361,7 @@ h1 {
 
 .systems-month,
 .systems-system,
+.systems-summary,
 .systems-comment,
 .systems-links {
   display: grid;
