@@ -1459,9 +1459,11 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           content={cmsMonthToContent(cmsMonth)}
           monthLabel={cmsMonth.label}
           monthSlug={cmsMonth.slug}
-          pageTitle={`${cmsMonth.label} Live Materials`}
-          lead="Copy each prompt into your AI workspace at the matching step of the guide."
+          pageTitle="Live Prompts"
+          lead="Use these alongside the live workshop when you just need the prompts to follow each step."
           showMaterials={false}
+          breadcrumbLabel="Prompts"
+          sectionLabel="Copy-paste"
         />
       );
     }
@@ -1473,10 +1475,10 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           content={cmsExtrasToContent(cmsMonth)}
           monthLabel={cmsMonth.label}
           monthSlug={cmsMonth.slug}
-          pageTitle={`${cmsMonth.label} Extras`}
-          lead="Use these optional follow-up resources after the main workshop guide."
-          breadcrumbLabel="Extras"
-          sectionLabel="Extras"
+          pageTitle={cmsMonth.extras?.video?.title || "Go Deeper"}
+          lead={cmsMonth.extras?.video?.intro || "Use these optional follow-up resources after the main workshop guide."}
+          breadcrumbLabel="Go Deeper"
+          sectionLabel={cmsMonth.extras?.video?.eyebrow || "Follow up video"}
           showMaterials={false}
         />
       );
@@ -1648,7 +1650,7 @@ function CmsResourcesMenu({ month, navigate }) {
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
                 <p className="section-kicker">{category}</p>
-                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category === "Other" ? "Recordings and challenge" : "Coming next"}</h3>
+                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category === "Other" ? "Recordings and challenge" : category === "Extras" ? "Follow up video" : "Coming next"}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
                 {groupedResources[category].map((item, index) => (
@@ -1683,11 +1685,11 @@ function CmsResourcesMenu({ month, navigate }) {
           </button>
           <button className="resource-card resource-card-button" type="button" disabled={!hasPrompts} onClick={() => navigate(`/monthly-resources/${month.slug}/prompts`)}>
             <div className="resource-card-top">
-              <span>Live materials</span>
+              <span>Live prompts</span>
               <small>{hasPrompts ? "Ready" : "Drafting"}</small>
             </div>
-            <h4>Live Materials</h4>
-            <p>Copy the prompts and templates that support this month's guide.</p>
+            <h4>Live Prompts</h4>
+            <p>Copy the prompts that support this month's guide.</p>
           </button>
           <button className="resource-card resource-card-button" type="button" disabled={!hasExtras} onClick={() => navigate(`/monthly-resources/${month.slug}/extras`)}>
             <div className="resource-card-top">

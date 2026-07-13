@@ -42,6 +42,8 @@ const UPCOMING_MONTH_PRESETS = [
   },
 ];
 
+const MONTH_TEMPLATE_HERO_SRC = "/july/july-ai-hub-card-relatable-3.png";
+
 const PRESET_ORDER = UPCOMING_MONTH_PRESETS.reduce((acc, preset, index) => {
   acc[preset.slug] = index;
   return acc;
@@ -88,10 +90,10 @@ const JULY_PREREQUISITES = [
     linkLabel: "Download Claude Desktop",
   },
   {
-    label: "July Live Materials ready",
-    detail: "Open the July Live Materials page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
+    label: "July Live Prompts ready",
+    detail: "Open the July Live Prompts page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
     link: "/monthly-resources/july/prompts",
-    linkLabel: "Open Live Materials",
+    linkLabel: "Open Live Prompts",
     internal: true,
   },
 ];
@@ -182,6 +184,228 @@ function getDefaultMonthSlug(items = []) {
   return items.find((item) => !item.is_published)?.slug || items[0]?.slug || "";
 }
 
+function monthTemplateGuide(label) {
+  return `## Table of Contents
+
+## What You'll Have When Done
+
+- [ ] Clear workshop outcome
+- [ ] Working setup from the live session
+- [ ] Prompt or tool ready to reuse after the workshop
+
+---
+
+## Before You Start
+
+- [ ] Account or tool one ready
+- [ ] Account or tool two ready
+- [ ] Any starter file, DNA, or template ready
+
+---
+
+# PART 1: BUILD THE CORE SYSTEM
+
+## Step 1: Set Up Your Workspace
+
+Write the first setup step here.
+
+1. First instruction.
+2. Second instruction.
+
+## Step 2: Build the First Working Version
+
+Write the first build step here.
+
+1. First instruction.
+2. Second instruction.
+
+## Step 3: Test It Once
+
+Write the first test step here.
+
+1. First instruction.
+2. Second instruction.
+
+---
+
+# PART 2: MAKE IT YOURS
+
+## Step 4: Customize the System
+
+Write the customization step here.
+
+1. First instruction.
+2. Second instruction.
+
+## Step 5: Save the Repeatable Version
+
+Write the reuse step here.
+
+1. First instruction.
+2. Second instruction.
+
+## Next Steps
+
+1. Use this once on your own work.
+2. Bring your questions to the community.
+3. Open the ${label} challenge when you are ready to submit.`;
+}
+
+function monthTemplateChallenge(label) {
+  return `## The Mission
+
+Write the one-sentence mission for the ${label} challenge here.
+
+## Your Challenge
+
+1. Build the thing from the workshop.
+2. Use it on your own work.
+3. Capture proof that it works.
+4. Submit the strongest version.
+
+## What to Submit
+
+1. Screenshot or proof of the final output.
+2. A short note on what you built.
+3. The file, prompt, or system artifact if this month requires one.
+
+## Where to Submit
+
+Post to [Challenge Submissions](https://community.aiadvantage.com/c/challenge-submissions/) in the AI Advantage Community.
+
+## Deadline
+
+Add the deadline here.
+
+## How Winners Are Chosen
+
+Community voting and team evaluation.`;
+}
+
+function createMonthTemplate(preset = {}) {
+  const slug = slugify(preset.slug || preset.label || "");
+  const label = preset.label || slug;
+  const topic = preset.topic || "To be announced";
+  const focus = preset.focus || `${label} Mastery Workshop`;
+  const outcome = preset.outcome || `Prepare ${label}'s guide, live prompts, follow-up resources, recordings, and challenge before this month goes live.`;
+
+  return {
+    slug,
+    label,
+    month_number: label,
+    topic,
+    focus,
+    outcome,
+    status: "draft",
+    is_published: false,
+    hero: {
+      src: MONTH_TEMPLATE_HERO_SRC,
+      alt: `${label} Mastery workshop`,
+      kicker: "Draft month",
+      title: `${label}: ${topic}`,
+      caption: "Replay, guide, live prompts, challenge, and follow-up resources in one path.",
+    },
+    resources: [
+      {
+        category: "Workshop",
+        type: "Checklist",
+        title: "Before You Start",
+        description: `Add the accounts, apps, files, and setup notes members need before the ${label} workshop.`,
+        status: "first draft",
+        url: `/monthly-resources/${slug}/guide`,
+      },
+      {
+        category: "Workshop",
+        type: "Walkthrough",
+        title: `${label} Guide`,
+        description: "Follow the full walkthrough for this month's build.",
+        status: "first draft",
+        url: `/monthly-resources/${slug}/guide`,
+      },
+      {
+        category: "Workshop",
+        type: "Copy-paste",
+        title: "Live Prompts",
+        description: "Use these alongside the live workshop when you just need the prompts to follow each step.",
+        status: "first draft",
+        url: `/monthly-resources/${slug}/prompts`,
+      },
+      {
+        category: "Other",
+        type: "Recordings",
+        title: `${label} Recordings`,
+        description: `Add the ${label} workshop replay link here once the recordings are ready.`,
+        status: "idea",
+        url: "",
+      },
+      {
+        category: "Other",
+        type: "Challenge",
+        title: `${label} Challenge`,
+        description: "Use what you built this month, submit your version, and see what other members made.",
+        status: "first draft",
+        url: `/challenges/${slug}`,
+      },
+      {
+        category: "Extras",
+        type: "Video + Prompts",
+        title: "Go Deeper",
+        description: "Use optional follow-up prompts when members are ready to extend the system after the live workshop.",
+        status: "idea",
+        url: `/monthly-resources/${slug}/extras`,
+      },
+    ],
+    guide_markdown: monthTemplateGuide(label),
+    challenge_markdown: monthTemplateChallenge(label),
+    challenge_prompt: `Use this space for the main ${label} challenge prompt.`,
+    prompts: [
+      {
+        title: "Prompt 1: Live Workshop Setup",
+        text: "Paste the first live workshop prompt here.",
+      },
+      {
+        title: "Prompt 2: Build or Run the System",
+        text: "Paste the main build prompt here.",
+      },
+      {
+        title: "Prompt 3: Help Prompt",
+        text: "Paste the troubleshooting or help prompt here.",
+      },
+    ],
+    extras: {
+      video: {
+        eyebrow: "Follow-up video",
+        title: `Go Deeper With ${label}`,
+        intro: "Use this optional follow-up when you are ready to extend the main workshop system.",
+        src: "",
+        ariaLabel: `${label} follow-up video`,
+      },
+      prompts: [
+        {
+          title: "Follow-up Prompt",
+          text: "Paste the first follow-up prompt here.",
+        },
+      ],
+    },
+    admin_notes: "Created from the July monthly resources template.",
+  };
+}
+
+function templateForSlug(slug) {
+  const cleanSlug = slugify(slug || "");
+  const preset = UPCOMING_MONTH_PRESETS.find((item) => item.slug === cleanSlug);
+  return preset ? createMonthTemplate(preset) : null;
+}
+
+function mergePresetMonths(items = []) {
+  const existing = new Set(items.map((item) => item.slug));
+  const templateMonths = UPCOMING_MONTH_PRESETS
+    .filter((preset) => !existing.has(preset.slug))
+    .map((preset) => createMonthTemplate(preset));
+
+  return sortMonthsForAdmin([...items, ...templateMonths]);
+}
+
 function adminDeepLink(slug, tab = "basics") {
   return `/admin?month=${encodeURIComponent(slug)}&tab=${encodeURIComponent(tab)}`;
 }
@@ -199,7 +423,7 @@ function resourceEditorLabel(tab) {
     basics: "Month setup",
     guide: "Guide markdown",
     challenge: "Challenge content",
-    prompts: "Live materials",
+    prompts: "Live prompts",
     extras: "Extras",
   }[tab] || "Content";
 }
@@ -289,7 +513,7 @@ export default function AdminBackend({ navigate }) {
     setError("");
     try {
       const data = await adminFetch(token, "/api/mastery-admin?action=list");
-      const sortedMonths = sortMonthsForAdmin(data.months || []);
+      const sortedMonths = mergePresetMonths(data.months || []);
       setMonths(sortedMonths);
       if (!selectedSlug) setSelectedSlug(getDefaultMonthSlug(sortedMonths));
     } catch (err) {
@@ -301,12 +525,14 @@ export default function AdminBackend({ navigate }) {
     setError("");
     try {
       const data = await adminFetch(token, `/api/mastery-admin?action=month&slug=${encodeURIComponent(slug)}`);
-      lastSavedSnapshotRef.current = JSON.stringify(data.month || null);
-      setMonth(data.month);
+      const template = templateForSlug(slug);
+      const nextMonth = data.month || template;
+      lastSavedSnapshotRef.current = JSON.stringify(nextMonth || null);
+      setMonth(nextMonth);
       setActiveResourceIndex(null);
       setSaveState(data.month ? "saved" : "idle");
       setLastSavedAt(data.month ? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "");
-      setStatus(data.month ? "Saved" : "");
+      setStatus(data.month ? "Saved" : template ? "Template ready. Save to create this month." : "");
     } catch (err) {
       setError(err.message);
     }
@@ -334,6 +560,33 @@ export default function AdminBackend({ navigate }) {
 
   function updateMonth(patch) {
     setMonth((current) => ({ ...current, ...patch }));
+  }
+
+  function applyMonthlyTemplate() {
+    setMonth((current) => {
+      if (!current?.slug) return current;
+      const template = createMonthTemplate({
+        slug: current.slug,
+        label: current.label || current.slug,
+        topic: current.topic || "To be announced",
+        focus: current.focus || `${current.label || current.slug} Mastery Workshop`,
+        outcome: current.outcome || "",
+      });
+
+      return {
+        ...current,
+        hero: template.hero,
+        resources: template.resources,
+        guide_markdown: template.guide_markdown,
+        challenge_markdown: template.challenge_markdown,
+        challenge_prompt: template.challenge_prompt,
+        prompts: template.prompts,
+        extras: template.extras,
+        admin_notes: current.admin_notes || template.admin_notes,
+      };
+    });
+    setActiveResourceIndex(null);
+    setActiveTab("basics");
   }
 
   function updateHero(field, value) {
@@ -643,6 +896,7 @@ export default function AdminBackend({ navigate }) {
                   updateResource={updateResource}
                   addResource={addResource}
                   removeResource={removeResource}
+                  applyMonthlyTemplate={applyMonthlyTemplate}
                   activeResourceIndex={activeResourceIndex}
                   onEditResource={(item, index) => {
                     const nextTab = resourceEditorTab(item);
@@ -775,7 +1029,17 @@ function PublicationToggle({ month, onChange }) {
   );
 }
 
-function BasicsEditor({ month, updateMonth, updateHero, updateResource, addResource, removeResource, activeResourceIndex, onEditResource }) {
+function BasicsEditor({
+  month,
+  updateMonth,
+  updateHero,
+  updateResource,
+  addResource,
+  removeResource,
+  applyMonthlyTemplate,
+  activeResourceIndex,
+  onEditResource,
+}) {
   return (
     <div className="admin-card-grid">
       <div className="admin-card">
@@ -799,7 +1063,10 @@ function BasicsEditor({ month, updateMonth, updateHero, updateResource, addResou
             <h2>Resource cards</h2>
             <p className="muted">This is the main content map. Edit a card, then open the matching content editor from that row.</p>
           </div>
-          <button type="button" onClick={addResource}>Add Card</button>
+          <div className="admin-inline-actions">
+            <button type="button" onClick={applyMonthlyTemplate}>Apply July Page Template</button>
+            <button type="button" onClick={addResource}>Add Card</button>
+          </div>
         </div>
         <div className="admin-resource-table" role="table" aria-label="Resource cards">
           <div className="admin-resource-row admin-resource-head" role="row">
