@@ -2647,6 +2647,13 @@ h1 {
   gap: 8px;
 }
 
+.step-help-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .step-help-actions a,
 .step-help-actions button {
   display: inline-flex;
@@ -2664,13 +2671,63 @@ h1 {
   text-decoration: none;
 }
 
+.step-help-actions .step-help-tip-trigger {
+  width: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border-color: rgba(222, 210, 193, 0.72);
+  background: rgba(255, 253, 248, 0.54);
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.step-help-tip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.step-help-tip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  width: min(280px, 72vw);
+  padding: 10px 12px;
+  border: 1px solid rgba(222, 210, 193, 0.88);
+  border-radius: 8px;
+  background: #fffdf8;
+  box-shadow: 0 16px 36px rgba(36, 24, 12, 0.18);
+  color: #3d2b1c;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  transform: translateY(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.step-help-tip-wrap:hover .step-help-tip,
+.step-help-tip-wrap:focus-within .step-help-tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .step-help-actions a:hover,
 .step-help-actions button:hover {
   border-color: rgba(182, 138, 59, 0.42);
   background: rgba(182, 138, 59, 0.08);
 }
 
-.step-help-actions span {
+.step-help-status {
   flex-basis: 100%;
   color: var(--gold-2);
   font-size: 12px;
@@ -4242,12 +4299,28 @@ h1 {
     width: 100%;
   }
 
+  .step-help-action {
+    flex-wrap: nowrap;
+  }
+
   .step-help-actions a,
   .step-help-actions button {
     min-height: 40px;
   }
 
-  .step-help-actions span {
+  .step-help-actions .step-help-tip-trigger {
+    width: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    height: 24px;
+  }
+
+  .step-help-tip {
+    left: 0;
+    right: auto;
+  }
+
+  .step-help-status {
     text-align: left;
   }
 

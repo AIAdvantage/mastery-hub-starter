@@ -2287,10 +2287,28 @@ function StepHelpActions({ guide, helpContext, step, stepNumber }) {
 
   return (
     <div className="step-help-actions" aria-label={`Help actions for ${step.title}`}>
-      <button type="button" onClick={handleAiHelp}>Ask AI</button>
-      <a href={MOD_HELP_URL} target="_blank" rel="noreferrer" onClick={handleModHelp}>Ask mods</a>
-      {status && <span role="status">{status}</span>}
+      <HelpActionWithTip tip="Copies a ready-made prompt to your clipboard. Paste it into any AI model to get help with this guide.">
+        <button type="button" onClick={handleAiHelp}>Ask AI</button>
+      </HelpActionWithTip>
+      <HelpActionWithTip tip="Opens the Mastery community Q&A, where you can post a question and get an answer.">
+        <a href={MOD_HELP_URL} target="_blank" rel="noreferrer" onClick={handleModHelp}>Ask Mods</a>
+      </HelpActionWithTip>
+      {status && <span className="step-help-status" role="status">{status}</span>}
     </div>
+  );
+}
+
+function HelpActionWithTip({ children, tip }) {
+  return (
+    <span className="step-help-action">
+      {children}
+      <span className="step-help-tip-wrap">
+        <button className="step-help-tip-trigger" type="button" aria-label={tip}>
+          i
+        </button>
+        <span className="step-help-tip" role="tooltip">{tip}</span>
+      </span>
+    </span>
   );
 }
 
