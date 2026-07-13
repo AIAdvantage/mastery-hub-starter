@@ -351,7 +351,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m7",
-    month: "Month 7",
+    month: "July",
     date: "Jul 2, 2026",
     theme: "AI Hub",
     system: "Build Your Agent a Home",
@@ -3259,7 +3259,7 @@ function PastSystemsSection() {
       <div className="section-heading compact">
         <p className="section-kicker">Past systems</p>
         <h2 id="past-systems-section-title">Which old recordings should you watch?</h2>
-        <p className="muted">Quick answer: match the month to your current comfort level, then use the replay as a swipe file instead of trying to complete everything in order.</p>
+        <p className="muted">Quick answer: you do not need to do every replay in order. Pick the month that matches your current comfort level, then use that recording as a swipe file.</p>
       </div>
       <PastSystemsTable />
     </div>
