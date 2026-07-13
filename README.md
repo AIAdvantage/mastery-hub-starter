@@ -73,6 +73,33 @@ create table mastery_challenge_submissions (
 );
 ```
 
+## Analytics
+
+Production logs lightweight UI events to Supabase when `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set in Vercel.
+
+Production also expects these Vercel environment variables:
+
+- `VITE_CLERK_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `MASTERY_ADMIN_TOKEN`
+
+Tracked today:
+
+- `page_view`
+- `ask_ai_click`
+- `ask_mods_click`
+- `copy_prompt_click`
+
+Events are inserted into `mastery_site_events` with RLS enabled. Anonymous visitors can insert approved event names only; public reads are not granted. Use admin/service credentials to query counts:
+
+```sql
+select event_date, event_name, guide_name, step_number, step_title, clicks, unique_sessions
+from mastery_site_help_click_counts
+order by event_date desc, event_name, step_number;
+```
+
 ## Local commands
 
 ```bash

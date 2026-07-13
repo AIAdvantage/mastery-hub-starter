@@ -1,3 +1,5 @@
+const env = import.meta.env || {};
+
 // ┌─────────────────────────────────────────────────────────────┐
 // │  👋 THIS IS THE ONLY FILE YOU NEED TO EDIT.                   │
 // │  Put your name and your GitHub vault repo below. Save. Done. │
@@ -14,7 +16,7 @@ export const CONFIG = {
   // The folder inside that repo where your task outputs live (use "" for root).
   vaultFolder: "",
 
-  // (Optional, later months) Supabase — leave blank until you need a database.
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  // (Optional, later months) Supabase. In production, set these as Vite env vars.
+  supabaseUrl: env.VITE_SUPABASE_URL || "",
+  supabaseAnonKey: env.VITE_SUPABASE_ANON_KEY || "",
 };
