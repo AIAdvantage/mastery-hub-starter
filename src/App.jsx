@@ -80,8 +80,8 @@ const MONTHS = [
       caption: "",
     },
     resources: [
-      { type: "Guide", title: "July Guide", description: "Follow the full walkthrough to build your Hub and connect the main pieces.", status: "Start here" },
-      { type: "Materials", title: "Live Materials", description: "Copy the prompts and workshop materials when the guide tells you to use them.", status: "Use with guide" },
+      { type: "Guide", title: "July Guide", description: "Follow the full walkthrough to build your Hub and connect the main pieces.", status: "Build" },
+      { type: "Materials", title: "Prompts / Tools / Templates", description: "Copy the prompts and workshop materials when the guide tells you to use them.", status: "Grab" },
       { type: "Recordings", title: "July Recordings", description: "Rewatch the July workshop sessions whenever you want to follow along again.", status: "Watch replay" },
       { type: "Challenge Document", title: "July Challenge", description: "Use what you built this month, submit your version, and see what other members made.", status: "Open" },
     ],
@@ -368,7 +368,7 @@ const TUTORIAL_QUICK_ACCESS = [
   {
     eyebrow: "Monthly Resources",
     title: "Start with current resources",
-    description: "This is the current month hub. Start here for the prerequisites, guide, live materials, recordings, and workshop path.",
+    description: "This is the current month hub. Start here for the prerequisites, guide, prompts, recordings, and workshop path.",
     url: "https://mastery.aiadvantage.com/monthly-resources",
     action: "Open monthly resources",
   },
@@ -447,14 +447,14 @@ const HOME_SEARCH_ITEMS = [
     keywords: "july guide build ai hub lovable github claude cowork walkthrough",
   },
   {
-    title: "Live Materials",
+    title: "Prompts / Tools / Templates",
     eyebrow: "July workshop",
     description: "Copy the prompts and workshop materials when the guide tells you to use them.",
     path: "/monthly-resources/july/prompts",
     keywords: "live materials prompts tools templates claude cowork lovable setup daily briefing help prompts",
   },
   {
-    title: "Publishing and Extra Apps",
+    title: "Go Deeper With Your AI Hub",
     eyebrow: "July extras",
     description: "Lock down access, publish cleanly, and extend the Hub with extra apps.",
     path: "/monthly-resources/july/extras",
@@ -552,10 +552,10 @@ const JULY_PREREQUISITES = [
     linkLabel: "Download Claude Desktop",
   },
   {
-    label: "July Live Materials ready",
-    detail: "Open the July Live Materials page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
+    label: "July prompts ready",
+    detail: "Open the July Prompts / Tools / Templates page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
     link: "/monthly-resources/july/prompts",
-    linkLabel: "Open Live Materials",
+    linkLabel: "Open Prompts",
     internal: true,
   },
 ];
@@ -1493,7 +1493,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         monthLabel="July"
         monthSlug="july"
         pageTitle="July Guide: Build Your AI Hub"
-        pageIntro="Build your own private AI Hub website where everything your AI creates shows up — Lovable, GitHub, and Claude Cowork wired together."
+        pageIntro="Build your own private AI Hub website where everything your AI creates shows up, with Lovable, GitHub, and Claude Cowork wired together."
         showMaterials={false}
       />
     );
@@ -1514,8 +1514,10 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         content={JULY_CONTENT}
         monthLabel="July"
         monthSlug="july"
-        pageTitle="July Live Materials"
+        pageTitle="Prompts / Tools / Templates"
         lead="Copy each prompt into Claude Cowork at the matching step of the guide."
+        breadcrumbLabel="Prompts"
+        sectionLabel="Copy-paste"
         showMaterials={false}
       />
     );
@@ -1528,10 +1530,10 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         content={JULY_EXTRAS_CONTENT}
         monthLabel="July"
         monthSlug="july"
-        pageTitle="Publishing and Extra Apps"
+        pageTitle="Go Deeper With Your AI Hub"
         lead="Use these prompts when you are ready to lock down access, publish cleanly, and extend the Hub with extra apps."
-        breadcrumbLabel="Extras"
-        sectionLabel="Extras"
+        breadcrumbLabel="Go Deeper"
+        sectionLabel="Follow up video"
         showMaterials={false}
       />
     );
@@ -1775,64 +1777,49 @@ function JulyResourcesMenu({ month, navigate }) {
       />
       <MonthVisualCard
         month={JULY_RESOURCE_BANNER}
-        actionLabel="Open the Guide"
-        onAction={() => navigate("/monthly-resources/july/guide")}
+        actionLinks={[
+          { label: "Replay", href: JULY_RECORDINGS_URL },
+          { label: "Guide", onClick: () => navigate("/monthly-resources/july/guide") },
+          { label: "Prompts", onClick: () => navigate("/monthly-resources/july/prompts") },
+          { label: "Challenge", onClick: () => navigate("/challenges/july") },
+        ]}
         variant="banner"
       />
       <div className="resource-category-stack">
         <section className="resource-category" aria-labelledby="july-workshop-title">
           <div className="resource-category-head">
-            <p className="section-kicker">Workshop</p>
             <h3 id="july-workshop-title">Build the Hub</h3>
           </div>
           <div className="resource-grid resource-grid-three">
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prerequisites")}>
               <div className="resource-card-top">
-                <span>Before you start</span>
-                <small>Start here</small>
+                <span>Checklist</span>
+                <small>Prep</small>
               </div>
               <h4>Before You Start</h4>
               <p>Make sure the accounts, apps, and files you need for the July workshop are ready.</p>
             </button>
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/guide")}>
               <div className="resource-card-top">
-                <span>Guide</span>
-                <small>Step by step</small>
+                <span>Walkthrough</span>
+                <small>Build</small>
               </div>
               <h4>{guideTitle}</h4>
               <p>Follow the full walkthrough to build your Hub and connect the main pieces.</p>
             </button>
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prompts")}>
               <div className="resource-card-top">
-                <span>Live materials</span>
-                <small>Use with guide</small>
+                <span>Copy-paste</span>
+                <small>Grab</small>
               </div>
-              <h4>Live Materials</h4>
+              <h4>Prompts / Tools / Templates</h4>
               <p>Copy the prompts and workshop materials when the guide tells you to use them.</p>
-            </button>
-          </div>
-        </section>
-
-        <section className="resource-category" aria-labelledby="july-extras-title">
-          <div className="resource-category-head">
-            <p className="section-kicker">Extras</p>
-            <h3 id="july-extras-title">Coming next</h3>
-          </div>
-          <div className="resource-grid">
-            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/extras")}>
-              <div className="resource-card-top">
-                <span>Publishing</span>
-                <small>Prompt 1 ready</small>
-              </div>
-              <h4>Publishing and Extra Apps</h4>
-              <p>Start here when you are ready to lock access to your email, publish, and build extra Hub apps.</p>
             </button>
           </div>
         </section>
 
         <section className="resource-category" aria-labelledby="july-challenge-category-title">
           <div className="resource-category-head">
-            <p className="section-kicker">Other</p>
             <h3 id="july-challenge-category-title">Recordings and challenge</h3>
           </div>
           <div className="resource-grid resource-grid-two">
@@ -1854,12 +1841,28 @@ function JulyResourcesMenu({ month, navigate }) {
             </button>
           </div>
         </section>
+
+        <section className="resource-category" aria-labelledby="july-extras-title">
+          <div className="resource-category-head">
+            <h3 id="july-extras-title">Follow up video</h3>
+          </div>
+          <div className="resource-grid">
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/extras")}>
+              <div className="resource-card-top">
+                <span>Video + Prompts</span>
+                <small>Level up</small>
+              </div>
+              <h4>Go Deeper With Your AI Hub</h4>
+              <p>Start here when you are ready to lock access to your email, publish, and build extra Hub apps.</p>
+            </button>
+          </div>
+        </section>
       </div>
     </section>
   );
 }
 
-function MonthVisualCard({ month = CURRENT_MONTH, actionLabel, onAction, variant = "" }) {
+function MonthVisualCard({ month = CURRENT_MONTH, actionLabel, actionLinks = [], onAction, variant = "" }) {
   const image = month.image || CURRENT_MONTH.image;
   const className = ["month-visual-card", variant === "banner" ? "month-visual-card-banner" : ""]
     .filter(Boolean)
@@ -1874,7 +1877,22 @@ function MonthVisualCard({ month = CURRENT_MONTH, actionLabel, onAction, variant
         <p>
           {month.outcome}
         </p>
-        {actionLabel && (
+        {actionLinks.length > 0 && (
+          <div className="month-quicklinks" aria-label={`${month.label} quick links`}>
+            {actionLinks.map((link) => (
+              link.href ? (
+                <a key={link.label} href={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                </a>
+              ) : (
+                <button key={link.label} type="button" onClick={link.onClick}>
+                  {link.label}
+                </button>
+              )
+            ))}
+          </div>
+        )}
+        {actionLabel && actionLinks.length === 0 && (
           <button type="button" onClick={onAction}>
             {actionLabel}
           </button>
