@@ -273,7 +273,7 @@ const HAS_CLERK = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 const PAST_SYSTEMS = [
   {
     id: "m1",
-    month: "Month 1",
+    month: "January",
     date: "Jan 6, 2026",
     theme: "Personal",
     system: "Personal AI Advisory Board",
@@ -286,7 +286,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m2",
-    month: "Month 2",
+    month: "February",
     date: "Feb 3, 2026",
     theme: "Strategy",
     system: "Strategy Dashboard",
@@ -299,7 +299,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m3",
-    month: "Month 3",
+    month: "March",
     date: "Mar 3, 2026",
     theme: "Time",
     system: "Bulk Generation in Google Sheets",
@@ -312,7 +312,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m4",
-    month: "Month 4",
+    month: "April",
     date: "Apr 7, 2026",
     theme: "Marketing",
     system: "Content Machine and Reusable Skill",
@@ -325,7 +325,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m5",
-    month: "Month 5",
+    month: "May",
     date: "May 7, 2026",
     theme: "Sales",
     system: "Meeting Intelligence and Proposal Generator",
@@ -338,7 +338,7 @@ const PAST_SYSTEMS = [
   },
   {
     id: "m6",
-    month: "Month 6",
+    month: "June",
     date: "Jun 4, 2026",
     theme: "Operations",
     system: "Paperwork Autopilot",
@@ -3277,7 +3277,7 @@ function PastSystemsSection() {
       <div className="section-heading compact">
         <p className="section-kicker">Past systems</p>
         <h2 id="past-systems-section-title">Which old recordings should you watch?</h2>
-        <p className="muted">Quick answer: you do not need to do every replay in order. Pick the month that matches your current comfort level, then use that recording as a swipe file.</p>
+        <p className="muted">Quick answer: all of this is optional. You do not need to finish every replay or go in order. Pick the month that matches your current comfort level.</p>
       </div>
       <PastSystemsTable />
     </div>
