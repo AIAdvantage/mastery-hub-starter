@@ -416,7 +416,7 @@ const TUTORIAL_FAQS = [
   },
   {
     question: "Which old Mastery recordings should I watch first?",
-    answer: "Use the Past Systems table on this Tutorial page. It shows the difficulty, what changed, and who I would recommend each old build for now.",
+    answer: "Use the Past Systems table at the bottom of the [Monthly Resources page](https://mastery.aiadvantage.com/monthly-resources). It shows the difficulty, what changed, and who I would recommend each old build for now.",
   },
   {
     question: "What if I am behind or missed last month?",
@@ -1431,6 +1431,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           pastTitle="Past months"
         />
         <CmsMonthGroup months={cmsMonths} basePath="/monthly-resources" navigate={navigate} />
+        <PastSystemsSection />
       </section>
     );
   }
@@ -3252,6 +3253,19 @@ function PastSystemsPage({ navigate }) {
   );
 }
 
+function PastSystemsSection() {
+  return (
+    <div className="past-systems-section" id="past-systems" aria-labelledby="past-systems-section-title">
+      <div className="section-heading compact">
+        <p className="section-kicker">Past systems</p>
+        <h2 id="past-systems-section-title">Which old recordings should you watch?</h2>
+        <p className="muted">Quick answer: match the month to your current comfort level, then use the replay as a swipe file instead of trying to complete everything in order.</p>
+      </div>
+      <PastSystemsTable />
+    </div>
+  );
+}
+
 function PastSystemsTable() {
   return (
     <div className="systems-table" role="table" aria-label="Past Mastery systems table">
@@ -3894,14 +3908,6 @@ function TutorialPage({ navigate }) {
             </article>
           );
         })}
-      </div>
-      <div className="tutorial-systems" id="past-systems" aria-labelledby="tutorial-systems-title">
-        <div className="section-heading compact">
-          <p className="section-kicker">Past systems</p>
-          <h2 id="tutorial-systems-title">Which old recordings should you watch?</h2>
-          <p className="muted">Quick answer: match the month to your current comfort level, then use the replay as a swipe file instead of trying to complete everything in order.</p>
-        </div>
-        <PastSystemsTable />
       </div>
       <div className="tutorial-faq" aria-labelledby="tutorial-faq-title">
         <div className="section-heading compact">

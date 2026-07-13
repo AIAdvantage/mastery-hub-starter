@@ -3575,11 +3575,11 @@ h1 {
   box-shadow: 0 10px 24px rgba(65, 48, 31, 0.1);
 }
 
-.tutorial-systems {
+.past-systems-section {
   margin-top: clamp(34px, 5vw, 58px);
 }
 
-.tutorial-systems .systems-table {
+.past-systems-section .systems-table {
   margin-top: 18px;
 }
 
