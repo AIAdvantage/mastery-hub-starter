@@ -6,6 +6,7 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_TOKEN = process.env.MASTERY_ADMIN_TOKEN;
 const IMAGE_BUCKET = "mastery-guide-images";
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
+const VERSION_HISTORY_LIMIT = 20;
 
 function json(res, status, payload) {
   res.status(status).setHeader("Content-Type", "application/json");
@@ -62,6 +63,87 @@ function cleanMonth(input = {}) {
     admin_notes: input.admin_notes || "",
     updated_by: input.updated_by || null,
   };
+}
+
+function monthSnapshot(input = {}) {
+  return {
+    slug: input.slug,
+    label: input.label,
+    month_number: input.month_number,
+    topic: input.topic,
+    focus: input.focus,
+    outcome: input.outcome,
+    hero: input.hero || {},
+    resources: Array.isArray(input.resources) ? input.resources : [],
+    guide_markdown: input.guide_markdown || "",
+    challenge_markdown: input.challenge_markdown || "",
+    challenge_prompt: input.challenge_prompt || "",
+    prompts: Array.isArray(input.prompts) ? input.prompts : [],
+    extras: input.extras || {},
+    admin_notes: input.admin_notes || "",
+    status: input.status || null,
+    is_published: Boolean(input.is_published),
+    published_at: input.published_at || null,
+    updated_at: input.updated_at || null,
+    updated_by: input.updated_by || null,
+  };
+}
+
+function monthEditableSnapshot(input = {}) {
+  const snapshot = monthSnapshot(input);
+  delete snapshot.status;
+  delete snapshot.is_published;
+  delete snapshot.published_at;
+  delete snapshot.updated_at;
+  delete snapshot.updated_by;
+  return snapshot;
+}
+
+function stableJson(value) {
+  return JSON.stringify(value);
+}
+
+async function archiveMonthVersion(supabase, existingMonth, { source = "save", savedBy = null } = {}) {
+  if (!existingMonth?.slug) return;
+  const snapshot = monthSnapshot(existingMonth);
+
+  const { data: latest, error: latestError } = await supabase
+    .from("mastery_month_draft_versions")
+    .select("id, snapshot")
+    .eq("month_slug", existingMonth.slug)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (latestError) throw latestError;
+
+  if (latest?.snapshot && stableJson(latest.snapshot) === stableJson(snapshot)) return;
+
+  const { error: insertError } = await supabase
+    .from("mastery_month_draft_versions")
+    .insert({
+      month_slug: existingMonth.slug,
+      snapshot,
+      source,
+      saved_by: savedBy,
+    });
+  if (insertError) throw insertError;
+
+  const { data: oldVersions, error: oldVersionsError } = await supabase
+    .from("mastery_month_draft_versions")
+    .select("id")
+    .eq("month_slug", existingMonth.slug)
+    .order("created_at", { ascending: false })
+    .range(VERSION_HISTORY_LIMIT, 1000);
+  if (oldVersionsError) throw oldVersionsError;
+
+  const oldIds = (oldVersions || []).map((version) => version.id);
+  if (oldIds.length) {
+    const { error: deleteError } = await supabase
+      .from("mastery_month_draft_versions")
+      .delete()
+      .in("id", oldIds);
+    if (deleteError) throw deleteError;
+  }
 }
 
 function dayKey(value) {
@@ -252,6 +334,18 @@ export default async function handler(req, res) {
         return json(res, 200, { month: data || null });
       }
 
+      if (action === "history") {
+        const slug = url.searchParams.get("slug");
+        const { data, error } = await supabase
+          .from("mastery_month_draft_versions")
+          .select("id, month_slug, snapshot, source, saved_by, created_at")
+          .eq("month_slug", slug)
+          .order("created_at", { ascending: false })
+          .limit(VERSION_HISTORY_LIMIT);
+        if (error) throw error;
+        return json(res, 200, { versions: data || [] });
+      }
+
       const { data, error } = await supabase
         .from("mastery_month_drafts")
         .select("id, slug, label, month_number, topic, focus, outcome, status, is_published, published_at, updated_at")
@@ -306,9 +400,59 @@ export default async function handler(req, res) {
       if (!month.slug || !month.label) {
         return json(res, 400, { error: "Month slug and label are required" });
       }
+
+      const { data: existing, error: existingError } = await supabase
+        .from("mastery_month_drafts")
+        .select("*")
+        .eq("slug", month.slug)
+        .maybeSingle();
+      if (existingError) throw existingError;
+      if (existing && stableJson(monthEditableSnapshot(existing)) !== stableJson(monthEditableSnapshot({ ...existing, ...month }))) {
+        await archiveMonthVersion(supabase, existing, {
+          source: body.source || "save",
+          savedBy: month.updated_by || body.updated_by || null,
+        });
+      }
+
       const { data, error } = await supabase
         .from("mastery_month_drafts")
         .upsert(month, { onConflict: "slug" })
+        .select("*")
+        .single();
+      if (error) throw error;
+      return json(res, 200, { month: data });
+    }
+
+    if (action === "restore-version") {
+      const versionId = String(body.version_id || "").trim();
+      const { data: version, error: versionError } = await supabase
+        .from("mastery_month_draft_versions")
+        .select("*")
+        .eq("id", versionId)
+        .single();
+      if (versionError) throw versionError;
+
+      const { data: existing, error: existingError } = await supabase
+        .from("mastery_month_drafts")
+        .select("*")
+        .eq("slug", version.month_slug)
+        .maybeSingle();
+      if (existingError) throw existingError;
+      if (existing) {
+        await archiveMonthVersion(supabase, existing, {
+          source: "restore",
+          savedBy: body.updated_by || null,
+        });
+      }
+
+      const restoredMonth = cleanMonth({
+        ...(version.snapshot || {}),
+        slug: version.month_slug,
+        updated_by: body.updated_by || null,
+      });
+      const { data, error } = await supabase
+        .from("mastery_month_drafts")
+        .upsert(restoredMonth, { onConflict: "slug" })
         .select("*")
         .single();
       if (error) throw error;

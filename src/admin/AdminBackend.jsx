@@ -454,6 +454,9 @@ export default function AdminBackend({ navigate }) {
   const [activeResourceIndex, setActiveResourceIndex] = useState(null);
   const [analytics, setAnalytics] = useState([]);
   const [analyticsReport, setAnalyticsReport] = useState(null);
+  const [versions, setVersions] = useState([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyState, setHistoryState] = useState("");
   const [status, setStatus] = useState("");
   const [saveState, setSaveState] = useState("idle");
   const [lastSavedAt, setLastSavedAt] = useState("");
@@ -533,8 +536,24 @@ export default function AdminBackend({ navigate }) {
       setSaveState(data.month ? "saved" : "idle");
       setLastSavedAt(data.month ? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "");
       setStatus(data.month ? "Saved" : template ? "Template ready. Save to create this month." : "");
+      if (nextMonth?.slug) await loadHistory(nextMonth.slug);
     } catch (err) {
       setError(err.message);
+    }
+  }
+
+  async function loadHistory(slug = monthRef.current?.slug) {
+    if (!slug) {
+      setVersions([]);
+      return;
+    }
+    try {
+      const data = await adminFetch(token, `/api/mastery-admin?action=history&slug=${encodeURIComponent(slug)}`);
+      setVersions(data.versions || []);
+      setHistoryState("");
+    } catch (err) {
+      setVersions([]);
+      setHistoryState(err.message || "Could not load version history");
     }
   }
 
@@ -711,6 +730,7 @@ export default function AdminBackend({ navigate }) {
         method: "POST",
         body: JSON.stringify({
           action: "save",
+          source,
           month: { ...monthToSave, updated_by: userLabel },
         }),
       });
@@ -721,6 +741,7 @@ export default function AdminBackend({ navigate }) {
         setSaveState("saved");
         setLastSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
         setStatus("Saved");
+        await loadHistory(data.month.slug);
       } else {
         setSaveState("dirty");
         setStatus("Unsaved changes");
@@ -738,6 +759,38 @@ export default function AdminBackend({ navigate }) {
 
   async function saveMonth() {
     await persistMonth(monthRef.current, { source: "manual" });
+  }
+
+  async function restoreVersion(version) {
+    if (!version?.id || !month?.slug) return;
+    const label = version.snapshot?.label || month.label || month.slug;
+    const when = version.created_at ? new Date(version.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "this version";
+    const confirmed = window.confirm(`Restore ${label} from ${when}? The current draft will be archived first.`);
+    if (!confirmed) return;
+
+    setHistoryState("Restoring version...");
+    setError("");
+    try {
+      const data = await adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "restore-version",
+          version_id: version.id,
+          updated_by: userLabel,
+        }),
+      });
+      lastSavedSnapshotRef.current = JSON.stringify(data.month);
+      setMonth(data.month);
+      setSaveState("saved");
+      setLastSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+      setStatus("Version restored");
+      await loadMonths();
+      await loadHistory(data.month.slug);
+      setHistoryState("Restored");
+    } catch (err) {
+      setHistoryState("");
+      setError(err.message);
+    }
   }
 
   async function publishMonth(isPublished) {
@@ -828,6 +881,18 @@ export default function AdminBackend({ navigate }) {
             onClick={saveMonth}
             disabled={!month || saveState === "saving"}
           />
+          <button
+            type="button"
+            className="admin-history-toggle"
+            onClick={() => {
+              setHistoryOpen((value) => !value);
+              if (!historyOpen) loadHistory(month?.slug);
+            }}
+            disabled={!month?.slug}
+            title="Version history. Restore a previous autosaved version of this month."
+          >
+            Version History
+          </button>
           <PublicationToggle month={month} onChange={publishMonth} />
         </div>
       </div>
@@ -836,6 +901,15 @@ export default function AdminBackend({ navigate }) {
         <div className={`admin-status ${error ? "error" : ""}`}>
           {error || status}
         </div>
+      )}
+
+      {historyOpen && (
+        <VersionHistoryPanel
+          versions={versions}
+          state={historyState}
+          onRefresh={() => loadHistory(month?.slug)}
+          onRestore={restoreVersion}
+        />
       )}
 
       <div className="admin-top-tabs" aria-label="Admin sections">
@@ -1026,6 +1100,61 @@ function PublicationToggle({ month, onChange }) {
         Published
       </button>
     </div>
+  );
+}
+
+function versionPreview(version = {}) {
+  const snapshot = version.snapshot || {};
+  const pieces = [
+    snapshot.focus,
+    snapshot.outcome,
+    snapshot.resources?.map((item) => item.title).filter(Boolean).join(", "),
+  ].filter(Boolean);
+  return pieces.join(" | ").replace(/\s+/g, " ").slice(0, 140);
+}
+
+function versionTime(value) {
+  if (!value) return "Unknown time";
+  return new Date(value).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function VersionHistoryPanel({ versions, state, onRefresh, onRestore }) {
+  return (
+    <section className="admin-card admin-history-panel" aria-label="Version history">
+      <div className="admin-section-actions">
+        <div>
+          <p className="section-kicker">Autosave archive</p>
+          <h2>Version history</h2>
+          <p className="muted">The latest 20 previous versions are archived before autosave or manual save overwrites the draft.</p>
+        </div>
+        <button type="button" onClick={onRefresh}>Refresh</button>
+      </div>
+      {state && <p className="admin-upload-status">{state}</p>}
+      {versions.length ? (
+        <div className="admin-version-list">
+          {versions.map((version) => (
+            <article className="admin-version-item" key={version.id}>
+              <div>
+                <strong>{versionTime(version.created_at)}</strong>
+                <small>
+                  {(version.source || "save").replace(/-/g, " ")}
+                  {version.saved_by ? ` by ${version.saved_by}` : ""}
+                </small>
+                <p>{versionPreview(version) || "Saved month draft"}</p>
+              </div>
+              <button type="button" onClick={() => onRestore(version)}>Restore</button>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="muted">No previous versions yet. Edits from now on are tracked here.</p>
+      )}
+    </section>
   );
 }
 

@@ -4471,6 +4471,7 @@ h1 {
 .admin-side-top button,
 .admin-content-toolbar button,
 .admin-section-actions button,
+.admin-history-panel button,
 .notion-editor-toolbar button,
 .markdown-editor-head button,
 .admin-lock button {
@@ -4842,6 +4843,52 @@ h1 {
 .admin-resource-actions button.danger {
   border-color: rgba(176, 63, 45, 0.35);
   color: #9f321f;
+}
+
+.admin-history-panel {
+  margin-bottom: 16px;
+}
+
+.admin-version-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-version-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(49, 40, 32, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.8);
+}
+
+.admin-version-item strong,
+.admin-version-item small,
+.admin-version-item p {
+  display: block;
+}
+
+.admin-version-item small {
+  margin-top: 2px;
+  color: #76695d;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.admin-version-item p {
+  margin: 7px 0 0;
+  color: #5d5148;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.admin-version-item button {
+  min-height: 40px;
+  padding: 8px 12px;
 }
 
 .markdown-editor-head,
