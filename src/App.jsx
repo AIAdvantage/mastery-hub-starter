@@ -81,7 +81,7 @@ const MONTHS = [
     },
     resources: [
       { type: "Guide", title: "July Guide", description: "Follow the full walkthrough to build your Hub and connect the main pieces.", status: "Build" },
-      { type: "Materials", title: "Prompts / Tools / Templates", description: "Copy the prompts and workshop materials when the guide tells you to use them.", status: "Grab" },
+      { type: "Materials", title: "Live Prompts", description: "Use these alongside the live workshop when you just need the prompts to follow each step.", status: "Live" },
       { type: "Recordings", title: "July Recordings", description: "Rewatch the July workshop sessions whenever you want to follow along again.", status: "Watch replay" },
       { type: "Challenge Document", title: "July Challenge", description: "Use what you built this month, submit your version, and see what other members made.", status: "Open" },
     ],
@@ -179,7 +179,7 @@ const HUB_FEATURES = [
     name: "Current Workshop Resources",
     tag: "Resources",
     summary: "Everything from this month’s workshop.",
-    includes: ["Slides", "Transcript", "Prompts / Tools / Templates", "Workshop Replay", "Q&A Replay"],
+    includes: ["Slides", "Transcript", "Live Prompts", "Workshop Replay", "Q&A Replay"],
     path: "/monthly-resources/july",
     action: "Open Current Workshop Resources",
   },
@@ -447,11 +447,11 @@ const HOME_SEARCH_ITEMS = [
     keywords: "july guide build ai hub lovable github claude cowork walkthrough",
   },
   {
-    title: "Prompts / Tools / Templates",
+    title: "Live Prompts",
     eyebrow: "July workshop",
-    description: "Copy the prompts and workshop materials when the guide tells you to use them.",
+    description: "Use these alongside the live workshop when you just need the prompts to follow each step.",
     path: "/monthly-resources/july/prompts",
-    keywords: "live materials prompts tools templates claude cowork lovable setup daily briefing help prompts",
+    keywords: "live prompts claude cowork lovable setup daily briefing help prompts",
   },
   {
     title: "Go Deeper With Your AI Hub",
@@ -553,7 +553,7 @@ const JULY_PREREQUISITES = [
   },
   {
     label: "July prompts ready",
-    detail: "Open the July Prompts / Tools / Templates page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
+    detail: "Open the July Live Prompts page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
     link: "/monthly-resources/july/prompts",
     linkLabel: "Open Prompts",
     internal: true,
@@ -1514,8 +1514,8 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         content={JULY_CONTENT}
         monthLabel="July"
         monthSlug="july"
-        pageTitle="Prompts / Tools / Templates"
-        lead="Copy each prompt into Claude Cowork at the matching step of the guide."
+        pageTitle="Live Prompts"
+        lead="Use these alongside the live workshop when you just need the prompts to follow each step."
         breadcrumbLabel="Prompts"
         sectionLabel="Copy-paste"
         showMaterials={false}
@@ -1810,10 +1810,10 @@ function JulyResourcesMenu({ month, navigate }) {
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prompts")}>
               <div className="resource-card-top">
                 <span>Copy-paste</span>
-                <small>Grab</small>
+                <small>Live</small>
               </div>
-              <h4>Prompts / Tools / Templates</h4>
-              <p>Copy the prompts and workshop materials when the guide tells you to use them.</p>
+              <h4>Live Prompts</h4>
+              <p>Use these alongside the live workshop when you just need the prompts to follow each step.</p>
             </button>
           </div>
         </section>
