@@ -428,12 +428,20 @@ function resourceEditorLabel(tab) {
   }[tab] || "Content";
 }
 
+function normalizeAdminToken(value = "") {
+  const trimmed = String(value).trim();
+  const hexToken = trimmed.match(/[a-f0-9]{32,}/i);
+  if (hexToken) return hexToken[0];
+  return trimmed.replace(/[^\x21-\x7e]/g, "");
+}
+
 async function adminFetch(token, path, options = {}) {
+  const safeToken = normalizeAdminToken(token);
   const res = await fetch(path, {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      "x-admin-token": token,
+      "x-admin-token": safeToken,
       ...(options.headers || {}),
     },
   });
@@ -444,7 +452,7 @@ async function adminFetch(token, path, options = {}) {
 
 export default function AdminBackend({ navigate }) {
   const { user, isSignedIn } = useUser();
-  const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
+  const [token, setToken] = useState(() => normalizeAdminToken(sessionStorage.getItem(TOKEN_KEY) || ""));
   const [tokenDraft, setTokenDraft] = useState("");
   const [months, setMonths] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState("");
@@ -570,7 +578,7 @@ export default function AdminBackend({ navigate }) {
 
   function unlock(event) {
     event.preventDefault();
-    const nextToken = tokenDraft.trim();
+    const nextToken = normalizeAdminToken(tokenDraft);
     if (!nextToken) return;
     sessionStorage.setItem(TOKEN_KEY, nextToken);
     setToken(nextToken);
