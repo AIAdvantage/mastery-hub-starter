@@ -6,6 +6,7 @@ import AdminBackend from "./admin/AdminBackend.jsx";
 import { MONTH6_CONTENT } from "./month6Content.js";
 import { JULY_CONTENT } from "./julyContent.js";
 import { JULY_CATCHUP_FAQ } from "./data/julyCatchupFaq.js";
+import FundamentalsJulyPage from "./FundamentalsJulyPage.jsx";
 import {
   ADD_PROMPT_LIBRARY_CARD_PROMPT,
   AGENTHUB_BUILDER_PROMPT,
@@ -805,6 +806,7 @@ export default function App() {
         {!isAuthPath && isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
         {!isAuthPath && path === "/" && <HomePage navigate={navigate} />}
         {!isAuthPath && path === "/admin" && <AdminBackend navigate={navigate} />}
+        {!isAuthPath && path === "/fundamentalsjuly" && <FundamentalsJulyPage />}
         {!isAuthPath && (resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
           <MonthlyResourcesPage
             currentMonth={currentMonth}
@@ -825,7 +827,7 @@ export default function App() {
         )}
         {!isAuthPath && resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
         {!isAuthPath && path === "/faq" && <TutorialPage navigate={navigate} />}
-        {!isAuthPath && !isLayoutLabPath && path !== "/admin" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
+        {!isAuthPath && !isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
     </div>
   );

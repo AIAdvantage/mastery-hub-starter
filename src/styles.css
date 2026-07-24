@@ -5553,3 +5553,352 @@ h1 {
     position: static;
   }
 }
+
+/* July Fundamentals live session companion */
+.fundamentals-page {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 64px 0 100px;
+  color: #312820;
+}
+
+.fundamentals-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.65fr);
+  gap: 40px;
+  align-items: end;
+  padding: 54px;
+  border: 1px solid rgba(143, 105, 41, 0.22);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(203, 154, 72, 0.18), transparent 32%),
+    #fffdf8;
+  box-shadow: 0 22px 60px rgba(71, 50, 29, 0.08);
+}
+
+.fundamentals-hero h1 {
+  max-width: 780px;
+  margin: 12px 0 18px;
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.fundamentals-lead {
+  max-width: 720px;
+  margin: 0;
+  color: #685c51;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.fundamentals-outcome {
+  padding: 24px;
+  border-radius: 16px;
+  background: #312820;
+  color: #fffaf0;
+}
+
+.fundamentals-outcome span,
+.fundamentals-step aside > span {
+  display: block;
+  margin-bottom: 10px;
+  color: #d7b66f;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fundamentals-outcome strong {
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.fundamentals-jump {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0 48px;
+}
+
+.fundamentals-jump a {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid rgba(49, 40, 32, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.86);
+  color: #4d4137;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.fundamentals-jump a:hover {
+  border-color: #b4863b;
+  transform: translateY(-1px);
+}
+
+.fundamentals-jump span {
+  color: #a07127;
+  font-size: 11px;
+}
+
+.fundamentals-setup {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 48px;
+  padding: 30px 34px;
+  border-radius: 18px;
+  background: #eee7d9;
+}
+
+.fundamentals-setup h2 {
+  margin: 8px 0 0;
+  font-size: 28px;
+}
+
+.fundamentals-tool-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.fundamentals-tool-links a {
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border: 1px solid rgba(49, 40, 32, 0.1);
+  border-radius: 12px;
+  background: #fffdf8;
+  color: #312820;
+  text-decoration: none;
+}
+
+.fundamentals-tool-links span {
+  color: #76695d;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.fundamentals-sections {
+  display: grid;
+  gap: 22px;
+}
+
+.fundamentals-step {
+  scroll-margin-top: 100px;
+  padding: 34px;
+  border: 1px solid rgba(49, 40, 32, 0.11);
+  border-radius: 20px;
+  background: #fffdf8;
+  box-shadow: 0 12px 35px rgba(71, 50, 29, 0.055);
+}
+
+.fundamentals-step > header {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(49, 40, 32, 0.1);
+}
+
+.fundamentals-number {
+  display: grid;
+  flex: 0 0 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 50%;
+  background: #9b712d;
+  color: #fffdf8;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.fundamentals-step header p {
+  margin: 0 0 4px;
+  color: #98702d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fundamentals-step h2 {
+  margin: 0;
+  font-size: clamp(25px, 3vw, 36px);
+  letter-spacing: -0.025em;
+}
+
+.fundamentals-step-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.65fr);
+  gap: 30px;
+}
+
+.fundamentals-step h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.fundamentals-step-grid p,
+.fundamentals-step li {
+  color: #685c51;
+  line-height: 1.65;
+}
+
+.fundamentals-step ul {
+  margin: 18px 0 0;
+  padding-left: 20px;
+}
+
+.fundamentals-step li + li {
+  margin-top: 8px;
+}
+
+.fundamentals-step aside {
+  align-self: start;
+  padding: 20px;
+  border-radius: 14px;
+  background: #f2eadc;
+}
+
+.fundamentals-step aside p {
+  margin: 0;
+  color: #493d32;
+  font-weight: 700;
+}
+
+.fundamentals-step aside a {
+  display: inline-block;
+  margin-top: 14px;
+  color: #805d24;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.fundamentals-prompt {
+  margin-top: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(49, 40, 32, 0.13);
+  border-radius: 14px;
+  background: #29231f;
+}
+
+.fundamentals-prompt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  color: #e2c98f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fundamentals-prompt button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #f2dfb4;
+  color: #312820;
+  font: inherit;
+  cursor: pointer;
+}
+
+.fundamentals-prompt pre {
+  margin: 0;
+  padding: 22px;
+  overflow-x: auto;
+  color: #f8f2e7;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.fundamentals-close {
+  margin-top: 48px;
+  padding: 46px;
+  border-radius: 22px;
+  background: #312820;
+  color: #fffaf0;
+  text-align: center;
+}
+
+.fundamentals-close h2 {
+  margin: 10px auto;
+  max-width: 700px;
+  font-size: clamp(30px, 4vw, 48px);
+}
+
+.fundamentals-close p:not(.section-kicker) {
+  max-width: 650px;
+  margin: 0 auto 22px;
+  color: #d8cec2;
+  line-height: 1.65;
+}
+
+.fundamentals-close a {
+  color: #e2c98f;
+  font-weight: 900;
+}
+
+@media (max-width: 860px) {
+  .fundamentals-page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 24px;
+  }
+
+  .fundamentals-hero,
+  .fundamentals-setup,
+  .fundamentals-step-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fundamentals-hero {
+    padding: 30px 24px;
+  }
+
+  .fundamentals-jump {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fundamentals-setup,
+  .fundamentals-step {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .fundamentals-jump,
+  .fundamentals-tool-links {
+    grid-template-columns: 1fr;
+  }
+
+  .fundamentals-hero h1 {
+    font-size: 40px;
+  }
+
+  .fundamentals-step > header {
+    align-items: flex-start;
+  }
+
+  .fundamentals-number {
+    flex-basis: 46px;
+    height: 46px;
+  }
+
+  .fundamentals-prompt-head {
+    align-items: flex-start;
+  }
+}
