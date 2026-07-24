@@ -38,14 +38,22 @@ function service() {
   });
 }
 
+function normalizeAdminToken(value = "") {
+  const trimmed = String(value).trim();
+  const hexToken = trimmed.match(/[a-f0-9]{32,}/i);
+  if (hexToken) return hexToken[0];
+  return trimmed.replace(/[^\x21-\x7e]/g, "");
+}
+
 function requireAdmin(req, res) {
   if (!ADMIN_TOKEN) {
     json(res, 500, { error: "Admin token is not configured" });
     return false;
   }
-  const token = String(req.headers["x-admin-token"] || "");
+  const token = normalizeAdminToken(req.headers["x-admin-token"]);
+  const expectedToken = normalizeAdminToken(ADMIN_TOKEN);
   const tokenBuffer = Buffer.from(token);
-  const adminBuffer = Buffer.from(ADMIN_TOKEN);
+  const adminBuffer = Buffer.from(expectedToken);
   const tokenMatches = tokenBuffer.length === adminBuffer.length && timingSafeEqual(tokenBuffer, adminBuffer);
   if (!tokenMatches) {
     json(res, 401, { error: "Admin access required" });
