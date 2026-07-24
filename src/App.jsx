@@ -3311,28 +3311,36 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
             .filter((item) => monthSlugFromLabel(item.month) !== "july")
             .slice()
             .reverse()
-            .map((item, index) => (
-            <button
-              className="month-choice has-image past-month-card"
-              type="button"
-              key={item.id}
-              onClick={() => navigate(`/past-workshops/${monthSlugFromLabel(item.month)}`)}
-            >
-              <img
-                className="month-choice-image"
-                src={index % 3 === 0
-                  ? "/month6/alternates/month6-paperwork-alt-1.png"
-                  : index % 3 === 1
-                    ? "/month6/alternates/month6-paperwork-alt-2.png"
-                    : "/month6/alternates/month6-paperwork-alt-3.png"}
-                alt=""
-                loading="lazy"
-              />
-              <span>{item.month}</span>
-              <small>{item.system}</small>
-              <strong>Open</strong>
-            </button>
-          ))}
+            .map((item, index) => {
+              const isCompleteEntry = monthSlugFromLabel(item.month) === "june";
+              return (
+                <button
+                  className={`month-choice has-image past-month-card ${isCompleteEntry ? "past-month-card-complete" : "past-month-card-coming"}`}
+                  type="button"
+                  key={item.id}
+                  onClick={() => navigate(`/past-workshops/${monthSlugFromLabel(item.month)}`)}
+                >
+                  <img
+                    className="month-choice-image"
+                    src={index % 3 === 0
+                      ? "/month6/alternates/month6-paperwork-alt-1.png"
+                      : index % 3 === 1
+                        ? "/month6/alternates/month6-paperwork-alt-2.png"
+                        : "/month6/alternates/month6-paperwork-alt-3.png"}
+                    alt=""
+                    loading="lazy"
+                  />
+                  <span>{item.month}</span>
+                  <small>{item.system}</small>
+                  {!isCompleteEntry && (
+                    <small className="past-month-card-note">
+                      Our team is still moving the full resources and challenge results into the Hub.
+                    </small>
+                  )}
+                  <strong>{isCompleteEntry ? "Open" : "Full entry coming"}</strong>
+                </button>
+              );
+            })}
           {cmsPastMonths.map((month) => {
               const displayMonth = cmsMonthToMonth(month);
               return (

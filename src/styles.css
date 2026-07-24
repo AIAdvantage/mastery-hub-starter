@@ -1919,13 +1919,29 @@ h1 {
   min-height: 190px;
 }
 
+.past-month-card-complete span {
+  color: #fff8ec;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72);
+}
+
+.past-month-card-coming {
+  min-height: 238px;
+}
+
 .past-month-card-note {
   display: block;
-  margin-top: 16px;
-  color: var(--cream);
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.45;
+  margin-top: 4px;
+  color: rgba(255, 249, 237, 0.84) !important;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.48);
+}
+
+.past-month-card-coming strong {
+  background: rgba(255, 248, 233, 0.16);
+  border-color: rgba(255, 248, 233, 0.38);
+  color: #fff8ec;
 }
 
 .past-workshop-detail-card {
