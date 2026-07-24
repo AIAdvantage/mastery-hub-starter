@@ -5,7 +5,7 @@ import { trackEvent, trackStepHelpClick } from "./lib/analytics.js";
 import AdminBackend from "./admin/AdminBackend.jsx";
 import { MONTH6_CONTENT } from "./month6Content.js";
 import { JULY_CONTENT } from "./julyContent.js";
-import { CHALLENGE_ARCHIVE } from "./data/challengeArchive.js";
+import { JULY_CATCHUP_FAQ } from "./data/julyCatchupFaq.js";
 import {
   ADD_PROMPT_LIBRARY_CARD_PROMPT,
   AGENTHUB_BUILDER_PROMPT,
@@ -13,6 +13,10 @@ import {
 } from "./agentHubBuilderPrompt.js";
 
 const CURRENT_MONTH_ID = "jul";
+const CURRENT_WORKSHOP_SLUG = "july";
+const CURRENT_WORKSHOP_PATH = "/current-workshop";
+const WORKSHOP_YEAR = "2026";
+const CANONICAL_WORKSHOP_PREFIX = `/workshops/${WORKSHOP_YEAR}`;
 const JULY_PREREQUISITES_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1204164726?title=0&byline=0&portrait=0";
 const JULY_GUIDE_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1206968779?title=0&byline=0&portrait=0";
 const JULY_EXTRAS_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1207545766?title=0&byline=0&portrait=0";
@@ -32,7 +36,7 @@ const MONTHS = [
       alt: "A paperwork form preview used for June",
       kicker: "Past month",
       title: "June: Paperwork",
-      caption: "Archive, guide, session prompts, and challenge in one path.",
+      caption: "Guide, session prompts, replay, and challenge in one path.",
     },
     resources: [
       {
@@ -82,7 +86,6 @@ const MONTHS = [
     resources: [
       { type: "Guide", title: "July Guide", description: "Follow the full walkthrough to build your Hub and connect the main pieces.", status: "Build" },
       { type: "Materials", title: "Live Prompts", description: "Use these alongside the live workshop when you just need the prompts to follow each step.", status: "Live" },
-      { type: "Recordings", title: "July Recordings", description: "Rewatch the July workshop sessions whenever you want to follow along again.", status: "Watch replay" },
       { type: "Challenge Document", title: "July Challenge", description: "Use what you built this month, submit your version, and see what other members made.", status: "Open" },
     ],
   },
@@ -174,34 +177,6 @@ const JULY_RESOURCE_BANNER = {
   },
 };
 
-const HUB_FEATURES = [
-  {
-    name: "Current Workshop Resources",
-    tag: "Resources",
-    summary: "Everything from this month’s workshop.",
-    includes: ["Slides", "Transcript", "Live Prompts", "Workshop Replay", "Q&A Replay"],
-    path: "/monthly-resources/july",
-    action: "Open Current Workshop Resources",
-  },
-  {
-    name: "Current Challenge Resources",
-    tag: "Apply",
-    summary: "Find the task, submit your work, and see what other members built.",
-    includes: ["Task", "Submission Link", "Judging/voting", "Showcase"],
-    path: "/challenges/july",
-    action: "Open Current Challenge Resources",
-  },
-  {
-    name: "June Workshop Resources",
-    tag: "Past month",
-    summary: "Revisit the June workshop materials and challenge examples.",
-    includes: ["June replay", "Paperwork guide", "Live materials", "Challenge submissions"],
-    path: "/monthly-resources/june",
-    scroll: "bottom",
-    action: "Open June Resources",
-  },
-];
-
 const HOME_VISUALS = [
   {
     src: "/month6/paperwork-folder-structure.png",
@@ -223,19 +198,13 @@ const HOME_VISUALS = [
   },
 ];
 
-const ARCHIVE_ITEMS = [
-  { month: "July", type: "Challenge", title: "Paint your AI Hub", status: "Open" },
-  { month: "August", type: "Challenge", title: "Write Your Book", status: "Coming soon" },
-  { month: "September", type: "Challenge", title: "AI Email Command Center", status: "Coming soon" },
-];
-
 const SUBMISSION_STORAGE_KEY = "mastery-hub-submissions";
 
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
-  { path: "/monthly-resources", label: "Monthly Resources" },
-  { path: "/challenges", label: "Challenges" },
-  { path: "/tutorial", label: "Tutorial" },
+  { path: CURRENT_WORKSHOP_PATH, label: "Current Workshop", activePrefixes: [CURRENT_WORKSHOP_PATH, `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`, `/challenges/${CURRENT_WORKSHOP_SLUG}`] },
+  { path: "/past-workshops", label: "Past Workshops", activePrefixes: ["/past-workshops", "/monthly-resources/june", "/challenges/june"] },
+  { path: "/faq", label: "FAQ", activePrefixes: ["/faq", "/tutorial"] },
 ];
 
 const MOD_HELP_URL = "https://community.aiadvantage.com/c/ask-answer-questions/";
@@ -276,11 +245,11 @@ const PAST_SYSTEMS = [
     month: "January",
     date: "Jan 6, 2026",
     theme: "Personal",
-    system: "Personal AI Advisory Board",
+    system: "Build Your Personal AI Advisory Board",
     tools: "Custom GPTs, ChatGPT",
     difficulty: "Beginner",
-    summary: "Members turned their DNA and decision history into a council of advisor personas inside a custom GPT.",
-    igorComment: "The council of advisors idea still works, and today you can port it into Claude by importing the files and asking Claude to turn it into a skill.",
+    summary: "Turn your DNA and decision history into a council of advisor personas inside a custom GPT.",
+    igorComment: "If you'd rather do this in Claude, it's an easy switch. Just import the files and ask Claude to turn them into a skill.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/mastery-workshop-1-replay-build-your-personal-ai-advisory-board",
     resourceUrl: "https://aiadvantage.notion.site/AI-Advantage-Mastery-Interactive-Resources-Hub-2e06426aaf698045bb76e360377ba5d1?source=copy_link",
   },
@@ -289,11 +258,11 @@ const PAST_SYSTEMS = [
     month: "February",
     date: "Feb 3, 2026",
     theme: "Strategy",
-    system: "Strategy Dashboard",
+    system: "Build Custom Business Tools",
     tools: "Lovable, ChatGPT, Google AI Studio",
     difficulty: "Beginner",
-    summary: "Members used their clone DNA and strategy prompts to build a hosted Lovable dashboard with charts and a chatbot.",
-    igorComment: "This is still a great Lovable entry point, even if a few buttons look different now.",
+    summary: "Used your clone DNA and strategy prompts to build a hosted dashboard with charts and a chatbot.",
+    igorComment: "This is my top recommendation for people just joining the program. This is a great way to learn an important tool: Lovable.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/mastery-workshop-2-replay-how-to-build-custom-business-tools-without-writing-a-single-line-of-code",
     resourceUrl: "https://aiadvantage.notion.site/Guide-2-DNA-to-Dashboard-2ed6426aaf6980038bb0fad729de8d87",
   },
@@ -302,11 +271,11 @@ const PAST_SYSTEMS = [
     month: "March",
     date: "Mar 3, 2026",
     theme: "Time",
-    system: "Bulk Generation in Google Sheets",
+    system: "Turn Your Expertise Into AI Workflows",
     tools: "ChatGPT, Google Sheets, Gemini, Lovable",
     difficulty: "Beginner",
-    summary: "Members used spreadsheet rows and AI formulas to generate personalized outputs in bulk from static data.",
-    igorComment: "The bulk-work idea is useful, but today I would usually build this kind of repeated generation in Cowork instead of Sheets.",
+    summary: "Teach AI your personal decision-making process.",
+    igorComment: "It's also possible to build this kind of repeated generation in Cowork.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/march-strategy-amplifier-workshop",
     resourceUrl: "https://aiadvantage.notion.site/AI-Time-Tracker-Prompt-3196426aaf698024a6a3f72cb75494e6",
   },
@@ -315,11 +284,11 @@ const PAST_SYSTEMS = [
     month: "April",
     date: "Apr 7, 2026",
     theme: "Marketing",
-    system: "Content Machine and Reusable Skill",
+    system: "Create Content, Visuals, and Marketing Assets With AI",
     tools: "Claude Cowork, ChatGPT, Notion, Zoom",
     difficulty: "Intermediate",
-    summary: "Members built a scheduled Claude Cowork marketing employee that researched, drafted, reviewed, and packaged social content.",
-    igorComment: "This is still a strong intro to Cowork, just treat the exact Cowork button clicks as flexible because the interface has shifted.",
+    summary: "Build a Claude marketing employee that can research, draft, and review content.",
+    igorComment: "This is a great introduction to Claude Cowork.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/april-mastery-replay",
     resourceUrl: "https://aiadvantage.notion.site/AI-Advantage-Mastery-Interactive-Resources-Hub-2e06426aaf698045bb76e360377ba5d1",
   },
@@ -328,11 +297,11 @@ const PAST_SYSTEMS = [
     month: "May",
     date: "May 7, 2026",
     theme: "Sales",
-    system: "Meeting Intelligence and Proposal Generator",
+    system: "Automate Your Sales Follow-Ups",
     tools: "Claude Cowork, Zoom, Fathom, Fireflies, Granola",
     difficulty: "Advanced",
-    summary: "Members turned meeting transcripts into buying signals, proposals, follow-up drafts, and a reusable Claude workflow.",
-    igorComment: "This is powerful if you already feel confident in Cowork and want to see how deep plugins and meeting workflows can go.",
+    summary: "Turn meeting transcripts into proposals, follow-up drafts, and a reusable workflow.",
+    igorComment: "This workshop is a great way to see how deep plugins and meeting workflows can go.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/may-ai-mastery-replay",
     resourceUrl: "https://aiadvantage.notion.site/Guide-5-From-Meeting-to-Proposal-34c6426aaf6980a4ba24dee6ad8e591a",
   },
@@ -341,11 +310,11 @@ const PAST_SYSTEMS = [
     month: "June",
     date: "Jun 4, 2026",
     theme: "Operations",
-    system: "Paperwork Autopilot",
+    system: "Build an AI Paperwork Assistant",
     tools: "Claude Cowork",
     difficulty: "Intermediate",
-    summary: "Members built a paperwork system that fills forms from a reusable profile and improves as missing information gets closed.",
-    igorComment: "This is still very relevant, especially the challenge, and I recommend it once you are comfortable enough in Cowork to handle a self-improving system.",
+    summary: "Build a paperwork system that fills forms from a reusable profile and then improves itself.",
+    igorComment: "This is a great way to learn how to build a self-improving system.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/june-mastery-replay",
     resourceUrl: "/monthly-resources/june",
   },
@@ -354,11 +323,11 @@ const PAST_SYSTEMS = [
     month: "July",
     date: "Jul 2, 2026",
     theme: "AI Hub",
-    system: "Build Your Agent a Home",
+    system: "Build Your Agents A Home",
     tools: "Claude Cowork, Lovable, GitHub",
     difficulty: "Advanced",
-    summary: "Members built a private AI Hub that connects Cowork, GitHub, and Lovable so outputs, ideas, wins, and tools live in one place.",
-    igorComment: "This connects Cowork, GitHub, and Lovable into one Hub, but Lovable makes it simple enough to customize, play around, and make it feel like yours.",
+    summary: "Build a private AI Hub so outputs, ideas, wins, and tools live in one place.",
+    igorComment: "This one includes multiple tools, but Lovable makes it simple to customize your hub once it's set up.",
     replayUrl: "https://community.aiadvantage.com/c/mastery-replays/mastery-july-2nd-replay",
     resourceUrl: "/monthly-resources/july",
   },
@@ -366,11 +335,18 @@ const PAST_SYSTEMS = [
 
 const TUTORIAL_QUICK_ACCESS = [
   {
-    eyebrow: "Monthly Resources",
-    title: "Start with current resources",
-    description: "This is the current month hub. Start here for the prerequisites, guide, prompts, recordings, and workshop path.",
-    url: "https://mastery.aiadvantage.com/monthly-resources",
-    action: "Open monthly resources",
+    eyebrow: "Current Workshop",
+    title: "Start with July",
+    description: "This is the current workshop hub. Start here for prerequisites, guide, prompts, challenge, and follow-up resources.",
+    url: "https://mastery.aiadvantage.com/monthly-resources/july",
+    action: "Open current workshop",
+  },
+  {
+    eyebrow: "Past Workshops",
+    title: "Revisit previous months",
+    description: "Use Past Workshops when you want June materials, June challenge links, or Igor's table on which older recordings to watch.",
+    url: "https://mastery.aiadvantage.com/past-workshops",
+    action: "Open past workshops",
   },
   {
     eyebrow: "AI Advantage Club",
@@ -381,26 +357,12 @@ const TUTORIAL_QUICK_ACCESS = [
     secondaryUrl: MASTERY_CALENDAR_URL,
     secondaryAction: "Open upcoming events",
   },
-  {
-    eyebrow: "Current Challenge",
-    title: "Open the current challenge",
-    description: "This is where the active challenge lives. Use it when you are ready to apply the month’s workshop and follow the submission steps.",
-    url: "https://mastery.aiadvantage.com/challenges",
-    action: "Open current challenge",
-  },
-  {
-    eyebrow: "Past Challenge Archive",
-    title: "Browse past submissions",
-    description: "This is the archive for past months. Use it to see what members submitted, study examples, and borrow ideas for your own build.",
-    url: "https://mastery.aiadvantage.com/archive",
-    action: "Open archive",
-  },
 ];
 
 const TUTORIAL_FAQS = [
   {
     question: "Where should I start if I just opened the site?",
-    answer: "Start with the current [Monthly Resources page](https://mastery.aiadvantage.com/monthly-resources). It keeps the guide, prerequisites, live materials, recordings link, and workshop path in one place so you are not hunting around.",
+    answer: "Start with [Current Workshop](https://mastery.aiadvantage.com/monthly-resources/july). It keeps the guide, prerequisites, live materials, challenge, and follow-up resources in one place so you are not hunting around.",
   },
   {
     question: "Where are the replays and upcoming live sessions?",
@@ -408,29 +370,29 @@ const TUTORIAL_FAQS = [
   },
   {
     question: "Where do I find the current challenge?",
-    answer: "Go to [Challenges](https://mastery.aiadvantage.com/challenges), then open the current challenge. That page has the challenge, the submission path, the deadline, and the link into the [Challenge Submissions](https://community.aiadvantage.com/c/challenge-submissions/) space.",
+    answer: "Go to [Current Workshop](https://mastery.aiadvantage.com/monthly-resources/july), then use the Challenge row. That page has the challenge, the submission path, and the link into the [Challenge Submissions](https://community.aiadvantage.com/c/challenge-submissions/) space.",
   },
   {
     question: "Where can I see past challenge submissions?",
-    answer: "Use the [challenge archive](https://mastery.aiadvantage.com/archive). This is where old month submissions should live, so you can learn from real examples without confusing them with the current challenge.",
+    answer: "Use the [Challenge Submissions space](https://community.aiadvantage.com/c/challenge-submissions/) inside the AI Advantage Club. That is where member challenge posts live.",
   },
   {
     question: "Which old Mastery recordings should I watch first?",
-    answer: "Use the Past Systems table at the bottom of the [Monthly Resources page](https://mastery.aiadvantage.com/monthly-resources). It shows the difficulty, what changed, and who I would recommend each old build for now.",
+    answer: "Use the Past Systems table at the bottom of [Past Workshops](https://mastery.aiadvantage.com/past-workshops). It shows the difficulty, what changed, and who I would recommend each old build for now.",
   },
   {
     question: "What if I am behind or missed last month?",
-    answer: "Totally fine. Start with the [current month](https://mastery.aiadvantage.com/monthly-resources) first, then use the Past Systems table below when you want context or examples. You do not need to perfectly finish every old piece before you can participate now.",
+    answer: "Totally fine. Start with the [current workshop](https://mastery.aiadvantage.com/monthly-resources/july) first, then use [Past Workshops](https://mastery.aiadvantage.com/past-workshops) when you want context or examples. You do not need to perfectly finish every old piece before you can participate now.",
   },
 ];
 
 const HOME_SEARCH_ITEMS = [
   {
-    title: "Current Workshop Resources",
-    eyebrow: "Resources",
-    description: "Slides, transcript, prompts, tools, templates, workshop replay, and Q&A replay.",
+    title: "Current Workshop",
+    eyebrow: "Current",
+    description: "July guide, prompts, challenge, FAQ, and follow-up resources.",
     path: "/monthly-resources/july",
-    keywords: "current workshop resources slides transcript prompts tools templates replay q&a materials",
+    keywords: "current workshop resources july guide prompts challenge faq materials",
   },
   {
     title: "Before You Start",
@@ -461,17 +423,10 @@ const HOME_SEARCH_ITEMS = [
     keywords: "extras publishing extra apps restrict access email agenthub builder project instructions prompt library",
   },
   {
-    title: "July Recordings",
-    eyebrow: "Community replay",
-    description: "Rewatch the July workshop sessions in the AI Advantage Club.",
-    path: JULY_RECORDINGS_URL,
-    keywords: "july recordings replays workshop q&a video community",
-  },
-  {
-    title: "Current Challenge Resources",
+    title: "Current Challenge",
     eyebrow: "Challenge",
     description: "Task, submission link, judging, voting, and showcase.",
-    path: "/challenges/july",
+    path: "/monthly-resources/july",
     keywords: "current challenge resources task submission link judging voting showcase paint your ai hub",
   },
   {
@@ -482,40 +437,33 @@ const HOME_SEARCH_ITEMS = [
     keywords: "july challenge paint your ai hub mobile redesign design director submit prize",
   },
   {
-    title: "June Workshop Resources",
+    title: "Past Workshops",
     eyebrow: "Past month",
-    description: "June replay, Paperwork guide, live materials, and challenge examples.",
-    path: "/monthly-resources/june",
-    scroll: "bottom",
-    keywords: "june past workshop resources replay paperwork guide live materials challenge examples submissions",
+    description: "Previous workshop and challenge materials merged by month.",
+    path: "/past-workshops",
+    keywords: "june past workshop resources replay paperwork guide live materials challenge examples submissions past systems",
   },
   {
     title: "Past Systems Swipe File",
-    eyebrow: "Archive",
+    eyebrow: "Past Workshops",
     description: "Concise guide to old Mastery builds, difficulty, recordings, and what Igor would recommend today.",
-    path: "/archive/past-systems",
-    keywords: "past systems swipe file recordings difficulty beginner intermediate advanced mastery months archive",
+    path: "/past-workshops",
+    scroll: "bottom",
+    keywords: "past systems swipe file recordings difficulty beginner intermediate advanced mastery months",
   },
   {
     title: "June Guide",
     eyebrow: "Past month",
-    description: "The archived Paperwork guide from June.",
+    description: "The Paperwork guide from June.",
     path: "/monthly-resources/june/guide",
-    keywords: "june guide paperwork forms claude skill archive",
+    keywords: "june guide paperwork forms claude skill",
   },
   {
-    title: "June Challenge Archive",
-    eyebrow: "Past challenge",
-    description: "Browse June challenge submissions and examples.",
-    path: "/archive/june",
-    keywords: "june challenge archive submissions examples self-improving skill",
-  },
-  {
-    title: "Tutorial",
+    title: "FAQ",
     eyebrow: "Quick access",
     description: "Use the shortcut page when you need the right place fast.",
-    path: "/tutorial",
-    keywords: "tutorial quick access shortcuts resources replays events challenge archive",
+    path: "/faq",
+    keywords: "faq tutorial quick access shortcuts resources replays events challenge",
   },
 ];
 
@@ -562,7 +510,7 @@ const JULY_PREREQUISITES = [
 
 const JULY_EXTRAS_CONTENT = {
   video: {
-    eyebrow: "Follow-up video",
+    eyebrow: "Follow up resources",
     title: "Go Deeper With Your AI Agent Hub",
     intro:
       "If you already built your AI Agent Hub, this follow-up shows you how to turn it from a nice project into something you can actually use: publish it, protect it behind login, expand it with new cards, and personalize it over time.",
@@ -668,10 +616,39 @@ const BEFORE_START_ITEMS = [
 
 function getPath() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
-  if (path === "/monthly-hubs") return "/monthly-resources";
-  if (path === "/challenge-archive") return "/archive";
-  if (path === "/submit") return "/challenges/july";
+  if (path === "/monthly-hubs") return "/monthly-resources/july";
+  if (path === "/monthly-resources") return "/monthly-resources/july";
+  if (path === "/challenges") return "/monthly-resources/july";
+  if (path === "/challenges/july") return "/monthly-resources/july";
+  if (path === "/monthly-resources/june") return "/past-workshops/june";
+  if (path === "/challenges/june") return "/past-workshops/june";
+  if (path === "/tutorial") return "/faq";
+  if (path === "/challenge-archive") return "/past-workshops";
+  if (path === "/submit") return "/monthly-resources/july";
   return path;
+}
+
+function resolveCurrentWorkshopPath(path) {
+  if (path === CURRENT_WORKSHOP_PATH) return `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`;
+  if (path.startsWith(`${CURRENT_WORKSHOP_PATH}/`)) {
+    return path.replace(CURRENT_WORKSHOP_PATH, `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`);
+  }
+  return path;
+}
+
+function resolveCanonicalWorkshopPath(path) {
+  if (!path.startsWith(`${CANONICAL_WORKSHOP_PREFIX}/`)) return path;
+
+  const [, , year, slug, ...rest] = path.split("/");
+  if (year !== WORKSHOP_YEAR || !slug) return path;
+  const suffix = rest.length ? `/${rest.join("/")}` : "";
+  const pastSystem = PAST_SYSTEMS.find((item) => monthSlugFromLabel(item.month) === slug);
+
+  if (slug === CURRENT_WORKSHOP_SLUG) return `/monthly-resources/${slug}${suffix}`;
+  if (pastSystem && !suffix) return `/past-workshops/${slug}`;
+  if (slug === "june" && suffix) return `/monthly-resources/june${suffix}`;
+  if (pastSystem && suffix) return `/past-workshops/${slug}`;
+  return `/monthly-resources/${slug}${suffix}`;
 }
 
 function isRedirectTrackingSource(path) {
@@ -699,19 +676,7 @@ export default function App() {
     () => MONTHS.find((month) => month.id === selectedMonth) || CURRENT_MONTH,
     [selectedMonth]
   );
-  const archiveRows = useMemo(
-    () => [
-      ...submissions.map((submission) => ({
-        month: submission.month,
-        type: "Member submission",
-        title: submission.title,
-        status: submission.status,
-      })),
-      ...ARCHIVE_ITEMS,
-    ],
-    [submissions]
-  );
-
+  const resolvedPath = resolveCanonicalWorkshopPath(path);
   useEffect(() => {
     function handlePopState() {
       setPath(getPath());
@@ -823,7 +788,7 @@ export default function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.path}
-              className={item.path === "/" ? (path === "/" ? "active" : "") : (path.startsWith(item.path) ? "active" : "")}
+              className={item.path === "/" ? (path === "/" ? "active" : "") : ((item.activePrefixes || [item.path]).some((prefix) => path.startsWith(prefix)) ? "active" : "")}
               onClick={() => navigate(item.path)}
             >
               {item.label}
@@ -840,17 +805,16 @@ export default function App() {
         {!isAuthPath && isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
         {!isAuthPath && path === "/" && <HomePage navigate={navigate} />}
         {!isAuthPath && path === "/admin" && <AdminBackend navigate={navigate} />}
-        {!isAuthPath && path.startsWith("/monthly-resources") && (
+        {!isAuthPath && (resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
           <MonthlyResourcesPage
             currentMonth={currentMonth}
-            path={path}
+            path={resolveCurrentWorkshopPath(resolvedPath)}
             navigate={navigate}
             cmsMonths={cmsMonths}
           />
         )}
         {!isAuthPath && path.startsWith("/challenges") && (
           <ChallengesPage
-            archiveRows={archiveRows}
             handleSubmit={handleSubmit}
             path={path}
             navigate={navigate}
@@ -859,9 +823,9 @@ export default function App() {
             cmsMonths={cmsMonths}
           />
         )}
-        {!isAuthPath && path.startsWith("/archive") && <ArchivePage path={path} navigate={navigate} />}
-        {!isAuthPath && path === "/tutorial" && <TutorialPage navigate={navigate} />}
-        {!isAuthPath && !isLayoutLabPath && path !== "/admin" && !path.startsWith("/monthly-resources") && !path.startsWith("/challenges") && !path.startsWith("/archive") && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
+        {!isAuthPath && resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
+        {!isAuthPath && path === "/faq" && <TutorialPage navigate={navigate} />}
+        {!isAuthPath && !isLayoutLabPath && path !== "/admin" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
     </div>
   );
@@ -1078,7 +1042,6 @@ const clerkAppearance = {
 function HomePage({ navigate }) {
   const [mapGlow, setMapGlow] = useState({ x: 62, y: 34, active: false });
   const [searchQuery, setSearchQuery] = useState("");
-  const currentMonth = CURRENT_MONTH;
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
@@ -1115,13 +1078,6 @@ function HomePage({ navigate }) {
   function handleSearchSubmit(event) {
     event.preventDefault();
     if (searchResults[0]) openDestination(searchResults[0].path, { scroll: searchResults[0].scroll });
-  }
-
-  function handleCardKeyDown(event, destination, options = {}) {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      navigate(destination, options);
-    }
   }
 
   return (
@@ -1180,56 +1136,21 @@ function HomePage({ navigate }) {
               )}
             </form>
           </div>
-          <div
-            className="hero-current-panel"
-            aria-label="Current month"
-            style={{ "--month-image": `url(${currentMonth.image.src})` }}
-          >
-            <div className="hero-current-copy">
-              <span>{currentMonth.image.kicker}</span>
-              <strong>{currentMonth.image.title}</strong>
-              <small>{currentMonth.image.caption}</small>
-              <button type="button" onClick={() => navigate("/monthly-resources/july")}>Open July</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section home-system" aria-labelledby="plans-title">
-        <h2 id="plans-title" className="sr-only">AI Mastery resource tabs</h2>
-        <div className="plan-grid">
-          {HUB_FEATURES.map((feature) => (
-            <article
-              className="plan-card plan-card-clickable"
-              key={feature.name}
-              role="link"
-              tabIndex={0}
-              aria-label={`${feature.action}: ${feature.summary}`}
-              onClick={() => navigate(feature.path, { scroll: feature.scroll })}
-              onKeyDown={(event) => handleCardKeyDown(event, feature.path, { scroll: feature.scroll })}
+          <div className="hero-route-grid hero-route-grid-single" aria-label="Current workshop">
+            <button
+              type="button"
+              className="hero-route-card"
+              style={{ "--month-image": `url("${MONTHS.find((month) => month.id === CURRENT_MONTH_ID)?.image?.src}")` }}
+              onClick={() => navigate(CURRENT_WORKSHOP_PATH)}
             >
-              <div className="plan-topline">
-                <span>{feature.tag}</span>
-              </div>
-              <h3>{feature.name}</h3>
-              <p>{feature.summary}</p>
-              <ul>
-                {feature.includes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              <button
-                className="plan-card-action"
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  navigate(feature.path, { scroll: feature.scroll });
-                }}
-              >
-                {feature.action}
-              </button>
-            </article>
-          ))}
+              <span className="hero-route-copy">
+                <span>Current Workshop</span>
+                <strong>Build Your AI Hub</strong>
+                <small>Open the July guide, prompts, challenge, and follow-up resources.</small>
+                <span className="hero-route-action">Open workshop</span>
+              </span>
+            </button>
+          </div>
         </div>
       </section>
     </>
@@ -1288,10 +1209,10 @@ function LayoutPreview({ layout, navigate }) {
           <div className="command-preview-main">
             <p className="section-kicker">Private member platform</p>
             <h2>Start with the right next step.</h2>
-            <p>Monthly resources, challenges, and member examples, organized around what to do this month.</p>
+            <p>Current workshop, past workshops, and FAQ, organized around what to do next.</p>
             <div className="preview-actions">
-              <button type="button" onClick={() => navigate("/monthly-resources")}>Open Monthly Resources</button>
-              <button type="button" onClick={() => navigate("/challenges")}>Open Challenges</button>
+              <button type="button" onClick={() => navigate("/monthly-resources/july")}>Open Current Workshop</button>
+              <button type="button" onClick={() => navigate("/past-workshops")}>Open Past Workshops</button>
             </div>
           </div>
           <div className="command-preview-panel">
@@ -1414,26 +1335,11 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
   const staticMonth = MONTHS.find((month) => month.label.toLowerCase() === segment);
 
   if (path === "/monthly-resources") {
-    return (
-      <section className="section page-section month-section" aria-labelledby="months-title">
-        <Breadcrumbs items={[{ label: "Monthly Resources" }]} navigate={navigate} />
-        <div className="section-heading">
-          <p className="section-kicker">Monthly resources</p>
-          <h1 id="months-title" className="page-title">Choose your month.</h1>
-          <p className="muted">Open the current month to find the guide prep materials. Future months unlock when they go live.</p>
-        </div>
-        <MonthChoiceSections
-          activeId={CURRENT_MONTH_ID}
-          basePath="/monthly-resources"
-          navigate={navigate}
-          cmsMonths={cmsMonths}
-          currentTitle="Current and upcoming months"
-          pastTitle="Past months"
-        />
-        <CmsMonthGroup months={cmsMonths} basePath="/monthly-resources" navigate={navigate} />
-        <PastSystemsSection />
-      </section>
-    );
+    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
+  }
+
+  if (path === "/monthly-resources/june") {
+    return <RedirectRoute to="/past-workshops" navigate={navigate} />;
   }
 
   if (cmsMonth && segment !== "june" && segment !== "july") {
@@ -1478,7 +1384,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           pageTitle={cmsMonth.extras?.video?.title || "Go Deeper"}
           lead={cmsMonth.extras?.video?.intro || "Use these optional follow-up resources after the main workshop guide."}
           breadcrumbLabel="Go Deeper"
-          sectionLabel={cmsMonth.extras?.video?.eyebrow || "Follow up video"}
+          sectionLabel={cmsMonth.extras?.video?.eyebrow || "Follow up resources"}
           showMaterials={false}
         />
       );
@@ -1535,10 +1441,14 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         pageTitle="Go Deeper With Your AI Hub"
         lead="Use these prompts when you are ready to lock down access, publish cleanly, and extend the Hub with extra apps."
         breadcrumbLabel="Go Deeper"
-        sectionLabel="Follow up video"
+        sectionLabel="Follow up resources"
         showMaterials={false}
       />
     );
+  }
+
+  if (path === "/monthly-resources/july/faq-catchup") {
+    return <JulyFaqCatchupPage navigate={navigate} />;
   }
 
   if (path === "/monthly-resources/june/guide") {
@@ -1571,7 +1481,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
 function MonthUnavailable({ basePath, label, navigate, title, message }) {
   const cleanLabel = label ? label.replace(/-/g, " ") : "month";
   return (
-    <section className="section page-section archive-section">
+    <section className="section page-section challenge-section">
       <Breadcrumbs items={[{ label: basePath === "/challenges" ? "Challenges" : "Monthly Resources", path: basePath }, { label: cleanLabel }]} navigate={navigate} />
       <div className="section-heading">
         <p className="section-kicker">Not live</p>
@@ -1650,7 +1560,7 @@ function CmsResourcesMenu({ month, navigate }) {
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
                 <p className="section-kicker">{category}</p>
-                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category === "Other" ? "Recordings and challenge" : category === "Extras" ? "Follow up video" : "Coming next"}</h3>
+                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category === "Other" ? "Challenge" : category === "Extras" ? "Follow up resources" : "Coming next"}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
                 {groupedResources[category].map((item, index) => (
@@ -1753,13 +1663,13 @@ function MonthResourcesMenu({ month, segment, navigate }) {
           <h4>Live Materials</h4>
           <p>Copy the prompts for following along with the replay and running the workflow.</p>
         </button>
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/archive/june")}>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
             <span>Challenge examples</span>
           </div>
           <h4>June Challenge Submissions</h4>
-          <p>Browse the self-improving skill submissions and borrow ideas from what members built.</p>
-        </button>
+          <p>Browse the community submissions and borrow ideas from what members built.</p>
+        </a>
       </div>
     </section>
   );
@@ -1772,18 +1682,18 @@ function JulyResourcesMenu({ month, navigate }) {
     <section className="section page-section month-section" aria-label="July resources">
       <Breadcrumbs
         items={[
-          { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: "July" },
+          { label: "Current Workshop" },
         ]}
         navigate={navigate}
       />
       <MonthVisualCard
         month={JULY_RESOURCE_BANNER}
         actionLinks={[
-          { label: "Replay", href: JULY_RECORDINGS_URL },
-          { label: "Guide", onClick: () => navigate("/monthly-resources/july/guide") },
-          { label: "Prompts", onClick: () => navigate("/monthly-resources/july/prompts") },
-          { label: "Challenge", onClick: () => navigate("/challenges/july") },
+          { label: "Replays", href: PAST_SYSTEMS.find((item) => item.id === "m7")?.replayUrl },
+          { label: "Guide", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/guide`) },
+          { label: "Prompts", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/prompts`) },
+          { label: "FAQ", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/faq-catchup`) },
+          { label: "Challenge", onClick: () => navigate("/challenges/july/guide") },
         ]}
         variant="banner"
       />
@@ -1822,33 +1732,40 @@ function JulyResourcesMenu({ month, navigate }) {
 
         <section className="resource-category" aria-labelledby="july-challenge-category-title">
           <div className="resource-category-head">
-            <h3 id="july-challenge-category-title">Recordings and challenge</h3>
+            <h3 id="july-challenge-category-title">Challenge</h3>
           </div>
-          <div className="resource-grid resource-grid-two">
-            <a className="resource-card resource-card-link" href={JULY_RECORDINGS_URL} target="_blank" rel="noreferrer">
-              <div className="resource-card-top">
-                <span>Recordings</span>
-                <small>Community</small>
-              </div>
-              <h4>July Recordings</h4>
-              <p>Rewatch the July workshop sessions whenever you want to follow along again.</p>
-            </a>
-            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july")}>
+          <div className="resource-grid resource-grid-three">
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/guide")}>
               <div className="resource-card-top">
                 <span>Challenge</span>
-                <small>Open</small>
               </div>
               <h4>July Challenge</h4>
-              <p>Use what you built this month, submit your version, and see what other members made.</p>
+              <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
             </button>
+            <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
+              <div className="resource-card-top">
+                <span>Submit</span>
+                <small>Community</small>
+              </div>
+              <h4>Post to Challenge Submissions</h4>
+              <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
+            </a>
+            <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
+              <div className="resource-card-top">
+                <span>Submissions</span>
+                <small>Community</small>
+              </div>
+              <h4>Recent Submissions</h4>
+              <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
+            </a>
           </div>
         </section>
 
         <section className="resource-category" aria-labelledby="july-extras-title">
           <div className="resource-category-head">
-            <h3 id="july-extras-title">Follow up video</h3>
+            <h3 id="july-extras-title">Follow up resources</h3>
           </div>
-          <div className="resource-grid">
+          <div className="resource-grid resource-grid-two">
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/extras")}>
               <div className="resource-card-top">
                 <span>Video + Prompts</span>
@@ -1857,9 +1774,125 @@ function JulyResourcesMenu({ month, navigate }) {
               <h4>Go Deeper With Your AI Hub</h4>
               <p>Start here when you are ready to lock access to your email, publish, and build extra Hub apps.</p>
             </button>
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/faq-catchup")}>
+              <div className="resource-card-top">
+                <span>FAQ</span>
+                <small>Catchup</small>
+              </div>
+              <h4>FAQ & Catchup</h4>
+              <p>Review the July 16 catch-up answers, next steps, and prompts from Dirk's resource hub.</p>
+            </button>
+          </div>
+        </section>
+
+        <section className="resource-category" aria-labelledby="next-month-title">
+          <div className="resource-category-head">
+            <h3 id="next-month-title">Next month</h3>
+          </div>
+          <div className="resource-grid">
+            <a className="resource-card resource-card-link" href={MONTHS.find((item) => item.id === "aug")?.calendarUrl || MASTERY_CALENDAR_URL} target="_blank" rel="noreferrer">
+              <div className="resource-card-top">
+                <span>August</span>
+                <small>Event</small>
+              </div>
+              <h4>August Mastery Workshop</h4>
+              <p>Open the August workshop event in the AI Advantage Club calendar.</p>
+            </a>
           </div>
         </section>
       </div>
+    </section>
+  );
+}
+
+function JulyFaqCatchupPage({ navigate }) {
+  return (
+    <section className="section page-section month-section faq-catchup-page" aria-labelledby="july-catchup-title">
+      <Breadcrumbs
+        items={[
+          { label: "Current Workshop", path: "/monthly-resources/july" },
+          { label: "FAQ & Catchup" },
+        ]}
+        navigate={navigate}
+      />
+      <section className="resource-section">
+        <div className="resource-section-head">
+          <div>
+            <p className="section-kicker">{JULY_CATCHUP_FAQ.eyebrow}</p>
+            <h1 id="july-catchup-title" className="page-title">{JULY_CATCHUP_FAQ.title}</h1>
+            <p>{JULY_CATCHUP_FAQ.intro}</p>
+          </div>
+          <button type="button" onClick={() => navigate("/monthly-resources/july/extras")}>
+            Open follow up resources
+          </button>
+        </div>
+        {JULY_CATCHUP_FAQ.heroImage && (
+          <figure className="faq-catchup-hero">
+            <img src={JULY_CATCHUP_FAQ.heroImage.src} alt={JULY_CATCHUP_FAQ.heroImage.alt} />
+          </figure>
+        )}
+
+        {JULY_CATCHUP_FAQ.quickStart && (
+          <aside className="faq-catchup-quickstart" aria-label={JULY_CATCHUP_FAQ.quickStart.title}>
+            <div>
+              <p className="section-kicker">{JULY_CATCHUP_FAQ.quickStart.kicker}</p>
+              <h2>{JULY_CATCHUP_FAQ.quickStart.title}</h2>
+              {JULY_CATCHUP_FAQ.quickStart.intro && <p>{JULY_CATCHUP_FAQ.quickStart.intro}</p>}
+            </div>
+            <ol>
+              {JULY_CATCHUP_FAQ.quickStart.items.map((item) => <li key={item}>{item}</li>)}
+            </ol>
+          </aside>
+        )}
+
+        <div className="faq-catchup-grid">
+          {JULY_CATCHUP_FAQ.sections.map((item, index) => (
+            <details className="faq-catchup-card" key={item.title} open={index < 3}>
+              <summary>
+                <span>{item.kicker}</span>
+                <strong>{item.title}</strong>
+              </summary>
+              <div className="faq-catchup-body">
+                {item.visuals?.length > 0 && (
+                  <div className="faq-catchup-visuals">
+                    {item.visuals.map((visual) => (
+                      <figure key={visual.src}>
+                        <img src={visual.src} alt={visual.alt} loading="lazy" />
+                        {visual.caption && <figcaption>{visual.caption}</figcaption>}
+                      </figure>
+                    ))}
+                  </div>
+                )}
+                {item.answer.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+                {item.checklist?.length > 0 && (
+                  <div className="faq-catchup-list">
+                    <h4>{item.checklistTitle || "Checklist"}</h4>
+                    <ul>
+                      {item.checklist.map((step) => <li key={step}>{step}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {item.prompt && (
+                  <div className="faq-catchup-prompt">
+                    <div className="faq-catchup-prompt-head">
+                      <h4>{item.promptTitle || "Prompt"}</h4>
+                      <button type="button" onClick={() => copyText(item.prompt)}>Copy prompt</button>
+                    </div>
+                    <pre>{item.prompt}</pre>
+                  </div>
+                )}
+                {item.link && (
+                  <a className="faq-catchup-link" href={item.link.url} target="_blank" rel="noreferrer">
+                    {item.link.label}
+                  </a>
+                )}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }
@@ -1932,8 +1965,10 @@ function GuidePage({
       <HoverTableOfContents title="Guide contents" items={guide.tocItems} />
       <Breadcrumbs
         items={[
-          { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: monthLabel, path: `/monthly-resources/${monthSlug}` },
+          monthSlug === "july"
+            ? { label: "Current Workshop", path: CURRENT_WORKSHOP_PATH }
+            : { label: "Monthly Resources", path: "/monthly-resources" },
+          ...(monthSlug === "july" ? [] : [{ label: monthLabel, path: `/monthly-resources/${monthSlug}` }]),
           { label: "Guide" },
         ]}
         navigate={navigate}
@@ -2204,16 +2239,17 @@ function MarkdownHeading({ block }) {
 
 function IntroSectionCard({ section, monthSlug = "june", navigate }) {
   const isBeforeStart = section.title === "Before You Start";
+  const hasLegacyChecklist = monthSlug === "june" || monthSlug === "july";
   const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS;
   const checklistSubtitle = monthSlug === "july"
     ? "Get these six setup pieces ready before you start building your AI Hub."
     : "Get these four pieces ready before you start the Paperwork workflow.";
 
-  if (!isBeforeStart) {
+  if (!isBeforeStart || !hasLegacyChecklist) {
     return (
       <article className="workbench-step workbench-intro" id={section.id}>
         <div className="workbench-step-top">
-          <span>Prep</span>
+          <span>{isBeforeStart ? "Prep checklist" : "Prep"}</span>
         </div>
         <h3>{section.title}</h3>
         <MarkdownBlocks blocks={section.blocks} />
@@ -2302,12 +2338,7 @@ function HelpActionWithTip({ children, tip }) {
   return (
     <span className="step-help-action">
       {children}
-      <span className="step-help-tip-wrap">
-        <button className="step-help-tip-trigger" type="button" aria-label={tip}>
-          i
-        </button>
-        <span className="step-help-tip" role="tooltip">{tip}</span>
-      </span>
+      <span className="step-help-tip" role="tooltip">{tip}</span>
     </span>
   );
 }
@@ -2341,8 +2372,7 @@ function JulyPrerequisitesPage({ navigate }) {
     <section className="section page-section month-section" aria-labelledby="july-prerequisites-title">
       <Breadcrumbs
         items={[
-          { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: "July", path: "/monthly-resources/july" },
+          { label: "Current Workshop", path: "/monthly-resources/july" },
           { label: "Prerequisites" },
         ]}
         navigate={navigate}
@@ -2414,8 +2444,10 @@ function SessionPromptsPage({
     <section className="section page-section month-section" aria-labelledby="prompts-title">
       <Breadcrumbs
         items={[
-          { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: monthLabel, path: `/monthly-resources/${monthSlug}` },
+          monthSlug === "july"
+            ? { label: "Current Workshop", path: "/monthly-resources/july" }
+            : { label: "Monthly Resources", path: "/monthly-resources" },
+          ...(monthSlug === "july" ? [] : [{ label: monthLabel, path: `/monthly-resources/${monthSlug}` }]),
           { label: breadcrumbLabel },
         ]}
         navigate={navigate}
@@ -3226,67 +3258,209 @@ function renderInlineMarkdown(text = "") {
   return nodes;
 }
 
-function ArchivePage({ path, navigate }) {
-  const archiveMonths = CHALLENGE_ARCHIVE.months;
-  const segment = path.split("/")[2] || "";
-  const selectedMonth = archiveMonths.find((month) => month.label.toLowerCase() === segment || month.id === segment);
-
-  if (path === "/archive/past-systems") {
-    return <PastSystemsPage navigate={navigate} />;
-  }
-
-  if (path === "/archive" || !selectedMonth) {
-    return (
-      <section className="section page-section archive-section" aria-labelledby="archive-home-title">
-        <Breadcrumbs items={[{ label: "Archive" }]} navigate={navigate} />
-        <div className="section-heading">
-          <p className="section-kicker">Archive</p>
-          <h1 id="archive-home-title" className="page-title">Find the right past material fast.</h1>
-          <p className="muted">Start with the systems swipe file when you want to know what is still worth replaying, then open challenge archives when you want member examples.</p>
-        </div>
-        <div className="archive-entry-grid" aria-label="Archive sections">
-          <button type="button" className="archive-entry-card" onClick={() => navigate("/archive/past-systems")}>
-            <span>Swipe file</span>
-            <strong>Past Systems and Recordings</strong>
-            <small>Traffic-light guidance for Months 1 through 7.</small>
-          </button>
-          <button type="button" className="archive-entry-card" onClick={() => navigate("/archive/june")}>
-            <span>Challenge examples</span>
-            <strong>Past Challenge Submissions</strong>
-            <small>June is loaded now. More months join after each challenge closes.</small>
-          </button>
-        </div>
-        <div className="section-heading archive-subheading">
-          <p className="section-kicker">Challenge archive</p>
-          <h2 className="page-title">Choose a challenge month.</h2>
-        </div>
-        <ArchiveMonthGrid months={archiveMonths} navigate={navigate} />
-      </section>
-    );
-  }
-
-  return <ArchiveMonthPage month={selectedMonth} navigate={navigate} />;
+function monthSlugFromLabel(label = "") {
+  return label.toLowerCase();
 }
 
-function PastSystemsPage({ navigate }) {
+function pastSystemToMonthCard(item) {
+  return {
+    id: item.id,
+    label: item.month,
+    number: item.month,
+    focus: item.system,
+    outcome: item.summary,
+    tools: item.tools,
+    difficulty: item.difficulty,
+    image: item.month === "June"
+      ? MONTHS.find((month) => month.id === "jun")?.image
+      : {
+          src: "/july/july-ai-hub-card-relatable-3.png",
+          alt: `${item.month} Mastery workshop`,
+          kicker: "Past workshop",
+          title: `${item.month}: ${item.system}`,
+          caption: item.summary,
+        },
+  };
+}
+
+function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
+  const selectedSlug = path.split("/")[2] || "";
+  const selectedSystem = selectedSlug
+    ? PAST_SYSTEMS.find((item) => monthSlugFromLabel(item.month) === selectedSlug)
+    : null;
+  const cmsPastMonths = cmsMonths.filter((month) => {
+    const slug = month.slug || month.label?.toLowerCase();
+    return slug && !["july", "august"].includes(slug) && !MONTHS.some((item) => item.label.toLowerCase() === slug);
+  });
+
+  if (selectedSlug && !selectedSystem) {
+    return <RedirectRoute to="/past-workshops" navigate={navigate} />;
+  }
+
+  if (selectedSystem) {
+    return <PastWorkshopDetailPage item={selectedSystem} navigate={navigate} />;
+  }
+
   return (
-    <section className="section page-section archive-section systems-archive-section" aria-labelledby="past-systems-title">
+    <section className="section page-section month-section" aria-label="Past Workshops">
+      <Breadcrumbs items={[{ label: "Past Workshops" }]} navigate={navigate} />
+
+      <div className="resource-category-stack">
+        <div className="month-choice-grid past-month-card-grid" aria-label="Previous months">
+          {PAST_SYSTEMS
+            .filter((item) => monthSlugFromLabel(item.month) !== "july")
+            .slice()
+            .reverse()
+            .map((item, index) => (
+            <button
+              className="month-choice has-image past-month-card"
+              type="button"
+              key={item.id}
+              onClick={() => navigate(`/past-workshops/${monthSlugFromLabel(item.month)}`)}
+            >
+              <img
+                className="month-choice-image"
+                src={index % 3 === 0
+                  ? "/month6/alternates/month6-paperwork-alt-1.png"
+                  : index % 3 === 1
+                    ? "/month6/alternates/month6-paperwork-alt-2.png"
+                    : "/month6/alternates/month6-paperwork-alt-3.png"}
+                alt=""
+                loading="lazy"
+              />
+              <span>{item.month}</span>
+              <small>{item.system}</small>
+              <strong>Open</strong>
+            </button>
+          ))}
+          {cmsPastMonths.map((month) => {
+              const displayMonth = cmsMonthToMonth(month);
+              return (
+                <button
+                  className={`month-choice ${displayMonth.image ? "has-image" : ""} past-month-card`}
+                  type="button"
+                  key={month.slug}
+                  onClick={() => navigate(`/monthly-resources/${month.slug}`)}
+                >
+                  {displayMonth.image && <img className="month-choice-image" src={displayMonth.image.src} alt="" loading="lazy" />}
+                  <span>{displayMonth.label}</span>
+                  <small>{displayMonth.focus}</small>
+                  <strong>Open</strong>
+                </button>
+              );
+            })}
+        </div>
+
+        <PastSystemsSection />
+      </div>
+    </section>
+  );
+}
+
+function PastWorkshopDetailPage({ item, navigate }) {
+  const slug = monthSlugFromLabel(item.month);
+  const isJune = slug === "june";
+  const resourceIsInternal = item.resourceUrl?.startsWith("/");
+  const cardMonth = isJune
+    ? MONTHS.find((month) => month.id === "jun") || pastSystemToMonthCard(item)
+    : pastSystemToMonthCard(item);
+  const titleId = `past-workshop-${slug}-title`;
+
+  return (
+    <section className="section page-section month-section" aria-labelledby={titleId}>
       <Breadcrumbs
         items={[
-          { label: "Archive", path: "/archive" },
-          { label: "Past Systems" },
+          { label: "Past Workshops", path: "/past-workshops" },
+          { label: item.month },
         ]}
         navigate={navigate}
       />
-      <div className="archive-hero systems-hero">
-        <div>
-          <p className="section-kicker">Swipe file</p>
-          <h1 id="past-systems-title" className="page-title">Past Mastery systems and recordings.</h1>
-          <p className="muted">Use this before rewatching old months. The goal is simple: know what each month built, how hard it is, and whether I would still recommend copying that system today.</p>
-        </div>
+      <div className="section-heading section-heading-compact">
+        <p className="section-kicker">{item.month}</p>
+        <h1 id={titleId} className="page-title">{item.system}</h1>
       </div>
 
-      <PastSystemsTable />
+      {isJune ? (
+        <MonthVisualCard
+          month={cardMonth}
+          actionLinks={[
+            { label: "Replay", href: MONTH6_CONTENT.replayUrl },
+            { label: "Guide", onClick: () => navigate("/monthly-resources/june/guide") },
+            { label: "Prompts", onClick: () => navigate("/monthly-resources/june/prompts") },
+            { label: "Challenge", onClick: () => navigate("/challenges/june/guide") },
+            { label: "Submissions", href: CHALLENGE_SUBMISSIONS_URL },
+          ]}
+          variant="banner"
+        />
+      ) : (
+        <div className="past-workshop-detail-card">
+          <p>{item.summary}</p>
+          <div>
+            <span>Note from Igor</span>
+            <strong>{item.igorComment}</strong>
+          </div>
+        </div>
+      )}
+
+      <div className="resource-grid resource-grid-three">
+        <a className="resource-card resource-card-link" href={item.replayUrl} target="_blank" rel="noreferrer">
+          <div className="resource-card-top">
+            <span>Replay</span>
+            <small>Club</small>
+          </div>
+          <h4>{item.month} Replay</h4>
+          <p>Watch the workshop recording in the AI Advantage Club.</p>
+        </a>
+        {resourceIsInternal ? (
+          <button className="resource-card resource-card-button" type="button" onClick={() => navigate(isJune ? "/monthly-resources/june/guide" : item.resourceUrl)}>
+            <div className="resource-card-top">
+              <span>Resources</span>
+              <small>Hub</small>
+            </div>
+            <h4>{item.month} Resources</h4>
+            <p>Open the Hub materials for this month.</p>
+          </button>
+        ) : (
+          <a className="resource-card resource-card-link" href={item.resourceUrl} target="_blank" rel="noreferrer">
+            <div className="resource-card-top">
+              <span>Resources</span>
+              <small>Guide</small>
+            </div>
+            <h4>{item.month} Resources</h4>
+            <p>Open the original resources for this month.</p>
+          </a>
+        )}
+      </div>
+
+      {isJune && (
+        <section className="resource-category" id="challenge-archive" aria-labelledby="june-challenge-archive-title">
+          <div className="resource-category-head">
+            <div>
+              <p className="section-kicker">Challenge archive</p>
+              <h2 id="june-challenge-archive-title">June Challenge: Build a Self-Improving Skill</h2>
+              <p className="muted">Revisit the complete challenge instructions and browse the work members submitted.</p>
+            </div>
+          </div>
+          <div className="resource-grid resource-grid-two">
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
+              <div className="resource-card-top">
+                <span>Challenge</span>
+                <small>Archived guide</small>
+              </div>
+              <h4>Build a Self-Improving Skill</h4>
+              <p>Read the full mission, workflow, deliverables, working prompt, and submission requirements.</p>
+            </button>
+            <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
+              <div className="resource-card-top">
+                <span>Submissions</span>
+                <small>Community archive</small>
+              </div>
+              <h4>June Challenge Submissions</h4>
+              <p>Browse the member projects submitted for the Self-Improving Skill challenge.</p>
+            </a>
+          </div>
+        </section>
+      )}
     </section>
   );
 }
@@ -3311,7 +3485,7 @@ function PastSystemsTable() {
           <span role="columnheader">Month</span>
           <span role="columnheader">System</span>
           <span role="columnheader">Summary</span>
-          <span role="columnheader">Igor's comment</span>
+          <span role="columnheader">Note from Igor</span>
           <span role="columnheader">Links</span>
         </div>
         {PAST_SYSTEMS.slice().reverse().map((item) => (
@@ -3354,178 +3528,19 @@ function PastSystemRow({ item }) {
   );
 }
 
-function ArchiveMonthGrid({ months, navigate }) {
-  return (
-    <div className="archive-month-grid" aria-label="Archive months">
-      {months.map((month) => {
-        const hasSubmissions = month.submissionCount > 0;
-        return (
-          <button
-            key={month.id}
-            type="button"
-            className={`archive-month-card ${hasSubmissions ? "ready" : "empty"}`}
-            onClick={() => navigate(`/archive/${month.label.toLowerCase()}`)}
-          >
-            <span>{month.label}</span>
-            <strong>{month.theme}</strong>
-            <small>{hasSubmissions ? `${month.submissionCount} submissions` : "Ready after this challenge closes"}</small>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function ArchiveMonthPage({ month, navigate }) {
-  const [activeInterest, setActiveInterest] = useState("All");
-  const [query, setQuery] = useState("");
-
-  const visibleSubmissions = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return month.submissions.filter((submission) => {
-      const matchesInterest = activeInterest === "All" || submission.interests.includes(activeInterest);
-      if (!matchesInterest) return false;
-      if (!q) return true;
-      return [submission.title, submission.author, submission.summary, ...(submission.interests || [])]
-        .join(" ")
-        .toLowerCase()
-        .includes(q);
-    });
-  }, [activeInterest, month.submissions, query]);
-
-  const hasSubmissions = month.submissionCount > 0;
-
-  return (
-    <section className="section page-section archive-section archive-detail" aria-labelledby="archive-month-title">
-      <Breadcrumbs
-        items={[
-          { label: "Archive", path: "/archive" },
-          { label: month.label },
-        ]}
-        navigate={navigate}
-      />
-      <div className="archive-hero">
-        <div>
-          <p className="section-kicker">{month.label} archive</p>
-          <h1 id="archive-month-title" className="page-title">{month.title}</h1>
-          <p className="muted">{month.description}</p>
-        </div>
-        <div className="archive-stats" aria-label={`${month.label} archive stats`}>
-          <span><strong>{month.submissionCount}</strong> submissions</span>
-          <span><strong>{month.rawPostCount}</strong> Circle posts checked</span>
-          <span><strong>{month.excludedPostCount}</strong> excluded</span>
-        </div>
-      </div>
-
-      {!hasSubmissions && (
-        <div className="archive-empty">
-          <h2>{month.label} is ready for submissions.</h2>
-          <p>The monthly archive shell is in place. When this challenge closes, run the Circle scrape and add the month dataset here.</p>
-        </div>
-      )}
-
-      {hasSubmissions && (
-        <>
-          <div className="archive-controls" aria-label="Archive filters">
-            <label>
-              Search submissions
-              <input
-                type="search"
-                value={query}
-                placeholder="Search title, author, summary..."
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </label>
-            <div className="archive-filter-chips" aria-label="Interest filters">
-              {month.interestCategories.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  className={category === activeInterest ? "active" : ""}
-                  onClick={() => setActiveInterest(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="archive-submission-grid" aria-live="polite">
-            {visibleSubmissions.map((submission) => (
-              <ArchiveSubmissionCard submission={submission} key={submission.id} />
-            ))}
-          </div>
-
-          {visibleSubmissions.length === 0 && (
-            <p className="archive-no-results">No submissions match that filter yet.</p>
-          )}
-        </>
-      )}
-    </section>
-  );
-}
-
-function ArchiveSubmissionCard({ submission }) {
-  const preview = submission.displayImages?.[0];
-
-  return (
-    <article className="archive-submission-card">
-      {preview ? (
-        <img className="archive-submission-image" src={preview.src} alt={preview.alt} loading="eager" />
-      ) : (
-        <div className="archive-submission-image archive-submission-placeholder">
-          <span>{submission.author?.slice(0, 1) || "M"}</span>
-        </div>
-      )}
-      <div className="archive-submission-body">
-        <h2>{submission.title}</h2>
-        <p className="archive-author">{submission.author}</p>
-        <p>{submission.summary}</p>
-        <div className="archive-interest-row">
-          {submission.interests.map((interest) => (
-            <span key={interest}>{interest}</span>
-          ))}
-        </div>
-        <a className="archive-source-link" href={submission.url} target="_blank" rel="noreferrer">
-          Open Circle post
-        </a>
-      </div>
-    </article>
-  );
-}
-
-function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionStatus, submissions, cmsMonths = [] }) {
+function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submissions, cmsMonths = [] }) {
   const segment = path.split("/")[2] || "";
   const child = path.split("/")[3] || "";
   const cmsMonth = cmsMonths.find((month) => month.slug === segment);
 
   if (path === "/challenges") {
-    return (
-      <section className="section page-section archive-section" aria-labelledby="challenges-title">
-        <Breadcrumbs items={[{ label: "Challenges" }]} navigate={navigate} />
-        <div className="section-heading">
-          <p className="section-kicker">Challenges</p>
-          <h1 id="challenges-title" className="page-title">Choose your challenge month.</h1>
-          <p className="muted">Open the current month to find the challenge, submit your work, and review submissions. Future challenges unlock when they go live.</p>
-        </div>
-        <MonthChoiceSections
-          activeId={CURRENT_MONTH_ID}
-          basePath="/challenges"
-          navigate={navigate}
-          cmsMonths={cmsMonths}
-          currentTitle="Current and upcoming challenges"
-          pastTitle="Past challenges"
-        />
-        <CmsMonthGroup months={cmsMonths} basePath="/challenges" navigate={navigate} />
-      </section>
-    );
+    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
   }
 
   if (segment === "june") {
-    const juneMonth = MONTHS.find((item) => item.id === "jun") || MONTHS[0];
     if (child === "guide") return <ChallengeGuidePage navigate={navigate} />;
-    if (child === "submit" || child === "submissions") return <RedirectRoute to="/archive/june" navigate={navigate} />;
-    return <JuneChallengeLanding month={juneMonth} navigate={navigate} />;
+    if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
+    return <RedirectRoute to="/past-workshops" navigate={navigate} />;
   }
 
   if (segment !== "july") {
@@ -3549,7 +3564,7 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
     }
 
     return (
-      <section className="section page-section archive-section">
+      <section className="section page-section challenge-section">
         <Breadcrumbs
           items={[
             { label: "Challenges", path: "/challenges" },
@@ -3568,7 +3583,7 @@ function ChallengesPage({ archiveRows, handleSubmit, path, navigate, submissionS
 
   if (child === "guide") return <JulyChallengeGuidePage navigate={navigate} />;
   if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
-  return <JulyChallengeLanding navigate={navigate} />;
+  return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
 }
 
 function CmsChallengeLanding({ month, navigate }) {
@@ -3582,7 +3597,7 @@ function CmsChallengeLanding({ month, navigate }) {
   });
 
   return (
-    <section className="section page-section archive-section" aria-labelledby={`${month.slug}-challenge-title`}>
+    <section className="section page-section challenge-section" aria-labelledby={`${month.slug}-challenge-title`}>
       <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: month.label }]} navigate={navigate} />
       <div className="section-heading section-heading-compact">
         <h1 id={`${month.slug}-challenge-title`} className="page-title">{month.label} Challenge</h1>
@@ -3648,7 +3663,7 @@ function CmsChallengeGuidePage({ month, navigate }) {
 
 function CurrentChallengeComingSoon({ month, navigate }) {
   return (
-    <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
+    <section className="section page-section challenge-section" aria-labelledby="july-challenge-title">
       <Breadcrumbs
         items={[
           { label: "Challenges", path: "/challenges" },
@@ -3670,7 +3685,7 @@ function CurrentChallengeComingSoon({ month, navigate }) {
 
 function JulyChallengeLanding({ navigate }) {
   return (
-    <section className="section page-section archive-section" aria-labelledby="july-challenge-title">
+    <section className="section page-section challenge-section" aria-labelledby="july-challenge-title">
       <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "July" }]} navigate={navigate} />
       <div className="section-heading section-heading-compact">
         <h1 id="july-challenge-title" className="page-title">Paint your AI Hub</h1>
@@ -3711,25 +3726,27 @@ function JulyChallengeLanding({ navigate }) {
 
 function JuneChallengeLanding({ month, navigate }) {
   return (
-    <section className="section page-section archive-section" aria-labelledby="june-challenge-title">
+    <section className="section page-section challenge-section" aria-labelledby="june-challenge-title">
       <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: "June" }]} navigate={navigate} />
       <div className="section-heading section-heading-compact">
         <h1 id="june-challenge-title" className="page-title">Build a Self-Improving Skill</h1>
       </div>
       <MonthVisualCard
         month={month}
-        actionLabel="Open June Archive"
-        onAction={() => navigate("/archive/june")}
+        actionLinks={[
+          { label: "Open Challenge", onClick: () => navigate("/challenges/june/guide") },
+          { label: "View Submissions", href: CHALLENGE_SUBMISSIONS_URL },
+        ]}
       />
       <div className="resource-grid">
-        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/archive/june")}>
+        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
           <div className="resource-card-top">
-            <span>Archive</span>
-            <small>20 submissions</small>
+            <span>Submissions</span>
+            <small>Community</small>
           </div>
-          <h4>June Challenge Archive</h4>
-          <p>Browse the member submissions from the Self-Improving Skill challenge, with filters, summaries, screenshots, and Circle links.</p>
-        </button>
+          <h4>June Challenge Submissions</h4>
+          <p>Browse the member posts from the Self-Improving Skill challenge in the AI Advantage Community.</p>
+        </a>
         <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
           <div className="resource-card-top">
             <span>Challenge</span>
@@ -3745,7 +3762,7 @@ function JuneChallengeLanding({ month, navigate }) {
 function JulyChallengeGuidePage({ navigate }) {
   const tocItems = useMemo(() => markdownTocItems(JULY_CONTENT.challenge), []);
   return (
-    <section className="section page-section month-section has-hover-toc" aria-labelledby="archive-title">
+    <section className="section page-section month-section has-hover-toc" aria-labelledby="challenge-title">
       <HoverTableOfContents title="Challenge contents" items={tocItems} />
       <Breadcrumbs
         items={[
@@ -3759,7 +3776,7 @@ function JulyChallengeGuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Challenge</p>
-            <h1 id="archive-title" className="page-title">July Challenge: Paint your AI Hub</h1>
+            <h1 id="challenge-title" className="page-title">July Challenge: Paint your AI Hub</h1>
             <p>Use this page to complete the July challenge and submit the strongest version of your work.</p>
           </div>
         </div>
@@ -3777,12 +3794,12 @@ function ChallengeGuidePage({ navigate }) {
   const tocItems = useMemo(() => markdownTocItems(MONTH6_CONTENT.challenge), []);
 
   return (
-    <section className="section page-section archive-section has-hover-toc" aria-labelledby="archive-title">
+    <section className="section page-section challenge-section has-hover-toc" aria-labelledby="challenge-title">
       <HoverTableOfContents title="Challenge contents" items={tocItems} />
       <Breadcrumbs
         items={[
-          { label: "Challenges", path: "/challenges" },
-          { label: "June", path: "/challenges/june" },
+          { label: "Past Workshops", path: "/past-workshops" },
+          { label: "June", path: "/past-workshops/june" },
           { label: "Challenge" },
         ]}
         navigate={navigate}
@@ -3791,50 +3808,11 @@ function ChallengeGuidePage({ navigate }) {
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Challenge</p>
-            <h1 id="archive-title" className="page-title">Mastery Challenge #6: Build a Self-Improving Skill</h1>
+            <h1 id="challenge-title" className="page-title">Mastery Challenge #6: Build a Self-Improving Skill</h1>
             <p>Use this page to complete the June challenge and submit the strongest version of your work.</p>
           </div>
         </div>
         <MarkdownSectionCards content={MONTH6_CONTENT.challenge} />
-      </div>
-    </section>
-  );
-}
-
-function ChallengeSubmissionsPage({ archiveRows, navigate, monthLabel = "June" }) {
-  const visibleRows = archiveRows.filter((item) => item.month === monthLabel);
-  const rows = visibleRows.length > 0 ? visibleRows : archiveRows;
-
-  return (
-    <section className="section page-section archive-section" aria-labelledby="archive-title">
-      <Breadcrumbs
-        items={[
-          { label: "Challenges", path: "/challenges" },
-          { label: monthLabel, path: `/challenges/${monthLabel.toLowerCase()}` },
-          { label: "Submissions" },
-        ]}
-        navigate={navigate}
-      />
-      <div className="section-heading">
-        <p className="section-kicker">Submissions</p>
-        <h1 id="archive-title" className="page-title">{monthLabel} challenge submissions.</h1>
-        <p className="muted">Use the archive to revisit past challenges, review your own work, and learn from standout member examples.</p>
-      </div>
-      <div className="archive-table" role="table" aria-label="Challenge archive">
-        <div className="archive-row archive-head" role="row">
-          <span>Month</span>
-          <span>Type</span>
-          <span>Collection</span>
-          <span>Status</span>
-        </div>
-        {rows.map((item) => (
-          <div className="archive-row" role="row" key={`${item.month}-${item.title}`}>
-            <span>{item.month}</span>
-            <span>{item.type}</span>
-            <span>{item.title}</span>
-            <span>{item.status}</span>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -3908,10 +3886,10 @@ function TutorialPage({ navigate }) {
   }
 
   return (
-    <section className="section page-section tutorial-section" aria-labelledby="tutorial-title">
+    <section className="section page-section tutorial-section" aria-labelledby="faq-title">
       <div className="section-heading">
-        <p className="section-kicker">Tutorial</p>
-        <h1 id="tutorial-title" className="page-title">Start here when you open the Hub.</h1>
+        <p className="section-kicker">FAQ</p>
+        <h1 id="faq-title" className="page-title">Start here when you open the Hub.</h1>
         <p className="muted">Use these shortcuts whenever you need the right place fast. Materials live here. Replays, live events, and community conversation live inside the AI Advantage Club.</p>
       </div>
       <div className="tutorial-grid">

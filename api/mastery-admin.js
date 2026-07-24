@@ -6,6 +6,22 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_TOKEN = process.env.MASTERY_ADMIN_TOKEN;
 const IMAGE_BUCKET = "mastery-guide-images";
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
+const REQUEST_FILE_BUCKET = "mastery-request-files";
+const MAX_REQUEST_FILE_BYTES = 3 * 1024 * 1024;
+const REQUEST_FILE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "text/plain",
+  "text/csv",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/zip",
+]);
 const VERSION_HISTORY_LIMIT = 20;
 
 function json(res, status, payload) {
@@ -111,6 +127,7 @@ async function archiveMonthVersion(supabase, existingMonth, { source = "save", s
     .from("mastery_month_draft_versions")
     .select("id, snapshot")
     .eq("month_slug", existingMonth.slug)
+    .neq("source", "auto")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -180,6 +197,26 @@ function imageExtensionForType(contentType = "") {
   }[contentType] || "";
 }
 
+function cleanActor(input = {}) {
+  return {
+    id: String(input.id || "").trim().slice(0, 200),
+    name: String(input.name || input.email || "Admin").trim().slice(0, 200),
+    email: String(input.email || "").trim().toLowerCase().slice(0, 320) || null,
+    avatar: String(input.avatar || "").trim().slice(0, 2000) || null,
+  };
+}
+
+function cleanCommentBody(value) {
+  return String(value || "").trim().slice(0, 5000);
+}
+
+const REQUEST_STATUSES = new Set(["new", "planned", "in-progress", "done"]);
+const REQUEST_PRIORITIES = new Set(["low", "medium", "high"]);
+
+function cleanRequestText(value, max = 5000) {
+  return String(value || "").trim().slice(0, max);
+}
+
 async function ensureImageBucket(supabase) {
   const { data: buckets, error } = await supabase.storage.listBuckets();
   if (error) throw error;
@@ -189,6 +226,22 @@ async function ensureImageBucket(supabase) {
     public: true,
     fileSizeLimit: MAX_IMAGE_BYTES,
     allowedMimeTypes: ["image/png", "image/jpeg", "image/webp", "image/gif"],
+  });
+
+  if (createError && !/already exists/i.test(createError.message || "")) {
+    throw createError;
+  }
+}
+
+async function ensureRequestFileBucket(supabase) {
+  const { data: buckets, error } = await supabase.storage.listBuckets();
+  if (error) throw error;
+  if ((buckets || []).some((bucket) => bucket.name === REQUEST_FILE_BUCKET)) return;
+
+  const { error: createError } = await supabase.storage.createBucket(REQUEST_FILE_BUCKET, {
+    public: true,
+    fileSizeLimit: MAX_REQUEST_FILE_BYTES,
+    allowedMimeTypes: [...REQUEST_FILE_TYPES],
   });
 
   if (createError && !/already exists/i.test(createError.message || "")) {
@@ -340,10 +393,57 @@ export default async function handler(req, res) {
           .from("mastery_month_draft_versions")
           .select("id, month_slug, snapshot, source, saved_by, created_at")
           .eq("month_slug", slug)
+          .neq("source", "auto")
           .order("created_at", { ascending: false })
           .limit(VERSION_HISTORY_LIMIT);
         if (error) throw error;
         return json(res, 200, { versions: data || [] });
+      }
+
+      if (action === "comments") {
+        const slug = String(url.searchParams.get("slug") || "").trim().toLowerCase();
+        const documentKey = String(url.searchParams.get("document_key") || "guide").trim().slice(0, 80);
+        const { data, error } = await supabase
+          .from("mastery_editor_comments")
+          .select("*")
+          .eq("month_slug", slug)
+          .eq("document_key", documentKey)
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+        return json(res, 200, { comments: data || [] });
+      }
+
+      if (action === "requests") {
+        const { data: requests, error: requestError } = await supabase
+          .from("mastery_admin_requests")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (requestError) throw requestError;
+
+        const requestIds = (requests || []).map((item) => item.id);
+        let comments = [];
+        if (requestIds.length) {
+          const { data, error } = await supabase
+            .from("mastery_admin_request_comments")
+            .select("*")
+            .in("request_id", requestIds)
+            .order("created_at", { ascending: true });
+          if (error) throw error;
+          comments = data || [];
+        }
+
+        const commentsByRequest = comments.reduce((grouped, comment) => {
+          if (!grouped[comment.request_id]) grouped[comment.request_id] = [];
+          grouped[comment.request_id].push(comment);
+          return grouped;
+        }, {});
+
+        return json(res, 200, {
+          requests: (requests || []).map((item) => ({
+            ...item,
+            comments: commentsByRequest[item.id] || [],
+          })),
+        });
       }
 
       const { data, error } = await supabase
@@ -360,6 +460,206 @@ export default async function handler(req, res) {
 
     const body = await readBody(req);
     const action = body.action || "save";
+
+    if (action === "create-request") {
+      const actor = cleanActor(body.actor);
+      const title = cleanRequestText(body.title, 240);
+      const description = cleanRequestText(body.description);
+      const priority = REQUEST_PRIORITIES.has(body.priority) ? body.priority : "medium";
+      if (!actor.id || !title || !description) {
+        return json(res, 400, { error: "Author, title, and details are required." });
+      }
+
+      const { data, error } = await supabase.from("mastery_admin_requests").insert({
+        title,
+        description,
+        priority,
+        status: "new",
+        attachments: Array.isArray(body.attachments) ? body.attachments.slice(0, 10) : [],
+        submitted_by: actor.id,
+        submitted_by_name: actor.name,
+        submitted_by_email: actor.email,
+        submitted_by_avatar: actor.avatar,
+      }).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { request: data });
+    }
+
+    if (action === "update-request") {
+      const actor = cleanActor(body.actor);
+      const requestId = String(body.request_id || "").trim();
+      if (!actor.id || !requestId) return json(res, 400, { error: "Author and request are required." });
+      const patch = body.patch || {};
+      const update = { updated_at: new Date().toISOString() };
+
+      if (patch.status !== undefined) {
+        if (!REQUEST_STATUSES.has(patch.status)) return json(res, 400, { error: "Unknown request status." });
+        update.status = patch.status;
+        update.completed_at = patch.status === "done" ? new Date().toISOString() : null;
+      }
+      if (patch.priority !== undefined) {
+        if (!REQUEST_PRIORITIES.has(patch.priority)) return json(res, 400, { error: "Unknown request priority." });
+        update.priority = patch.priority;
+      }
+      if (patch.team_notes !== undefined) update.team_notes = cleanRequestText(patch.team_notes);
+      if (patch.title !== undefined) update.title = cleanRequestText(patch.title, 240);
+      if (patch.description !== undefined) update.description = cleanRequestText(patch.description);
+      if (patch.attachments !== undefined) {
+        if (!Array.isArray(patch.attachments) || patch.attachments.length > 10) {
+          return json(res, 400, { error: "A request can have up to 10 attachments." });
+        }
+        update.attachments = patch.attachments.map((attachment) => ({
+          name: cleanRequestText(attachment?.name, 240),
+          url: cleanRequestText(attachment?.url, 2000),
+          path: cleanRequestText(attachment?.path, 500),
+          type: cleanRequestText(attachment?.type, 160),
+          size: Number(attachment?.size) || 0,
+        })).filter((attachment) => attachment.name && attachment.url);
+      }
+
+      const { data, error } = await supabase
+        .from("mastery_admin_requests")
+        .update(update)
+        .eq("id", requestId)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return json(res, 200, { request: data });
+    }
+
+    if (action === "delete-request") {
+      const actor = cleanActor(body.actor);
+      const requestId = String(body.request_id || "").trim();
+      if (!actor.id || !requestId) return json(res, 400, { error: "Author and request are required." });
+      const { data: existing, error: existingError } = await supabase
+        .from("mastery_admin_requests")
+        .select("submitted_by")
+        .eq("id", requestId)
+        .single();
+      if (existingError) throw existingError;
+      if (existing.submitted_by !== actor.id) {
+        return json(res, 403, { error: "Only the request creator can delete it." });
+      }
+      const { error } = await supabase.from("mastery_admin_requests").delete().eq("id", requestId);
+      if (error) throw error;
+      return json(res, 200, { ok: true });
+    }
+
+    if (action === "create-request-comment") {
+      const actor = cleanActor(body.actor);
+      const requestId = String(body.request_id || "").trim();
+      const commentBody = cleanCommentBody(body.body);
+      if (!actor.id || !requestId || !commentBody) {
+        return json(res, 400, { error: "Author, request, and reply are required." });
+      }
+      const { data, error } = await supabase.from("mastery_admin_request_comments").insert({
+        request_id: requestId,
+        body: commentBody,
+        author_id: actor.id,
+        author_name: actor.name,
+        author_email: actor.email,
+        author_avatar: actor.avatar,
+      }).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { comment: data });
+    }
+
+    if (action === "delete-request-comment") {
+      const actor = cleanActor(body.actor);
+      const commentId = String(body.comment_id || "").trim();
+      if (!actor.id || !commentId) return json(res, 400, { error: "Author and reply are required." });
+      const { data: existing, error: existingError } = await supabase
+        .from("mastery_admin_request_comments")
+        .select("author_id")
+        .eq("id", commentId)
+        .single();
+      if (existingError) throw existingError;
+      if (existing.author_id !== actor.id) return json(res, 403, { error: "Only the reply creator can delete it." });
+      const { error } = await supabase.from("mastery_admin_request_comments").delete().eq("id", commentId);
+      if (error) throw error;
+      return json(res, 200, { ok: true });
+    }
+
+    if (action === "create-comment") {
+      const actor = cleanActor(body.actor);
+      const commentBody = cleanCommentBody(body.body);
+      const monthSlug = String(body.month_slug || "").trim().toLowerCase();
+      const documentKey = String(body.document_key || "guide").trim().slice(0, 80);
+      if (!actor.id || !commentBody || !monthSlug) return json(res, 400, { error: "Author, month, and comment are required." });
+
+      const parentId = body.parent_id ? String(body.parent_id).trim() : null;
+      let selectionStart = Math.max(0, Number(body.selection_start) || 0);
+      let selectionEnd = Math.max(selectionStart, Number(body.selection_end) || selectionStart);
+      let quotedText = String(body.quoted_text || "").slice(0, 4000);
+      if (parentId) {
+        const { data: parent, error: parentError } = await supabase
+          .from("mastery_editor_comments")
+          .select("month_slug, document_key, selection_start, selection_end, quoted_text, parent_id")
+          .eq("id", parentId)
+          .single();
+        if (parentError) throw parentError;
+        if (parent.parent_id || parent.month_slug !== monthSlug || parent.document_key !== documentKey) {
+          return json(res, 400, { error: "Reply thread does not match this document." });
+        }
+        selectionStart = parent.selection_start;
+        selectionEnd = parent.selection_end;
+        quotedText = parent.quoted_text;
+      } else if (selectionEnd <= selectionStart || !quotedText.trim()) {
+        return json(res, 400, { error: "Select text before leaving a comment." });
+      }
+
+      const { data, error } = await supabase.from("mastery_editor_comments").insert({
+        month_slug: monthSlug,
+        document_key: documentKey,
+        selection_start: selectionStart,
+        selection_end: selectionEnd,
+        quoted_text: quotedText,
+        body: commentBody,
+        author_id: actor.id,
+        author_name: actor.name,
+        author_email: actor.email,
+        author_avatar: actor.avatar,
+        parent_id: parentId,
+      }).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { comment: data });
+    }
+
+    if (action === "update-comment" || action === "delete-comment") {
+      const actor = cleanActor(body.actor);
+      const commentId = String(body.comment_id || "").trim();
+      if (!actor.id || !commentId) return json(res, 400, { error: "Author and comment are required." });
+      const { data: existing, error: existingError } = await supabase
+        .from("mastery_editor_comments").select("*").eq("id", commentId).single();
+      if (existingError) throw existingError;
+      if (existing.author_id !== actor.id) return json(res, 403, { error: "Only the comment creator can change it." });
+
+      if (action === "delete-comment") {
+        const { error } = await supabase.from("mastery_editor_comments").delete().eq("id", commentId);
+        if (error) throw error;
+        return json(res, 200, { ok: true });
+      }
+
+      const commentBody = cleanCommentBody(body.body);
+      if (!commentBody) return json(res, 400, { error: "Comment cannot be empty." });
+      const { data, error } = await supabase.from("mastery_editor_comments")
+        .update({ body: commentBody, updated_at: new Date().toISOString() })
+        .eq("id", commentId).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { comment: data });
+    }
+
+    if (action === "resolve-comment") {
+      const actor = cleanActor(body.actor);
+      const commentId = String(body.comment_id || "").trim();
+      if (!actor.id || !commentId) return json(res, 400, { error: "Author and comment are required." });
+      const resolved = Boolean(body.resolved);
+      const { data, error } = await supabase.from("mastery_editor_comments")
+        .update({ resolved_at: resolved ? new Date().toISOString() : null, resolved_by: resolved ? actor.name : null, updated_at: new Date().toISOString() })
+        .eq("id", commentId).is("parent_id", null).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { comment: data });
+    }
 
     if (action === "upload-image") {
       const contentType = String(body.content_type || "").toLowerCase();
@@ -395,6 +695,42 @@ export default async function handler(req, res) {
       return json(res, 200, { url: data.publicUrl, path });
     }
 
+    if (action === "upload-request-file") {
+      const contentType = String(body.content_type || "").toLowerCase();
+      if (!REQUEST_FILE_TYPES.has(contentType)) {
+        return json(res, 400, { error: "Upload an image, PDF, text, Word, Excel, or ZIP file." });
+      }
+
+      const base64 = String(body.data || "").replace(/^data:[^;]+;base64,/i, "");
+      if (!base64) return json(res, 400, { error: "File data is required." });
+
+      const buffer = Buffer.from(base64, "base64");
+      if (!buffer.length || buffer.length > MAX_REQUEST_FILE_BYTES) {
+        return json(res, 400, { error: "Files must be under 3 MB each." });
+      }
+
+      await ensureRequestFileBucket(supabase);
+      const requestKey = String(body.request_key || "new")
+        .trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 80) || "new";
+      const fileName = safeFileName(body.file_name || "attachment");
+      const path = `${requestKey}/${Date.now()}-${fileName}`;
+      const { error: uploadError } = await supabase.storage
+        .from(REQUEST_FILE_BUCKET)
+        .upload(path, buffer, { contentType, upsert: false });
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from(REQUEST_FILE_BUCKET).getPublicUrl(path);
+      return json(res, 200, {
+        attachment: {
+          name: cleanRequestText(body.file_name, 240) || fileName,
+          url: data.publicUrl,
+          path,
+          type: contentType,
+          size: buffer.length,
+        },
+      });
+    }
+
     if (action === "save") {
       const month = cleanMonth(body.month);
       if (!month.slug || !month.label) {
@@ -407,12 +743,7 @@ export default async function handler(req, res) {
         .eq("slug", month.slug)
         .maybeSingle();
       if (existingError) throw existingError;
-      if (existing && stableJson(monthEditableSnapshot(existing)) !== stableJson(monthEditableSnapshot({ ...existing, ...month }))) {
-        await archiveMonthVersion(supabase, existing, {
-          source: body.source || "save",
-          savedBy: month.updated_by || body.updated_by || null,
-        });
-      }
+      const source = body.source || "manual";
 
       const { data, error } = await supabase
         .from("mastery_month_drafts")
@@ -420,6 +751,14 @@ export default async function handler(req, res) {
         .select("*")
         .single();
       if (error) throw error;
+      // Autosave continuously protects the working draft, but only an explicit
+      // save creates a durable team checkpoint in Version History.
+      if (source !== "auto") {
+        await archiveMonthVersion(supabase, data, {
+          source: source === "manual" ? "checkpoint" : source,
+          savedBy: month.updated_by || body.updated_by || null,
+        });
+      }
       return json(res, 200, { month: data });
     }
 

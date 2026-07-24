@@ -29,14 +29,13 @@ Proxy: DNS only / grey cloud if using Cloudflare
 ## What is included
 
 - Premium AI Mastery visual direction using a dark, gold, serif-led interface.
-- Routed top navigation for Home, Monthly Hubs, Challenge Archive, Submit, and Tutorial.
+- Routed top navigation for Home, Current Workshop, Past Workshops, and FAQ.
 - July through December monthly hub shells, with July set as the current member month.
 - July prerequisite page for the first member release: GitHub, Lovable, Mastery Hub, Claude Desktop, and active Claude Pro/Max/Team access.
-- June content is kept in source as the old Month 6 template, but hidden from the live month picker and redirected away from member-facing routes.
+- June content is kept in source as the old Month 6 template and surfaced through Past Workshops with workshop and challenge links merged into one card.
 - Plan 2 V1 direction: Launch Base plus the working Challenge OS foundation.
-- Challenge archive foundation that shows recent submission rows.
 - Challenge submission form with local preview storage and Supabase handoff.
-- Tutorial page structure for member onboarding.
+- FAQ page structure for member onboarding and routing help.
 - Clerk-ready sign-in/status area for the next authentication pass.
 - Plan 3 roadmap in `PLAN_3_ROADMAP.md`.
 
@@ -111,15 +110,15 @@ npm run build
 ## Routes
 
 - `/`
-- `/monthly-hubs`
-- `/challenge-archive`
-- `/submit`
-- `/tutorial`
+- `/monthly-resources/july`
+- `/past-workshops`
+- `/faq`
+
+Legacy broad routes such as `/monthly-resources`, `/challenges`, `/monthly-hubs`, `/submit`, and `/tutorial` redirect into the current navigation.
 
 ## Next integrations
 
 - Replace the Clerk-ready placeholder with real Clerk components and membership claims.
 - Add Clerk membership claims and protected routes.
 - Feed monthly hub content from markdown or database records.
-- Add archive filters once real submissions exist.
 - Build the Plan 3 Mastery Campus roadmap.

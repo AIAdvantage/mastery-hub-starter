@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { JULY_CONTENT } from "../julyContent.js";
+import MasteryRequests from "./MasteryRequests.jsx";
 
 const TOKEN_KEY = "mastery_admin_token";
+const WORKSHOP_YEAR = "2026";
+const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";
 
 const UPCOMING_MONTH_PRESETS = [
   {
@@ -50,7 +53,7 @@ const PRESET_ORDER = UPCOMING_MONTH_PRESETS.reduce((acc, preset, index) => {
 }, {});
 
 const CONTENT_TABS = ["basics", "guide", "challenge", "prompts", "extras"];
-const ADMIN_SECTIONS = ["content", "analytics"];
+const ADMIN_SECTIONS = ["content", "analytics", "requests"];
 const RESOURCE_CATEGORIES = ["Workshop", "Extras", "Other"];
 const RESOURCE_STATUSES = ["idea", "first draft", "tested", "final"];
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
@@ -308,14 +311,6 @@ function createMonthTemplate(preset = {}) {
     resources: [
       {
         category: "Workshop",
-        type: "Checklist",
-        title: "Before You Start",
-        description: `Add the accounts, apps, files, and setup notes members need before the ${label} workshop.`,
-        status: "first draft",
-        url: `/monthly-resources/${slug}/guide`,
-      },
-      {
-        category: "Workshop",
         type: "Walkthrough",
         title: `${label} Guide`,
         description: "Follow the full walkthrough for this month's build.",
@@ -446,6 +441,12 @@ async function adminFetch(token, path, options = {}) {
     },
   });
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    sessionStorage.removeItem(TOKEN_KEY);
+    window.dispatchEvent(new CustomEvent("mastery-admin-unauthorized", {
+      detail: { message: data.error || "Admin passcode was not accepted" },
+    }));
+  }
   if (!res.ok) throw new Error(data.error || "Admin request failed");
   return data;
 }
@@ -454,6 +455,7 @@ export default function AdminBackend({ navigate }) {
   const { user, isSignedIn } = useUser();
   const [token, setToken] = useState(() => normalizeAdminToken(sessionStorage.getItem(TOKEN_KEY) || ""));
   const [tokenDraft, setTokenDraft] = useState("");
+  const [tokenError, setTokenError] = useState("");
   const [months, setMonths] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState("");
   const [month, setMonth] = useState(null);
@@ -476,19 +478,35 @@ export default function AdminBackend({ navigate }) {
 
   const canLoad = Boolean(token);
   const selectedSummary = months.find((item) => item.slug === selectedSlug);
-  const userLabel = user?.primaryEmailAddress?.emailAddress || user?.fullName || "admin";
+  const userLabel = user?.fullName || user?.primaryEmailAddress?.emailAddress || "admin";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const monthParam = params.get("month");
     const tabParam = params.get("tab");
     if (monthParam) setSelectedSlug(slugify(monthParam));
-    if (tabParam === "analytics") {
-      setAdminSection("analytics");
+    if (ADMIN_SECTIONS.includes(tabParam)) {
+      setAdminSection(tabParam);
     } else if (tabParam && CONTENT_TABS.includes(tabParam)) {
       setAdminSection("content");
       setActiveTab(tabParam);
     }
+  }, []);
+
+  useEffect(() => {
+    function handleUnauthorized(event) {
+      sessionStorage.removeItem(TOKEN_KEY);
+      setToken("");
+      setTokenDraft("");
+      setTokenError(event.detail?.message || "That admin passcode was not accepted. Please try again.");
+      setMonths([]);
+      setSelectedSlug("");
+      setMonth(null);
+      setError("");
+    }
+
+    window.addEventListener("mastery-admin-unauthorized", handleUnauthorized);
+    return () => window.removeEventListener("mastery-admin-unauthorized", handleUnauthorized);
   }, []);
 
   useEffect(() => {
@@ -580,6 +598,7 @@ export default function AdminBackend({ navigate }) {
     event.preventDefault();
     const nextToken = normalizeAdminToken(tokenDraft);
     if (!nextToken) return;
+    setTokenError("");
     sessionStorage.setItem(TOKEN_KEY, nextToken);
     setToken(nextToken);
     setTokenDraft("");
@@ -647,6 +666,21 @@ export default function AdminBackend({ navigate }) {
       ...current,
       resources: (current?.resources || []).filter((_, itemIndex) => itemIndex !== index),
     }));
+  }
+
+  function moveResource(index, direction) {
+    setMonth((current) => {
+      const resources = [...(current?.resources || [])];
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= resources.length) return current;
+      [resources[index], resources[nextIndex]] = [resources[nextIndex], resources[index]];
+      return { ...current, resources };
+    });
+    setActiveResourceIndex((current) => {
+      if (current === index) return index + direction;
+      if (current === index + direction) return index;
+      return current;
+    });
   }
 
   function updatePrompt(index, field, value) {
@@ -748,8 +782,8 @@ export default function AdminBackend({ navigate }) {
         setMonth(data.month);
         setSaveState("saved");
         setLastSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-        setStatus("Saved");
-        await loadHistory(data.month.slug);
+        setStatus(source === "auto" ? "Draft autosaved" : "Version saved");
+        if (source !== "auto") await loadHistory(data.month.slug);
       } else {
         setSaveState("dirty");
         setStatus("Unsaved changes");
@@ -860,6 +894,7 @@ export default function AdminBackend({ navigate }) {
           <p className="section-kicker">Admin</p>
           <h1 className="page-title">Mastery admin backend.</h1>
           <p className="muted">Enter the admin passcode for this browser session. Draft writes stay behind the server API.</p>
+          {tokenError && <p className="admin-auth-error" role="alert">{tokenError}</p>}
           <form onSubmit={unlock}>
             <input
               type="password"
@@ -882,7 +917,7 @@ export default function AdminBackend({ navigate }) {
           <h1 id="admin-title" className="page-title">Mastery content backend.</h1>
           <p className="muted">Edit each month here. Keep it in draft until the content is ready for members.</p>
         </div>
-        <div className="admin-head-actions">
+        {adminSection === "content" && <div className="admin-head-actions">
           <SaveStatusButton
             saveState={saveState}
             lastSavedAt={lastSavedAt}
@@ -902,7 +937,7 @@ export default function AdminBackend({ navigate }) {
             Version History
           </button>
           <PublicationToggle month={month} onChange={publishMonth} />
-        </div>
+        </div>}
       </div>
 
       {(status || error) && (
@@ -911,7 +946,7 @@ export default function AdminBackend({ navigate }) {
         </div>
       )}
 
-      {historyOpen && (
+      {historyOpen && adminSection === "content" && (
         <VersionHistoryPanel
           versions={versions}
           state={historyState}
@@ -928,7 +963,13 @@ export default function AdminBackend({ navigate }) {
             className={adminSection === section ? "active" : ""}
             onClick={() => {
               setAdminSection(section);
-              window.history.replaceState({}, "", section === "analytics" ? "/admin?tab=analytics" : adminDeepLink(selectedSlug || getDefaultMonthSlug(months), activeTab));
+              window.history.replaceState(
+                {},
+                "",
+                section === "content"
+                  ? adminDeepLink(selectedSlug || getDefaultMonthSlug(months), activeTab)
+                  : `/admin?tab=${section}`,
+              );
             }}
           >
             {section}
@@ -940,6 +981,8 @@ export default function AdminBackend({ navigate }) {
         <main className="admin-main">
           <AnalyticsPanel rows={analytics} report={analyticsReport} total={analyticsTotal} refresh={loadAnalytics} />
         </main>
+      ) : adminSection === "requests" ? (
+        <MasteryRequests token={token} user={user} />
       ) : (
         <div className="admin-layout admin-layout-single">
           <main className="admin-main">
@@ -973,11 +1016,13 @@ export default function AdminBackend({ navigate }) {
               <div className="admin-stack">
                 <BasicsEditor
                   month={month}
+                  token={token}
                   updateMonth={updateMonth}
                   updateHero={updateHero}
                   updateResource={updateResource}
                   addResource={addResource}
                   removeResource={removeResource}
+                  moveResource={moveResource}
                   applyMonthlyTemplate={applyMonthlyTemplate}
                   activeResourceIndex={activeResourceIndex}
                   onEditResource={(item, index) => {
@@ -994,8 +1039,7 @@ export default function AdminBackend({ navigate }) {
                 <section className="admin-card admin-card-wide" id="admin-resource-editor">
                   <div className="admin-section-actions">
                     <div>
-                      <p className="section-kicker">Resource editor</p>
-                      <h2>{resourceEditorLabel(activeTab)}</h2>
+                      <p className="admin-order-label">4 · Selected card content</p>
                     </div>
                   </div>
                   {activeTab === "basics" && (
@@ -1009,6 +1053,8 @@ export default function AdminBackend({ navigate }) {
                     previewKind="guide"
                     token={token}
                     monthSlug={month.slug}
+                    documentKey="guide"
+                    actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
                   />
                   )}
                   {activeTab === "challenge" && (
@@ -1018,8 +1064,10 @@ export default function AdminBackend({ navigate }) {
                     value={month.challenge_markdown || ""}
                     onChange={(value) => updateMonth({ challenge_markdown: value })}
                     previewKind="challenge"
-                    token={token}
-                    monthSlug={month.slug}
+                      token={token}
+                      monthSlug={month.slug}
+                      documentKey="challenge"
+                      actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
                   />
                     <MarkdownBoxEditor
                       title="Challenge prompt"
@@ -1028,6 +1076,8 @@ export default function AdminBackend({ navigate }) {
                     previewKind="document"
                     token={token}
                     monthSlug={month.slug}
+                    documentKey="challenge-prompt"
+                    actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
                   />
                   </div>
                   )}
@@ -1066,10 +1116,10 @@ export default function AdminBackend({ navigate }) {
 
 function SaveStatusButton({ saveState, lastSavedAt, onClick, disabled }) {
   const labels = {
-    idle: "Save",
-    dirty: "Unsaved",
+    idle: "Save version",
+    dirty: "Save version",
     saving: "Saving...",
-    saved: lastSavedAt ? `Saved ${lastSavedAt}` : "Saved",
+    saved: "Save version",
     error: "Save failed",
   };
 
@@ -1079,7 +1129,7 @@ function SaveStatusButton({ saveState, lastSavedAt, onClick, disabled }) {
       className={`save-status-button save-status-${saveState}`}
       onClick={onClick}
       disabled={disabled}
-      title={saveState === "saved" ? "Autosave is on. Click to save again now." : "Autosave is on. Click to save now."}
+      title={`Autosave protects the draft${lastSavedAt ? ` (last saved ${lastSavedAt})` : ""}. Click to create a team checkpoint.`}
     >
       {labels[saveState] || "Save"}
     </button>
@@ -1111,14 +1161,52 @@ function PublicationToggle({ month, onChange }) {
   );
 }
 
-function versionPreview(version = {}) {
-  const snapshot = version.snapshot || {};
-  const pieces = [
-    snapshot.focus,
-    snapshot.outcome,
-    snapshot.resources?.map((item) => item.title).filter(Boolean).join(", "),
-  ].filter(Boolean);
-  return pieces.join(" | ").replace(/\s+/g, " ").slice(0, 140);
+const VERSION_FIELDS = [
+  ["focus", "Workshop title"],
+  ["outcome", "Outcome"],
+  ["hero", "Hero"],
+  ["resources", "Resources"],
+  ["guide_markdown", "Guide"],
+  ["challenge_markdown", "Challenge"],
+  ["challenge_prompt", "Challenge prompt"],
+  ["prompts", "Prompts"],
+  ["extras", "Extras"],
+  ["admin_notes", "Admin notes"],
+];
+
+function diffText(value) {
+  return typeof value === "string" ? value : JSON.stringify(value ?? "");
+}
+
+function compactChange(beforeValue, afterValue) {
+  const before = diffText(beforeValue).trim().split(/\s+/).filter(Boolean);
+  const after = diffText(afterValue).trim().split(/\s+/).filter(Boolean);
+  let start = 0;
+  while (start < before.length && start < after.length && before[start] === after[start]) start += 1;
+  let beforeEnd = before.length - 1;
+  let afterEnd = after.length - 1;
+  while (beforeEnd >= start && afterEnd >= start && before[beforeEnd] === after[afterEnd]) {
+    beforeEnd -= 1;
+    afterEnd -= 1;
+  }
+  const removed = before.slice(start, beforeEnd + 1);
+  const added = after.slice(start, afterEnd + 1);
+  return {
+    added: added.length,
+    removed: removed.length,
+    addedText: added.join(" ").slice(0, 220),
+    removedText: removed.join(" ").slice(0, 220),
+  };
+}
+
+function versionChanges(version = {}, previousVersion) {
+  if (!previousVersion?.snapshot) return [];
+  return VERSION_FIELDS.flatMap(([key, label]) => {
+    const before = previousVersion.snapshot?.[key];
+    const after = version.snapshot?.[key];
+    if (diffText(before) === diffText(after)) return [];
+    return [{ key, label, ...compactChange(before, after) }];
+  });
 }
 
 function versionTime(value) {
@@ -1136,31 +1224,51 @@ function VersionHistoryPanel({ versions, state, onRefresh, onRestore }) {
     <section className="admin-card admin-history-panel" aria-label="Version history">
       <div className="admin-section-actions">
         <div>
-          <p className="section-kicker">Autosave archive</p>
+          <p className="section-kicker">Team checkpoints</p>
           <h2>Version history</h2>
-          <p className="muted">The latest 20 previous versions are archived before autosave or manual save overwrites the draft.</p>
+          <p className="muted">Autosave protects the working draft quietly. A version appears here only when someone clicks Save version.</p>
         </div>
         <button type="button" onClick={onRefresh}>Refresh</button>
       </div>
       {state && <p className="admin-upload-status">{state}</p>}
       {versions.length ? (
         <div className="admin-version-list">
-          {versions.map((version) => (
+          {versions.map((version, index) => {
+            const changes = versionChanges(version, versions[index + 1]);
+            return (
             <article className="admin-version-item" key={version.id}>
               <div>
                 <strong>{versionTime(version.created_at)}</strong>
                 <small>
-                  {(version.source || "save").replace(/-/g, " ")}
-                  {version.saved_by ? ` by ${version.saved_by}` : ""}
+                  {version.saved_by ? `Saved by ${version.saved_by}` : "Saved team version"}
                 </small>
-                <p>{versionPreview(version) || "Saved month draft"}</p>
+                {changes.length ? (
+                  <details className="admin-version-changes">
+                    <summary>
+                      {changes.map((change) => change.label).join(", ")} changed
+                    </summary>
+                    <div className="admin-version-change-list">
+                      {changes.map((change) => (
+                        <div className="admin-version-change" key={change.key}>
+                          <b>{change.label}</b>
+                          <span className="admin-diff-count added">+{change.added}</span>
+                          <span className="admin-diff-count removed">−{change.removed}</span>
+                          {change.addedText && <p className="admin-diff-added">Added: {change.addedText}{change.addedText.length >= 220 ? "…" : ""}</p>}
+                          {change.removedText && <p className="admin-diff-removed">Deleted: {change.removedText}{change.removedText.length >= 220 ? "…" : ""}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ) : (
+                  <p>{index === versions.length - 1 ? "First saved team version" : "Saved month version"}</p>
+                )}
               </div>
               <button type="button" onClick={() => onRestore(version)}>Restore</button>
             </article>
-          ))}
+          )})}
         </div>
       ) : (
-        <p className="muted">No previous versions yet. Edits from now on are tracked here.</p>
+        <p className="muted">No team versions yet. Autosave is protecting the draft. Click Save version when a meaningful round of work is done.</p>
       )}
     </section>
   );
@@ -1168,37 +1276,130 @@ function VersionHistoryPanel({ versions, state, onRefresh, onRestore }) {
 
 function BasicsEditor({
   month,
+  token,
   updateMonth,
   updateHero,
   updateResource,
   addResource,
   removeResource,
+  moveResource,
   applyMonthlyTemplate,
   activeResourceIndex,
   onEditResource,
 }) {
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [heroUploadState, setHeroUploadState] = useState("");
+  const heroFileInputRef = useRef(null);
+  const permanentWorkshopLink = `${MASTERY_ORIGIN}/workshops/${WORKSHOP_YEAR}/${month.slug || "month"}`;
+
+  function readHeroFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Could not read image file."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadHeroImage(file) {
+    if (!file) return;
+    setHeroUploadState("Uploading image...");
+    try {
+      const dataUrl = await readHeroFileAsDataUrl(file);
+      const data = await adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "upload-image",
+          month_slug: month.slug || "shared",
+          file_name: file.name,
+          content_type: file.type,
+          data: dataUrl,
+        }),
+      });
+      updateHero("src", data.url);
+      if (!month.hero?.alt) {
+        updateHero("alt", `${month.label || "Mastery"} workshop image`);
+      }
+      setHeroUploadState("Image uploaded and added to the hero");
+      window.setTimeout(() => setHeroUploadState(""), 2500);
+    } catch (err) {
+      setHeroUploadState(err.message || "Image upload failed");
+    } finally {
+      if (heroFileInputRef.current) heroFileInputRef.current.value = "";
+    }
+  }
+
+  async function copyPermanentWorkshopLink() {
+    await navigator.clipboard.writeText(permanentWorkshopLink);
+    setLinkCopied(true);
+    window.setTimeout(() => setLinkCopied(false), 1600);
+  }
+
   return (
     <div className="admin-card-grid">
       <div className="admin-card">
+        <p className="admin-order-label">1 · Page settings</p>
         <h2>Month setup</h2>
-        <label>Slug<input value={month.slug || ""} onChange={(event) => updateMonth({ slug: slugify(event.target.value) })} /></label>
-        <label>Label<input value={month.label || ""} onChange={(event) => updateMonth({ label: event.target.value, month_number: event.target.value })} /></label>
+        <p className="admin-system-value"><span>Editing month</span><strong>{month.label || month.month_number || "Month"}</strong></p>
         <label>Topic<input value={month.topic || ""} onChange={(event) => updateMonth({ topic: event.target.value })} /></label>
         <label>Focus<input value={month.focus || ""} onChange={(event) => updateMonth({ focus: event.target.value })} /></label>
         <label>Outcome<textarea value={month.outcome || ""} onChange={(event) => updateMonth({ outcome: event.target.value })} rows={3} /></label>
+        <label>
+          Permanent workshop link
+          <span className="admin-copy-field">
+            <input value={permanentWorkshopLink} readOnly />
+            <button type="button" onClick={copyPermanentWorkshopLink}>{linkCopied ? "Copied" : "Copy"}</button>
+          </span>
+        </label>
+        <p className="muted">Use this dated link in emails, calendar events, and shared resources. It will never move to a different month.</p>
+        <div className="admin-field-preview" aria-label="Page settings preview">
+          <span className="admin-preview-label">Frontend preview</span>
+          <div className="admin-month-copy-preview">
+            <p className="section-kicker">{month.month_number || month.label}</p>
+            <h3>{month.focus || `${month.label || "Month"} Mastery Workshop`}</h3>
+            <p>{month.outcome || "The workshop outcome will appear here."}</p>
+          </div>
+        </div>
       </div>
       <div className="admin-card">
+        <p className="admin-order-label">2 · Top of workshop page</p>
         <h2>Hero</h2>
-        <label>Image path<input value={month.hero?.src || ""} onChange={(event) => updateHero("src", event.target.value)} /></label>
+        <input
+          ref={heroFileInputRef}
+          className="admin-file-input"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          onChange={(event) => uploadHeroImage(event.target.files?.[0])}
+        />
+        <button className="admin-image-upload-button" type="button" onClick={() => heroFileInputRef.current?.click()}>
+          {month.hero?.src ? "Replace hero image" : "Upload hero image"}
+        </button>
+        {heroUploadState && <p className="admin-upload-status">{heroUploadState}</p>}
         <label>Alt text<input value={month.hero?.alt || ""} onChange={(event) => updateHero("alt", event.target.value)} /></label>
         <label>Title<input value={month.hero?.title || ""} onChange={(event) => updateHero("title", event.target.value)} /></label>
         <label>Caption<textarea value={month.hero?.caption || ""} onChange={(event) => updateHero("caption", event.target.value)} rows={3} /></label>
+        <div className="admin-field-preview" aria-label="Hero preview">
+          <span className="admin-preview-label">Frontend preview</span>
+          {month.hero?.src ? (
+            <figure className="admin-hero-preview">
+              <img src={month.hero.src} alt={month.hero.alt || ""} />
+              <figcaption>
+                <span>{month.hero?.kicker || "Published month"}</span>
+                <strong>{month.hero?.title || `${month.label}: ${month.topic || "Mastery"}`}</strong>
+                {month.hero?.caption && <small>{month.hero.caption}</small>}
+              </figcaption>
+            </figure>
+          ) : (
+            <p className="admin-preview-empty">Upload an image to preview the hero.</p>
+          )}
+        </div>
       </div>
       <div className="admin-card admin-card-wide">
         <div className="admin-section-actions">
           <div>
+            <p className="admin-order-label">3 · Frontend card order</p>
             <h2>Resource cards</h2>
-            <p className="muted">This is the main content map. Edit a card, then open the matching content editor from that row.</p>
+            <p className="muted">Cards appear on the member page in this exact top-to-bottom order. Reorder them here, then use Edit to open the matching content below.</p>
           </div>
           <div className="admin-inline-actions">
             <button type="button" onClick={applyMonthlyTemplate}>Apply July Page Template</button>
@@ -1213,25 +1414,26 @@ function BasicsEditor({
             <span>Description</span>
             <span>Status</span>
             <span>Link</span>
-            <span>Actions</span>
+            <span>Order & actions</span>
           </div>
           {(month.resources || []).map((item, index) => (
             <div className="admin-resource-row" role="row" key={`${item.type}-${index}`}>
-              <select value={item.category || "Workshop"} onChange={(event) => updateResource(index, "category", event.target.value)} aria-label="Category">
-                {RESOURCE_CATEGORIES.map((category) => (
-                  <option value={category} key={category}>{category}</option>
-                ))}
-              </select>
-              <input value={item.type || ""} onChange={(event) => updateResource(index, "type", event.target.value)} placeholder="Type" aria-label="Type" />
-              <input value={item.title || ""} onChange={(event) => updateResource(index, "title", event.target.value)} placeholder="Title" aria-label="Title" />
-              <textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={2} aria-label="Description" />
-              <select value={RESOURCE_STATUSES.includes(item.status) ? item.status : "idea"} onChange={(event) => updateResource(index, "status", event.target.value)} aria-label="Status">
-                {RESOURCE_STATUSES.map((status) => (
-                  <option value={status} key={status}>{status}</option>
-                ))}
-              </select>
-              <textarea value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" rows={2} aria-label="Link" />
+              <label className="admin-resource-field"><span>Category</span><select value={item.category || "Workshop"} onChange={(event) => updateResource(index, "category", event.target.value)} aria-label="Category">
+                {RESOURCE_CATEGORIES.map((category) => <option value={category} key={category}>{category}</option>)}
+              </select></label>
+              <label className="admin-resource-field"><span>Type</span><input value={item.type || ""} onChange={(event) => updateResource(index, "type", event.target.value)} placeholder="Type" aria-label="Type" /></label>
+              <label className="admin-resource-field"><span>Title</span><input value={item.title || ""} onChange={(event) => updateResource(index, "title", event.target.value)} placeholder="Title" aria-label="Title" /></label>
+              <label className="admin-resource-field"><span>Description</span><textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={2} aria-label="Description" /></label>
+              <label className="admin-resource-field"><span>Status</span><select value={RESOURCE_STATUSES.includes(item.status) ? item.status : "idea"} onChange={(event) => updateResource(index, "status", event.target.value)} aria-label="Status">
+                {RESOURCE_STATUSES.map((status) => <option value={status} key={status}>{status}</option>)}
+              </select></label>
+              <label className="admin-resource-field"><span>Link</span><textarea value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" rows={2} aria-label="Link" /></label>
               <div className="admin-resource-actions">
+                <div className="admin-order-actions" aria-label={`Reorder ${item.title || `resource ${index + 1}`}`}>
+                  <span>#{index + 1}</span>
+                  <button type="button" onClick={() => moveResource(index, -1)} disabled={index === 0} aria-label="Move up">↑</button>
+                  <button type="button" onClick={() => moveResource(index, 1)} disabled={index === (month.resources || []).length - 1} aria-label="Move down">↓</button>
+                </div>
                 <button
                   type="button"
                   className={activeResourceIndex === index ? "active" : ""}
@@ -1249,11 +1451,91 @@ function BasicsEditor({
   );
 }
 
-function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", token, monthSlug }) {
+function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", token, monthSlug, documentKey = "document", actor }) {
   const [mode, setMode] = useState("edit");
   const [uploadState, setUploadState] = useState("");
+  const [comments, setComments] = useState([]);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [replyDrafts, setReplyDrafts] = useState({});
+  const [commentSelection, setCommentSelection] = useState(null);
+  const [commentState, setCommentState] = useState("");
+  const [hasSelection, setHasSelection] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!token || !monthSlug) return;
+    loadComments();
+  }, [token, monthSlug, documentKey]);
+
+  async function loadComments() {
+    try {
+      const data = await adminFetch(token, `/api/mastery-admin?action=comments&slug=${encodeURIComponent(monthSlug)}&document_key=${encodeURIComponent(documentKey)}`);
+      setComments(data.comments || []);
+      setCommentState("");
+    } catch (err) {
+      setCommentState(err.message || "Could not load comments");
+    }
+  }
+
+  function startComment() {
+    const textarea = textareaRef.current;
+    const start = textarea?.selectionStart ?? 0;
+    const end = textarea?.selectionEnd ?? start;
+    const quotedText = String(value || "").slice(start, end);
+    if (!quotedText.trim()) {
+      setCommentState("Select some text first, then click Comment.");
+      return;
+    }
+    setCommentSelection({ start, end, quotedText });
+    setCommentDraft("");
+    setCommentState("");
+  }
+
+  async function createComment(parentId = null) {
+    const bodyText = parentId ? replyDrafts[parentId] : commentDraft;
+    if (!bodyText?.trim()) return;
+    setCommentState(parentId ? "Posting reply..." : "Posting comment...");
+    try {
+      await adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "create-comment", actor, month_slug: monthSlug, document_key: documentKey,
+          parent_id: parentId, body: bodyText,
+          selection_start: commentSelection?.start, selection_end: commentSelection?.end,
+          quoted_text: commentSelection?.quotedText,
+        }),
+      });
+      setCommentSelection(null);
+      setCommentDraft("");
+      setReplyDrafts((current) => ({ ...current, [parentId]: "" }));
+      await loadComments();
+    } catch (err) { setCommentState(err.message || "Could not post comment"); }
+  }
+
+  async function editComment(comment) {
+    const nextBody = window.prompt("Edit comment", comment.body);
+    if (!nextBody || nextBody.trim() === comment.body) return;
+    try {
+      await adminFetch(token, "/api/mastery-admin", { method: "POST", body: JSON.stringify({ action: "update-comment", actor, comment_id: comment.id, body: nextBody }) });
+      await loadComments();
+    } catch (err) { setCommentState(err.message || "Could not edit comment"); }
+  }
+
+  async function deleteComment(comment) {
+    if (!window.confirm("Delete this comment? Replies in its thread will also be deleted.")) return;
+    try {
+      await adminFetch(token, "/api/mastery-admin", { method: "POST", body: JSON.stringify({ action: "delete-comment", actor, comment_id: comment.id }) });
+      await loadComments();
+    } catch (err) { setCommentState(err.message || "Could not delete comment"); }
+  }
+
+  async function toggleResolved(comment) {
+    try {
+      await adminFetch(token, "/api/mastery-admin", { method: "POST", body: JSON.stringify({ action: "resolve-comment", actor, comment_id: comment.id, resolved: !comment.resolved_at }) });
+      await loadComments();
+    } catch (err) { setCommentState(err.message || "Could not update thread"); }
+  }
 
   function insertText(template) {
     const textarea = textareaRef.current;
@@ -1365,12 +1647,54 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", t
             />
             <button type="button" onClick={() => fileInputRef.current?.click()}>Upload Screenshot</button>
             <button type="button" onClick={addImageUrl}>Image URL</button>
+            {hasSelection && <button type="button" className="comment-button" onClick={startComment}>Comment on selection</button>}
           </div>
           {uploadState && <p className="admin-upload-status">{uploadState}</p>}
         </div>
       )}
       {mode === "edit" ? (
-        <textarea ref={textareaRef} value={value} onChange={(event) => onChange(event.target.value)} rows={24} spellCheck="true" />
+        <div className="markdown-collaboration-layout">
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            onSelect={(event) => setHasSelection(event.currentTarget.selectionEnd > event.currentTarget.selectionStart)}
+            rows={24}
+            spellCheck="true"
+          />
+          <aside className="editor-comments" aria-label={`${title} comments`}>
+            <div className="editor-comments-head"><strong>Comments</strong><span>{comments.filter((item) => !item.parent_id && !item.resolved_at).length} open</span></div>
+            {commentSelection && (
+              <div className="comment-composer">
+                <blockquote>{commentSelection.quotedText}</blockquote>
+                <textarea value={commentDraft} onChange={(event) => setCommentDraft(event.target.value)} rows={3} autoFocus placeholder="Leave a comment..." />
+                <div><button type="button" onClick={() => createComment()}>Comment</button><button type="button" onClick={() => setCommentSelection(null)}>Cancel</button></div>
+              </div>
+            )}
+            {comments.filter((item) => !item.parent_id).map((comment) => {
+              const replies = comments.filter((item) => item.parent_id === comment.id);
+              const isCreator = comment.author_id === actor?.id;
+              return <article className={`comment-thread ${comment.resolved_at ? "resolved" : ""}`} key={comment.id}>
+                <blockquote>{comment.quoted_text}</blockquote>
+                <div className="comment-meta"><span className="comment-author">{comment.author_avatar && <img src={comment.author_avatar} alt="" />}<strong>{comment.author_name}</strong></span><time>{new Date(comment.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time></div>
+                <p>{comment.body}</p>
+                {replies.map((reply) => <div className="comment-reply" key={reply.id}>
+                  <div className="comment-meta"><span className="comment-author">{reply.author_avatar && <img src={reply.author_avatar} alt="" />}<strong>{reply.author_name}</strong></span><time>{new Date(reply.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time></div>
+                  <p>{reply.body}</p>
+                  {reply.author_id === actor?.id && <div className="comment-actions"><button type="button" onClick={() => editComment(reply)}>Edit</button><button type="button" onClick={() => deleteComment(reply)}>Delete</button></div>}
+                </div>)}
+                {!comment.resolved_at && <textarea value={replyDrafts[comment.id] || ""} onChange={(event) => setReplyDrafts((current) => ({ ...current, [comment.id]: event.target.value }))} rows={2} placeholder="Reply..." />}
+                <div className="comment-actions">
+                  {!comment.resolved_at && replyDrafts[comment.id]?.trim() && <button type="button" onClick={() => createComment(comment.id)}>Reply</button>}
+                  <button type="button" onClick={() => toggleResolved(comment)}>{comment.resolved_at ? "Reopen" : "Resolve"}</button>
+                  {isCreator && <><button type="button" onClick={() => editComment(comment)}>Edit</button><button type="button" onClick={() => deleteComment(comment)}>Delete</button></>}
+                </div>
+              </article>;
+            })}
+            {!comments.length && !commentSelection && <p className="admin-preview-empty">Select text and click Comment to start a discussion.</p>}
+            {commentState && <p className="admin-upload-status">{commentState}</p>}
+          </aside>
+        </div>
       ) : (
         <div className="markdown-editor-preview">
           <CustomerMarkdownPreview content={value} kind={previewKind} />
@@ -1429,45 +1753,13 @@ function GuideCustomerPreview({ content }) {
 }
 
 function IntroCustomerPreview({ section }) {
-  if (section.title !== "Before You Start") {
-    return (
-      <article className="workbench-step workbench-intro" id={section.id}>
-        <div className="workbench-step-top">
-          <span>Prep</span>
-        </div>
-        <h3>{section.title}</h3>
-        <MarkdownBlocks blocks={section.blocks} />
-      </article>
-    );
-  }
-
   return (
-    <article className="workbench-step workbench-intro before-start-card" id={section.id}>
+    <article className="workbench-step workbench-intro" id={section.id}>
       <div className="workbench-step-top">
-        <span>Prep checklist</span>
+        <span>{section.title === "Before You Start" ? "Prep checklist" : "Prep"}</span>
       </div>
-      <div className="before-start-layout">
-        <div>
-          <h3>{section.title}</h3>
-          <p className="workbench-step-subtitle">
-            Get these six setup pieces ready before you start building your AI Hub.
-          </p>
-        </div>
-      </div>
-      <div className="before-start-checklist">
-        {JULY_PREREQUISITES.map((item) => (
-          <div className="before-start-item" key={item.label}>
-            <span className="before-start-check" aria-hidden="true" />
-            <div>
-              <strong>{item.label}</strong>
-              <p>{item.detail}</p>
-              <a className="link-button" href={item.link} target={item.internal ? undefined : "_blank"} rel={item.internal ? undefined : "noreferrer"}>
-                {item.linkLabel}
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
+      <h3>{section.title}</h3>
+      <MarkdownBlocks blocks={section.blocks} />
     </article>
   );
 }
@@ -1918,7 +2210,14 @@ function shortDate(value = "") {
 }
 
 function AnalyticsBars({ rows = [] }) {
-  const max = Math.max(1, ...rows.map((row) => row.page_views || 0, row.help_clicks || 0, row.copy_clicks || 0));
+  const max = Math.max(
+    1,
+    ...rows.flatMap((row) => [
+      Number(row.page_views || 0),
+      Number(row.help_clicks || 0),
+      Number(row.copy_clicks || 0),
+    ])
+  );
   const barHeight = (value) => (value ? Math.max(4, (value / max) * 100) : 0);
 
   return (

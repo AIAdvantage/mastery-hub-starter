@@ -1,4 +1,61 @@
 {
+  "redirects": [
+    {
+      "source": "/monthly-hubs",
+      "destination": "/current-workshop",
+      "permanent": false
+    },
+    {
+      "source": "/monthly-resources",
+      "destination": "/current-workshop",
+      "permanent": false
+    },
+    {
+      "source": "/challenges",
+      "destination": "/current-workshop",
+      "permanent": false
+    },
+    {
+      "source": "/challenges/july",
+      "destination": "/monthly-resources/july",
+      "permanent": false
+    },
+    {
+      "source": "/monthly-resources/june",
+      "destination": "/past-workshops/june",
+      "permanent": false
+    },
+    {
+      "source": "/challenges/june",
+      "destination": "/past-workshops/june",
+      "permanent": false
+    },
+    {
+      "source": "/tutorial",
+      "destination": "/faq",
+      "permanent": false
+    },
+    {
+      "source": "/challenge-archive",
+      "destination": "/past-workshops",
+      "permanent": false
+    },
+    {
+      "source": "/submit",
+      "destination": "/current-workshop",
+      "permanent": false
+    },
+    {
+      "source": "/archive",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/archive/:path*",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",
