@@ -8,6 +8,7 @@ const ADMIN_EMAILS = new Set([
   "nikita@aiadvantage.com",
   "dirk@aiadvantage.com",
   "igor@aiadvantage.com",
+  "fayamonkeyrecords@gmail.com",
 ]);
 const WORKSHOP_YEAR = "2026";
 const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";

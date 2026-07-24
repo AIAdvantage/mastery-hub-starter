@@ -11,6 +11,7 @@ const ADMIN_EMAILS = new Set([
   "nikita@aiadvantage.com",
   "dirk@aiadvantage.com",
   "igor@aiadvantage.com",
+  "fayamonkeyrecords@gmail.com",
 ]);
 const IMAGE_BUCKET = "mastery-guide-images";
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
