@@ -1,18 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { timingSafeEqual } from "node:crypto";
-import { createClerkClient, verifyToken } from "@clerk/backend";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_TOKEN = process.env.MASTERY_ADMIN_TOKEN;
-const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
-const ADMIN_EMAILS = new Set([
-  "ariadne@aiadvantage.com",
-  "nikita@aiadvantage.com",
-  "dirk@aiadvantage.com",
-  "igor@aiadvantage.com",
-  "fayamonkeyrecords@gmail.com",
-]);
 const IMAGE_BUCKET = "mastery-guide-images";
 const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
 const REQUEST_FILE_BUCKET = "mastery-request-files";
@@ -47,28 +38,9 @@ function service() {
   });
 }
 
-async function requireAdmin(req, res) {
-  const authorization = String(req.headers.authorization || "");
-  const bearerToken = authorization.startsWith("Bearer ") ? authorization.slice(7).trim() : "";
-
-  if (bearerToken && CLERK_SECRET_KEY) {
-    try {
-      const session = await verifyToken(bearerToken, { secretKey: CLERK_SECRET_KEY });
-      const clerk = createClerkClient({ secretKey: CLERK_SECRET_KEY });
-      const user = await clerk.users.getUser(session.sub);
-      const emails = user.emailAddresses.map((entry) => entry.emailAddress.toLowerCase());
-      if (emails.some((email) => ADMIN_EMAILS.has(email))) return true;
-      json(res, 403, { error: "This account does not have Mastery admin access" });
-      return false;
-    } catch {
-      json(res, 401, { error: "Please sign in again to access Mastery admin" });
-      return false;
-    }
-  }
-
-  // Retain the passcode only as a local/emergency fallback.
+function requireAdmin(req, res) {
   if (!ADMIN_TOKEN) {
-    json(res, 500, { error: "Admin authentication is not configured" });
+    json(res, 500, { error: "Admin token is not configured" });
     return false;
   }
   const token = String(req.headers["x-admin-token"] || "");
@@ -373,7 +345,7 @@ function aggregateEvents(events = []) {
 }
 
 export default async function handler(req, res) {
-  if (!(await requireAdmin(req, res))) return;
+  if (!requireAdmin(req, res)) return;
 
   try {
     const supabase = service();

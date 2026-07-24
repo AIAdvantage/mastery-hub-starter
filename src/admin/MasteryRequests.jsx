@@ -24,9 +24,7 @@ async function requestFetch(token, path, options = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(token.split(".").length === 3
-        ? { Authorization: `Bearer ${token}` }
-        : { "x-admin-token": token }),
+      "x-admin-token": token,
       ...(options.headers || {}),
     },
   });
