@@ -1,9 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { JULY_CONTENT } from "../julyContent.js";
 import MasteryRequests from "./MasteryRequests.jsx";
 
-const TOKEN_KEY = "mastery_admin_token";
+const ADMIN_EMAILS = new Set([
+  "ariadne@aiadvantage.com",
+  "nikita@aiadvantage.com",
+  "dirk@aiadvantage.com",
+  "igor@aiadvantage.com",
+]);
 const WORKSHOP_YEAR = "2026";
 const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";
 
@@ -436,13 +441,14 @@ async function adminFetch(token, path, options = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      "x-admin-token": safeToken,
+      ...(safeToken.split(".").length === 3
+        ? { Authorization: `Bearer ${safeToken}` }
+        : { "x-admin-token": safeToken }),
       ...(options.headers || {}),
     },
   });
   const data = await res.json().catch(() => ({}));
   if (res.status === 401) {
-    sessionStorage.removeItem(TOKEN_KEY);
     window.dispatchEvent(new CustomEvent("mastery-admin-unauthorized", {
       detail: { message: data.error || "Admin passcode was not accepted" },
     }));
@@ -452,9 +458,9 @@ async function adminFetch(token, path, options = {}) {
 }
 
 export default function AdminBackend({ navigate }) {
+  const { getToken, isLoaded: isAuthLoaded } = useAuth();
   const { user, isSignedIn } = useUser();
-  const [token, setToken] = useState(() => normalizeAdminToken(sessionStorage.getItem(TOKEN_KEY) || ""));
-  const [tokenDraft, setTokenDraft] = useState("");
+  const [token, setToken] = useState("");
   const [tokenError, setTokenError] = useState("");
   const [months, setMonths] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState("");
@@ -479,6 +485,26 @@ export default function AdminBackend({ navigate }) {
   const canLoad = Boolean(token);
   const selectedSummary = months.find((item) => item.slug === selectedSlug);
   const userLabel = user?.fullName || user?.primaryEmailAddress?.emailAddress || "admin";
+  const signedInEmail = user?.primaryEmailAddress?.emailAddress?.toLowerCase() || "";
+  const hasAdminAccess = ADMIN_EMAILS.has(signedInEmail);
+
+  useEffect(() => {
+    if (!isAuthLoaded || !isSignedIn || !hasAdminAccess) {
+      setToken("");
+      return;
+    }
+    let active = true;
+    getToken()
+      .then((nextToken) => {
+        if (active) setToken(nextToken || "");
+      })
+      .catch(() => {
+        if (active) setTokenError("Could not verify this admin session. Please sign in again.");
+      });
+    return () => {
+      active = false;
+    };
+  }, [getToken, hasAdminAccess, isAuthLoaded, isSignedIn]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -495,10 +521,8 @@ export default function AdminBackend({ navigate }) {
 
   useEffect(() => {
     function handleUnauthorized(event) {
-      sessionStorage.removeItem(TOKEN_KEY);
       setToken("");
-      setTokenDraft("");
-      setTokenError(event.detail?.message || "That admin passcode was not accepted. Please try again.");
+      setTokenError(event.detail?.message || "Your admin session could not be verified. Please sign in again.");
       setMonths([]);
       setSelectedSlug("");
       setMonth(null);
@@ -592,16 +616,6 @@ export default function AdminBackend({ navigate }) {
       setAnalytics([]);
       setAnalyticsReport(null);
     }
-  }
-
-  function unlock(event) {
-    event.preventDefault();
-    const nextToken = normalizeAdminToken(tokenDraft);
-    if (!nextToken) return;
-    setTokenError("");
-    sessionStorage.setItem(TOKEN_KEY, nextToken);
-    setToken(nextToken);
-    setTokenDraft("");
   }
 
   function updateMonth(patch) {
@@ -880,8 +894,20 @@ export default function AdminBackend({ navigate }) {
         <div className="section-heading">
           <p className="section-kicker">Admin</p>
           <h1 className="page-title">Sign in before opening the admin backend.</h1>
-          <p className="muted">Use the same Mastery account first, then enter the admin passcode.</p>
+          <p className="muted">Use your approved AI Advantage team account.</p>
           <button type="button" onClick={() => navigate("/sign-in")}>Sign in</button>
+        </div>
+      </section>
+    );
+  }
+
+  if (isAuthLoaded && !hasAdminAccess) {
+    return (
+      <section className="section page-section admin-shell">
+        <div className="admin-lock">
+          <p className="section-kicker">Admin</p>
+          <h1 className="page-title">This account does not have admin access.</h1>
+          <p className="muted">Sign in with an approved AI Advantage team email.</p>
         </div>
       </section>
     );
@@ -892,18 +918,9 @@ export default function AdminBackend({ navigate }) {
       <section className="section page-section admin-shell">
         <div className="admin-lock">
           <p className="section-kicker">Admin</p>
-          <h1 className="page-title">Mastery admin backend.</h1>
-          <p className="muted">Enter the admin passcode for this browser session. Draft writes stay behind the server API.</p>
+          <h1 className="page-title">Opening Mastery admin…</h1>
+          <p className="muted">Verifying your AI Advantage team account.</p>
           {tokenError && <p className="admin-auth-error" role="alert">{tokenError}</p>}
-          <form onSubmit={unlock}>
-            <input
-              type="password"
-              value={tokenDraft}
-              onChange={(event) => setTokenDraft(event.target.value)}
-              placeholder="Admin passcode"
-            />
-            <button type="submit">Unlock Admin</button>
-          </form>
         </div>
       </section>
     );
