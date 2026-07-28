@@ -238,6 +238,11 @@ const MASTERY_REPLAYS_URL = "https://community.aiadvantage.com/c/mastery-replays
 const JULY_RECORDINGS_URL = "https://community.aiadvantage.com/c/mastery-replays?topics=528891";
 const MASTERY_CALENDAR_URL = "https://community.aiadvantage.com/c/mastery-calendar/";
 const CHALLENGE_SUBMISSIONS_URL = "https://community.aiadvantage.com/c/challenge-submissions/";
+const JULY_CHALLENGE_STATUS = {
+  deadline: "Wednesday, July 29",
+  prize: "AI Advantage Swag Box",
+  submitUrl: CHALLENGE_SUBMISSIONS_URL,
+};
 const HAS_CLERK = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
 const PAST_SYSTEMS = [
@@ -1331,6 +1336,15 @@ function cmsGuideHelpContext(month, type = "guide") {
   };
 }
 
+function cmsHasContent(month, key) {
+  if (!month) return false;
+  if (key === "guide") return Boolean(month.guide_markdown?.trim());
+  if (key === "prompts") return Array.isArray(month.prompts) && month.prompts.length > 0;
+  if (key === "extras") return Boolean(month.extras?.video?.src || month.extras?.video?.title || month.extras?.video?.intro || month.extras?.prompts?.length);
+  if (key === "challenge") return Boolean(month.challenge_markdown?.trim());
+  return false;
+}
+
 function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) {
   const segment = path.split("/")[2] || "";
   const cmsMonth = cmsMonths.find((month) => month.slug === segment);
@@ -1346,6 +1360,17 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
 
   if (cmsMonth && segment !== "june" && segment !== "july") {
     if (path === `/monthly-resources/${segment}/guide`) {
+      if (!cmsHasContent(cmsMonth, "guide")) {
+        return (
+          <MonthUnavailable
+            basePath="/monthly-resources"
+            label={segment}
+            navigate={navigate}
+            title="This guide is not live yet."
+            message="The month is open, but this guide has not been published inside the month."
+          />
+        );
+      }
       return (
         <GuidePage
           navigate={navigate}
@@ -1361,6 +1386,17 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
     }
 
     if (path === `/monthly-resources/${segment}/prompts`) {
+      if (!cmsHasContent(cmsMonth, "prompts")) {
+        return (
+          <MonthUnavailable
+            basePath="/monthly-resources"
+            label={segment}
+            navigate={navigate}
+            title="These prompts are not live yet."
+            message="The month is open, but this prompt page has not been published inside the month."
+          />
+        );
+      }
       return (
         <SessionPromptsPage
           navigate={navigate}
@@ -1377,6 +1413,17 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
     }
 
     if (path === `/monthly-resources/${segment}/extras`) {
+      if (!cmsHasContent(cmsMonth, "extras")) {
+        return (
+          <MonthUnavailable
+            basePath="/monthly-resources"
+            label={segment}
+            navigate={navigate}
+            title="These extras are not live yet."
+            message="The month is open, but this extras page has not been published inside the month."
+          />
+        );
+      }
       return (
         <SessionPromptsPage
           navigate={navigate}
@@ -1522,8 +1569,9 @@ function CmsMonthGroup({ months = [], basePath, navigate }) {
 
 function CmsResourcesMenu({ month, navigate }) {
   const displayMonth = cmsMonthToMonth(month);
-  const hasPrompts = Array.isArray(month.prompts) && month.prompts.length > 0;
-  const hasExtras = month.extras && Array.isArray(month.extras.prompts) && month.extras.prompts.length > 0;
+  const hasGuide = cmsHasContent(month, "guide");
+  const hasPrompts = cmsHasContent(month, "prompts");
+  const hasExtras = cmsHasContent(month, "extras");
   const resourceCards = Array.isArray(month.resources) ? month.resources.filter((item) => item?.title) : [];
   const groupedResources = resourceCards.reduce((groups, item) => {
     const category = item.category || "Workshop";
@@ -1585,12 +1633,12 @@ function CmsResourcesMenu({ month, navigate }) {
             </section>
           ))}
         </div>
-      ) : (
+      ) : hasGuide || hasPrompts || hasExtras ? (
         <div className="resource-grid resource-grid-three">
-          <button className="resource-card resource-card-button" type="button" onClick={() => navigate(`/monthly-resources/${month.slug}/guide`)}>
+          <button className="resource-card resource-card-button" type="button" disabled={!hasGuide} onClick={() => navigate(`/monthly-resources/${month.slug}/guide`)}>
             <div className="resource-card-top">
               <span>Guide</span>
-              <small>Step by step</small>
+              <small>{hasGuide ? "Published" : "Drafting"}</small>
             </div>
             <h4>{month.label} Guide</h4>
             <p>{month.outcome || "Open the main written guide for this month."}</p>
@@ -1611,6 +1659,11 @@ function CmsResourcesMenu({ month, navigate }) {
             <h4>Extras</h4>
             <p>Open optional follow-up resources, extra prompts, and supporting material.</p>
           </button>
+        </div>
+      ) : (
+        <div className="admin-empty">
+          <h2>Resources are being prepared.</h2>
+          <p>The month is open, but the team has not published the first page inside it yet.</p>
         </div>
       )}
     </section>
@@ -1899,7 +1952,52 @@ function JulyFaqCatchupPage({ navigate }) {
   );
 }
 
-function MonthVisualCard({ month = CURRENT_MONTH, actionLabel, actionLinks = [], onAction, variant = "" }) {
+function ChallengeStatusStrip({ deadline, prize, submitUrl = CHALLENGE_SUBMISSIONS_URL }) {
+  if (!deadline && !prize) return null;
+
+  return (
+    <div className="challenge-status-strip" aria-label="Challenge status">
+      <div className="challenge-status-item">
+        <span>Due</span>
+        <strong>{deadline}</strong>
+      </div>
+      <div className="challenge-status-item">
+        <span>Prize</span>
+        <strong>{prize}</strong>
+      </div>
+      <a className="challenge-status-submit" href={submitUrl} target="_blank" rel="noreferrer">
+        Submit your entry
+      </a>
+    </div>
+  );
+}
+
+function challengeStatusFromMarkdown(content = "") {
+  function field(names) {
+    const heading = names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+    const match = content.match(new RegExp(`^#{2,3}\\s+(?:${heading})\\s*\\n+([^\\n]+)`, "im"));
+    return match?.[1]
+      ?.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[*_`]/g, "")
+      .replace(/^The winner gets(?: an?)?\s+/i, "")
+      .replace(/[.]+$/, "")
+      .trim() || "";
+  }
+
+  return {
+    deadline: field(["Deadline"]),
+    prize: field(["Prize", "Prizes"]),
+    submitUrl: CHALLENGE_SUBMISSIONS_URL,
+  };
+}
+
+function MonthVisualCard({
+  month = CURRENT_MONTH,
+  actionLabel,
+  actionLinks = [],
+  onAction,
+  variant = "",
+}) {
   const image = month.image || CURRENT_MONTH.image;
   const className = ["month-visual-card", variant === "banner" ? "month-visual-card-banner" : ""]
     .filter(Boolean)
@@ -3555,6 +3653,17 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
 
   if (segment !== "july") {
     if (cmsMonth) {
+      if (!cmsHasContent(cmsMonth, "challenge")) {
+        return (
+          <MonthUnavailable
+            basePath="/challenges"
+            label={segment}
+            navigate={navigate}
+            title="This challenge is not live yet."
+            message="The month is open, but the challenge has not been published inside the month."
+          />
+        );
+      }
       if (child === "guide") return <CmsChallengeGuidePage month={cmsMonth} navigate={navigate} />;
       if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
       return <CmsChallengeLanding month={cmsMonth} navigate={navigate} />;
@@ -3642,6 +3751,7 @@ function CmsChallengeLanding({ month, navigate }) {
 function CmsChallengeGuidePage({ month, navigate }) {
   const challenge = month.challenge_markdown || "";
   const tocItems = useMemo(() => markdownTocItems(challenge), [challenge]);
+  const challengeStatus = useMemo(() => challengeStatusFromMarkdown(challenge), [challenge]);
 
   return (
     <section className="section page-section month-section has-hover-toc" aria-labelledby={`${month.slug}-challenge-guide-title`}>
@@ -3659,6 +3769,7 @@ function CmsChallengeGuidePage({ month, navigate }) {
           <div>
             <p className="section-kicker">Challenge</p>
             <h1 id={`${month.slug}-challenge-guide-title`} className="page-title">{month.label} Challenge</h1>
+            <ChallengeStatusStrip {...challengeStatus} />
             <p>{month.outcome || "Use this page to complete the monthly challenge and submit your work."}</p>
           </div>
         </div>
@@ -3787,6 +3898,7 @@ function JulyChallengeGuidePage({ navigate }) {
           <div>
             <p className="section-kicker">Challenge</p>
             <h1 id="challenge-title" className="page-title">July Challenge: Paint your AI Hub</h1>
+            <ChallengeStatusStrip {...JULY_CHALLENGE_STATUS} />
             <p>Use this page to complete the July challenge and submit the strongest version of your work.</p>
           </div>
         </div>

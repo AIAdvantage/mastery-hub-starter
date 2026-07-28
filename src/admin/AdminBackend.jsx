@@ -55,7 +55,7 @@ const PRESET_ORDER = UPCOMING_MONTH_PRESETS.reduce((acc, preset, index) => {
 const CONTENT_TABS = ["basics", "guide", "challenge", "prompts", "extras"];
 const ADMIN_SECTIONS = ["content", "analytics", "requests"];
 const RESOURCE_CATEGORIES = ["Workshop", "Extras", "Other"];
-const RESOURCE_STATUSES = ["idea", "first draft", "tested", "final"];
+const RESOURCE_STATUSES = ["idea", "outline", "first draft", "testing", "final draft", "ready to publish", "published"];
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
@@ -280,6 +280,10 @@ Post to [Challenge Submissions](https://community.aiadvantage.com/c/challenge-su
 
 Add the deadline here.
 
+## Prize
+
+Add the prize here.
+
 ## How Winners Are Chosen
 
 Community voting and team evaluation.`;
@@ -315,6 +319,7 @@ function createMonthTemplate(preset = {}) {
         title: `${label} Guide`,
         description: "Follow the full walkthrough for this month's build.",
         status: "first draft",
+        is_published: false,
         url: `/monthly-resources/${slug}/guide`,
       },
       {
@@ -323,6 +328,7 @@ function createMonthTemplate(preset = {}) {
         title: "Live Prompts",
         description: "Use these alongside the live workshop when you just need the prompts to follow each step.",
         status: "first draft",
+        is_published: false,
         url: `/monthly-resources/${slug}/prompts`,
       },
       {
@@ -331,6 +337,7 @@ function createMonthTemplate(preset = {}) {
         title: `${label} Recordings`,
         description: `Add the ${label} workshop replay link here once the recordings are ready.`,
         status: "idea",
+        is_published: false,
         url: "",
       },
       {
@@ -339,6 +346,7 @@ function createMonthTemplate(preset = {}) {
         title: `${label} Challenge`,
         description: "Use what you built this month, submit your version, and see what other members made.",
         status: "first draft",
+        is_published: false,
         url: `/challenges/${slug}`,
       },
       {
@@ -347,6 +355,7 @@ function createMonthTemplate(preset = {}) {
         title: "Go Deeper",
         description: "Use optional follow-up prompts when members are ready to extend the system after the live workshop.",
         status: "idea",
+        is_published: false,
         url: `/monthly-resources/${slug}/extras`,
       },
     ],
@@ -421,6 +430,12 @@ function resourceEditorLabel(tab) {
     prompts: "Live prompts",
     extras: "Extras",
   }[tab] || "Content";
+}
+
+function normalizedResourceStatus(status) {
+  if (status === "tested") return "testing";
+  if (status === "final") return "final draft";
+  return RESOURCE_STATUSES.includes(status) ? status : "idea";
 }
 
 function normalizeAdminToken(value = "") {
@@ -656,7 +671,7 @@ export default function AdminBackend({ navigate }) {
       ...current,
       resources: [
         ...(current?.resources || []),
-        { category: "Workshop", type: "Resource", title: "New Resource", description: "", status: "idea", url: "" },
+        { category: "Workshop", type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
       ],
     }));
   }
@@ -862,7 +877,7 @@ export default function AdminBackend({ navigate }) {
       lastSavedSnapshotRef.current = JSON.stringify(data.month);
       setMonth(data.month);
       await loadMonths();
-      setStatus(isPublished ? "Published. Members can access this month." : "Unpublished.");
+      setStatus(isPublished ? "Month published. Only cards marked Published inside the month are visible." : "Month unpublished.");
     } catch (err) {
       setError(err.message);
       setStatus("");
@@ -1147,7 +1162,7 @@ function PublicationToggle({ month, onChange }) {
         onClick={() => isPublished && onChange(false)}
         disabled={!month?.slug || !isPublished}
       >
-        Draft
+        Month Draft
       </button>
       <button
         type="button"
@@ -1155,7 +1170,7 @@ function PublicationToggle({ month, onChange }) {
         onClick={() => !isPublished && onChange(true)}
         disabled={!month?.slug || isPublished}
       >
-        Published
+        Month Published
       </button>
     </div>
   );
@@ -1399,7 +1414,7 @@ function BasicsEditor({
           <div>
             <p className="admin-order-label">3 · Frontend card order</p>
             <h2>Resource cards</h2>
-            <p className="muted">Cards appear on the member page in this exact top-to-bottom order. Reorder them here, then use Edit to open the matching content below.</p>
+            <p className="muted">The month-level publish toggle opens the shell. A card appears to members only when its Published checkbox is on.</p>
           </div>
           <div className="admin-inline-actions">
             <button type="button" onClick={applyMonthlyTemplate}>Apply July Page Template</button>
@@ -1413,6 +1428,7 @@ function BasicsEditor({
             <span>Title</span>
             <span>Description</span>
             <span>Status</span>
+            <span>Published</span>
             <span>Link</span>
             <span>Order & actions</span>
           </div>
@@ -1424,9 +1440,29 @@ function BasicsEditor({
               <label className="admin-resource-field"><span>Type</span><input value={item.type || ""} onChange={(event) => updateResource(index, "type", event.target.value)} placeholder="Type" aria-label="Type" /></label>
               <label className="admin-resource-field"><span>Title</span><input value={item.title || ""} onChange={(event) => updateResource(index, "title", event.target.value)} placeholder="Title" aria-label="Title" /></label>
               <label className="admin-resource-field"><span>Description</span><textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={2} aria-label="Description" /></label>
-              <label className="admin-resource-field"><span>Status</span><select value={RESOURCE_STATUSES.includes(item.status) ? item.status : "idea"} onChange={(event) => updateResource(index, "status", event.target.value)} aria-label="Status">
+              <label className="admin-resource-field"><span>Status</span><select
+                value={normalizedResourceStatus(item.status)}
+                onChange={(event) => {
+                  const nextStatus = event.target.value;
+                  updateResource(index, "status", nextStatus);
+                  if (nextStatus === "published") updateResource(index, "is_published", true);
+                }}
+                aria-label="Status"
+              >
                 {RESOURCE_STATUSES.map((status) => <option value={status} key={status}>{status}</option>)}
               </select></label>
+              <label className="admin-resource-field admin-resource-publish-field">
+                <span>Published</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(item.is_published)}
+                  onChange={(event) => {
+                    updateResource(index, "is_published", event.target.checked);
+                    updateResource(index, "status", event.target.checked ? "published" : "ready to publish");
+                  }}
+                  aria-label={`Publish ${item.title || `resource ${index + 1}`}`}
+                />
+              </label>
               <label className="admin-resource-field"><span>Link</span><textarea value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" rows={2} aria-label="Link" /></label>
               <div className="admin-resource-actions">
                 <div className="admin-order-actions" aria-label={`Reorder ${item.title || `resource ${index + 1}`}`}>

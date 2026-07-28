@@ -23,6 +23,15 @@ const REQUEST_FILE_TYPES = new Set([
   "application/zip",
 ]);
 const VERSION_HISTORY_LIMIT = 20;
+const CONTENT_STATUSES = new Set([
+  "idea",
+  "outline",
+  "first draft",
+  "testing",
+  "final draft",
+  "ready to publish",
+  "published",
+]);
 
 function json(res, status, payload) {
   res.status(status).setHeader("Content-Type", "application/json");
@@ -78,7 +87,7 @@ function cleanMonth(input = {}) {
     focus: input.focus || "",
     outcome: input.outcome || "",
     hero: input.hero || {},
-    resources: Array.isArray(input.resources) ? input.resources : [],
+    resources: Array.isArray(input.resources) ? input.resources.map(cleanResource) : [],
     guide_markdown: input.guide_markdown || "",
     challenge_markdown: input.challenge_markdown || "",
     challenge_prompt: input.challenge_prompt || "",
@@ -86,6 +95,20 @@ function cleanMonth(input = {}) {
     extras: input.extras || {},
     admin_notes: input.admin_notes || "",
     updated_by: input.updated_by || null,
+  };
+}
+
+function cleanResource(input = {}) {
+  const isPublished = Boolean(input.is_published);
+  const legacyStatus = input.status === "tested" ? "testing" : input.status === "final" ? "final draft" : input.status;
+  return {
+    category: input.category || "Workshop",
+    type: input.type || "Resource",
+    title: input.title || "",
+    description: input.description || "",
+    status: isPublished ? "published" : (CONTENT_STATUSES.has(legacyStatus) ? legacyStatus : "idea"),
+    is_published: isPublished,
+    url: input.url || "",
   };
 }
 
@@ -220,6 +243,7 @@ function cleanCommentBody(value) {
 
 const REQUEST_STATUSES = new Set(["new", "planned", "in-progress", "done"]);
 const REQUEST_PRIORITIES = new Set(["low", "medium", "high"]);
+const REQUEST_AREAS = new Set(["Platform", "Month Content", "Guide", "Workshop", "Challenge", "Resources", "Member Experience", "Backend", "Other"]);
 
 function cleanRequestText(value, max = 5000) {
   return String(value || "").trim().slice(0, max);
@@ -474,6 +498,7 @@ export default async function handler(req, res) {
       const title = cleanRequestText(body.title, 240);
       const description = cleanRequestText(body.description);
       const priority = REQUEST_PRIORITIES.has(body.priority) ? body.priority : "medium";
+      const area = REQUEST_AREAS.has(body.area) ? body.area : "Platform";
       if (!actor.id || !title || !description) {
         return json(res, 400, { error: "Author, title, and details are required." });
       }
@@ -481,6 +506,7 @@ export default async function handler(req, res) {
       const { data, error } = await supabase.from("mastery_admin_requests").insert({
         title,
         description,
+        area,
         priority,
         status: "new",
         attachments: Array.isArray(body.attachments) ? body.attachments.slice(0, 10) : [],
@@ -508,6 +534,10 @@ export default async function handler(req, res) {
       if (patch.priority !== undefined) {
         if (!REQUEST_PRIORITIES.has(patch.priority)) return json(res, 400, { error: "Unknown request priority." });
         update.priority = patch.priority;
+      }
+      if (patch.area !== undefined) {
+        if (!REQUEST_AREAS.has(patch.area)) return json(res, 400, { error: "Unknown request area." });
+        update.area = patch.area;
       }
       if (patch.team_notes !== undefined) update.team_notes = cleanRequestText(patch.team_notes);
       if (patch.title !== undefined) update.title = cleanRequestText(patch.title, 240);
@@ -539,15 +569,12 @@ export default async function handler(req, res) {
       const actor = cleanActor(body.actor);
       const requestId = String(body.request_id || "").trim();
       if (!actor.id || !requestId) return json(res, 400, { error: "Author and request are required." });
-      const { data: existing, error: existingError } = await supabase
+      const { error: existingError } = await supabase
         .from("mastery_admin_requests")
         .select("submitted_by")
         .eq("id", requestId)
         .single();
       if (existingError) throw existingError;
-      if (existing.submitted_by !== actor.id) {
-        return json(res, 403, { error: "Only the request creator can delete it." });
-      }
       const { error } = await supabase.from("mastery_admin_requests").delete().eq("id", requestId);
       if (error) throw error;
       return json(res, 200, { ok: true });

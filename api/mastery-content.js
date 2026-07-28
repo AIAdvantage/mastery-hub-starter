@@ -3,6 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const PUBLIC_MONTH_COLUMNS = "slug, label, month_number, topic, focus, outcome, hero, resources, guide_markdown, challenge_markdown, challenge_prompt, prompts, extras, published_at, updated_at";
+const CONTENT_KEYS = {
+  guide: ["guide_markdown"],
+  prompts: ["prompts"],
+  extras: ["extras"],
+  challenge: ["challenge_markdown", "challenge_prompt"],
+};
 
 function json(res, status, payload) {
   res.status(status).setHeader("Content-Type", "application/json");
@@ -16,6 +22,40 @@ function service() {
   return createClient(SUPABASE_URL, SERVICE_KEY, {
     auth: { persistSession: false },
   });
+}
+
+function resourceContentKey(resource = {}) {
+  const haystack = `${resource.category || ""} ${resource.type || ""} ${resource.title || ""} ${resource.url || ""}`.toLowerCase();
+  if (haystack.includes("challenge") || haystack.includes("/challenges/")) return "challenge";
+  if (haystack.includes("extra") || haystack.includes("/extras")) return "extras";
+  if (haystack.includes("prompt") || haystack.includes("/prompts")) return "prompts";
+  if (haystack.includes("guide") || haystack.includes("/guide")) return "guide";
+  return "resource";
+}
+
+function isPublishedResource(resource = {}) {
+  return resource.is_published === true;
+}
+
+function sanitizePublishedMonth(month) {
+  if (!month) return null;
+  const publishedResources = Array.isArray(month.resources)
+    ? month.resources.filter((resource) => resource?.title && isPublishedResource(resource))
+    : [];
+  const publishedKeys = new Set(publishedResources.map(resourceContentKey));
+  const sanitized = {
+    ...month,
+    resources: publishedResources,
+  };
+
+  Object.entries(CONTENT_KEYS).forEach(([key, fields]) => {
+    if (publishedKeys.has(key)) return;
+    fields.forEach((field) => {
+      sanitized[field] = field === "prompts" ? [] : field === "extras" ? {} : "";
+    });
+  });
+
+  return sanitized;
 }
 
 export default async function handler(req, res) {
@@ -34,7 +74,7 @@ export default async function handler(req, res) {
         .eq("is_published", true)
         .single();
       if (error && error.code !== "PGRST116") throw error;
-      return json(res, 200, { month: data || null });
+      return json(res, 200, { month: sanitizePublishedMonth(data) });
     }
 
     const { data, error } = await supabase
@@ -43,7 +83,7 @@ export default async function handler(req, res) {
       .eq("is_published", true)
       .order("published_at", { ascending: false });
     if (error) throw error;
-    return json(res, 200, { months: data || [] });
+    return json(res, 200, { months: (data || []).map(sanitizePublishedMonth) });
   } catch (error) {
     console.error(error);
     return json(res, 500, { error: "Content request failed" });
