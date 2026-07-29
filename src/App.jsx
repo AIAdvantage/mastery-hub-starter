@@ -1491,7 +1491,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
   }
 
   if (cmsMonth && segment !== "june" && segment !== "july") {
-    if (path === `/monthly-resources/${segment}/guide`) {
+    if (path === `/monthly-resources/${segment}/guide` || path.startsWith(`/monthly-resources/${segment}/guide/`)) {
       if (!cmsHasContent(cmsMonth, "guide")) {
         return (
           <MonthUnavailable

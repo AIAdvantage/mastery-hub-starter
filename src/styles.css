@@ -5138,8 +5138,8 @@ h1 {
 
 .admin-resource-category {
   display: grid;
-  gap: 10px;
-  padding: 14px;
+  gap: 16px;
+  padding: 18px;
   border: 1px solid rgba(49, 40, 32, 0.1);
   border-radius: 8px;
   background: rgba(248, 243, 234, 0.72);
@@ -5150,20 +5150,23 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(49, 40, 32, 0.1);
+  padding: 0 0 14px;
+  border-bottom: 2px solid rgba(49, 40, 32, 0.14);
 }
 
 .admin-resource-category-head h3 {
   margin: 0;
   color: #312820;
-  font-size: 18px;
+  font-family: var(--serif);
+  font-size: 36px;
+  line-height: 0.98;
 }
 
 .admin-resource-category-head p {
-  margin: 3px 0 0;
+  margin: 8px 0 0;
   color: #76695d;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .admin-resource-editor-card {
@@ -5733,6 +5736,10 @@ h1 {
   .admin-resource-category-head {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .admin-resource-category-head h3 {
+    font-size: 30px;
   }
 
   .admin-resource-actions {

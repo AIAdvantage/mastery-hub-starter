@@ -281,6 +281,19 @@ function slugify(value) {
     .replace(/^-|-$/g, "");
 }
 
+function uniqueResourceUrl(resources = [], baseUrl) {
+  const usedUrls = new Set(resources.map((item) => item.url).filter(Boolean));
+  if (!usedUrls.has(baseUrl)) return baseUrl;
+
+  let count = 2;
+  let nextUrl = `${baseUrl}-${count}`;
+  while (usedUrls.has(nextUrl)) {
+    count += 1;
+    nextUrl = `${baseUrl}-${count}`;
+  }
+  return nextUrl;
+}
+
 function sortMonthsForAdmin(items = []) {
   return [...items].sort((a, b) => {
     const aPreset = PRESET_ORDER[a.slug];
@@ -305,24 +318,53 @@ function getDefaultMonthSlug(items = []) {
 }
 
 function monthTemplateGuide(label) {
-  return `## Table of Contents
+  return `# ${label} Guide: New Mastery Workshop
+
+### The Core Build - everyone does this
+
+---
+
+## Table of Contents
+
+- What You'll Have When Done
+- Before You Start
+- Quick Words
+- Part 1: Build the Core System
+- Part 2: Make It Useful
+- Part 3: Finish and Secure It
+- What's Next
+- Safety & Privacy
+
+---
 
 ## What You'll Have When Done
 
-- [ ] Clear workshop outcome
-- [ ] Working setup from the live session
-- [ ] Prompt or tool ready to reuse after the workshop
+You'll have a working system that:
+
+- **Does the main job.** Replace this with the first concrete outcome students get.
+- **Remembers the important details.** Replace this with what the system stores or reuses.
+- **Runs the key workflow.** Replace this with the action the system can now perform.
+- **Looks and feels usable.** Replace this with what makes it ready for real use.
 
 ---
 
 ## Before You Start
 
 - [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)
-- [ ] **Second account ready:** Make sure your second account is created, verified, and ready in the same browser.
-- [ ] **Starter files ready:** Download or prepare any starter file, DNA, prompt, or template you will use during the workshop.
-- [ ] **Workspace ready:** Open the app, folder, or project where you will build today.
+- [ ] **Second service ready:** Make sure the second account is created, verified, and open in the same browser. [Open service](https://example.com)
+- [ ] **Starter materials ready:** Download or prepare any starter file, DNA, prompt, or template you will use during the workshop.
+- [ ] **Workspace ready:** Open the app, folder, or project where students will build today.
 
-> 💡 No previous experience required. You only need the accounts, files, and workspace listed above.
+**Note from Igor:** Add the human context, expectation, or reassurance students need before they start.
+
+**Previous experience required:** No previous experience required. Students only need the accounts, files, and workspace listed above.
+
+---
+
+## Quick Words
+
+- **Frontend:** The part students see and click.
+- **Backend:** The part that stores data, runs automations, or connects services.
 
 ---
 
@@ -783,13 +825,47 @@ export default function AdminBackend({ navigate }) {
 
   function addResource(category = "Workshop") {
     const cleanCategory = normalizedResourceCategory(category);
-    setMonth((current) => ({
-      ...current,
-      resources: [
-        ...(current?.resources || []),
-        { category: cleanCategory, type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
-      ],
-    }));
+    setMonth((current) => {
+      const resources = current?.resources || [];
+      const monthSlug = current?.slug || slugify(current?.label || "month");
+      const label = current?.label || "New Month";
+      const nextResource = {
+        category: cleanCategory,
+        type: "Resource",
+        title: `New ${cleanCategory} Card`,
+        description: "Placeholder description. Replace this with the one-sentence member-facing reason to open this card.",
+        status: "outline",
+        is_published: false,
+        url: "",
+      };
+      const patch = {};
+
+      if (cleanCategory === "Workshop") {
+        const baseUrl = `/monthly-resources/${monthSlug}/guide/${slugify(`${label} workshop guide`) || "workshop-guide"}`;
+        nextResource.type = "Walkthrough";
+        nextResource.title = `${label} Workshop Guide`;
+        nextResource.description = "Placeholder workshop description. Replace this with what members will build and why it matters.";
+        nextResource.url = uniqueResourceUrl(resources, baseUrl);
+        if (!current?.guide_markdown?.trim()) {
+          patch.guide_markdown = monthTemplateGuide(label);
+        }
+      } else if (cleanCategory === "Challenge") {
+        nextResource.type = "Challenge";
+        nextResource.title = `${label} Challenge`;
+        nextResource.description = "Placeholder challenge description. Replace this with what members should submit.";
+        nextResource.url = uniqueResourceUrl(resources, `/challenges/${monthSlug}`);
+      } else if (cleanCategory === "Next month") {
+        nextResource.type = "Event";
+        nextResource.title = "Next Mastery Workshop";
+        nextResource.description = "Placeholder next-month description. Replace this with the next workshop announcement or calendar context.";
+      }
+
+      return {
+        ...current,
+        ...patch,
+        resources: [...resources, nextResource],
+      };
+    });
   }
 
   function removeResource(index) {
