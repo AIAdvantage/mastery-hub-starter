@@ -6,6 +6,7 @@ import AdminBackend from "./admin/AdminBackend.jsx";
 import { MONTH6_CONTENT } from "./month6Content.js";
 import { JULY_CONTENT } from "./julyContent.js";
 import { JULY_CATCHUP_FAQ } from "./data/julyCatchupFaq.js";
+import { JULY_CHALLENGE_ARCHIVE } from "./data/julyChallengeArchive.js";
 import FundamentalsJulyPage from "./FundamentalsJulyPage.jsx";
 import {
   ADD_PROMPT_LIBRARY_CARD_PROMPT,
@@ -1596,6 +1597,10 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
     return <RedirectRoute to="/monthly-resources/july/guide" navigate={navigate} />;
   }
 
+  if (path === "/monthly-resources/july/challenge-submissions") {
+    return <ChallengeSubmissionRegistryPage archive={JULY_CHALLENGE_ARCHIVE} navigate={navigate} />;
+  }
+
   if (path === "/monthly-resources/july/prompts") {
     return (
       <SessionPromptsPage
@@ -1943,14 +1948,14 @@ function JulyResourcesMenu({ month, navigate }) {
               <h4>Post to Challenge Submissions</h4>
               <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
             </a>
-            <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/challenge-submissions")}>
               <div className="resource-card-top">
                 <span>Submissions</span>
-                <small>Community</small>
+                <small>Registry</small>
               </div>
-              <h4>Recent Submissions</h4>
-              <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
-            </a>
+              <h4>Challenge Submission Registry</h4>
+              <p>Browse the July challenge submissions with summaries, visual previews, and filters.</p>
+            </button>
           </div>
         </section>
 
@@ -3940,7 +3945,8 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
   }
 
   if (child === "guide") return <JulyChallengeGuidePage navigate={navigate} />;
-  if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
+  if (child === "submit") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
+  if (child === "submissions") return <RedirectRoute to="/monthly-resources/july/challenge-submissions" navigate={navigate} />;
   return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
 }
 
@@ -4116,6 +4122,142 @@ function JuneChallengeLanding({ month, navigate }) {
         </button>
       </div>
     </section>
+  );
+}
+
+function challengeArchiveDate(value) {
+  if (!value) return "Unknown date";
+  return new Date(value).toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+function ChallengeSubmissionRegistryPage({ archive, navigate }) {
+  const [query, setQuery] = useState("");
+  const [interest, setInterest] = useState("All");
+  const [visualFilter, setVisualFilter] = useState("all");
+  const eligibleSubmissions = archive.submissions.filter((submission) => submission.status !== "team-example");
+  const filteredSubmissions = eligibleSubmissions.filter((submission) => {
+    const haystack = [
+      submission.title,
+      submission.author,
+      submission.summary,
+      submission.excerpt,
+      ...(submission.sourceTags || []),
+      ...(submission.interests || []),
+    ].join(" ").toLowerCase();
+    const matchesQuery = !query.trim() || query.toLowerCase().split(/\s+/).every((term) => haystack.includes(term));
+    const matchesInterest = interest === "All" || submission.interests?.includes(interest);
+    const matchesVisual = visualFilter === "all"
+      || (visualFilter === "with-images" && submission.displayImages?.length)
+      || (visualFilter === "hub-links" && submission.hubLinks?.length);
+    return matchesQuery && matchesInterest && matchesVisual;
+  });
+
+  const totalLikes = eligibleSubmissions.reduce((sum, submission) => sum + (submission.likes || 0), 0);
+  const totalComments = eligibleSubmissions.reduce((sum, submission) => sum + (submission.comments || 0), 0);
+
+  return (
+    <section className="section page-section challenge-registry-page" aria-labelledby="challenge-registry-title">
+      <Breadcrumbs
+        items={[
+          { label: "Current Workshop", path: "/monthly-resources/july" },
+          { label: "Challenge submissions" },
+        ]}
+        navigate={navigate}
+      />
+      <div className="challenge-registry-hero">
+        <div>
+          <p className="section-kicker">July challenge</p>
+          <h1 id="challenge-registry-title" className="page-title">{archive.title}</h1>
+          <p className="muted">{archive.description}</p>
+        </div>
+        <a className="registry-source-button" href={archive.sourceUrl} target="_blank" rel="noreferrer">Open Circle space</a>
+      </div>
+
+      <div className="challenge-registry-stats" aria-label="Submission registry stats">
+        <div><strong>{eligibleSubmissions.length}</strong><span>submissions</span></div>
+        <div><strong>{archive.imageAssetCount}</strong><span>images</span></div>
+        <div><strong>{totalLikes}</strong><span>likes</span></div>
+        <div><strong>{totalComments}</strong><span>comments</span></div>
+      </div>
+
+      <div className="challenge-registry-controls">
+        <label>
+          Search submissions
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search title, member, summary, style..." />
+        </label>
+        <label>
+          Visual filter
+          <select value={visualFilter} onChange={(event) => setVisualFilter(event.target.value)}>
+            <option value="all">All submissions</option>
+            <option value="with-images">With screenshots</option>
+            <option value="hub-links">With hub links</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="challenge-registry-chips" aria-label="Submission category filters">
+        {archive.interestCategories.map((category) => (
+          <button
+            type="button"
+            className={interest === category ? "active" : ""}
+            onClick={() => setInterest(category)}
+            key={category}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      <p className="challenge-registry-count">
+        Showing {filteredSubmissions.length} of {eligibleSubmissions.length} submissions.
+        {archive.excludedPostCount ? ` ${archive.excludedPostCount} off-topic post${archive.excludedPostCount === 1 ? "" : "s"} excluded from the registry.` : ""}
+      </p>
+
+      <div className="challenge-submission-registry-grid" aria-live="polite">
+        {filteredSubmissions.map((submission) => (
+          <ChallengeSubmissionRegistryCard submission={submission} key={submission.id} />
+        ))}
+      </div>
+
+      {!filteredSubmissions.length && (
+        <div className="challenge-registry-empty">
+          <h2>No submissions match this filter.</h2>
+          <p>Try a broader search or choose All.</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ChallengeSubmissionRegistryCard({ submission }) {
+  const preview = submission.displayImages?.[0];
+  return (
+    <article className="challenge-submission-card">
+      {preview ? (
+        <img className="challenge-submission-image" src={preview.src} alt={preview.alt} loading="lazy" />
+      ) : (
+        <div className="challenge-submission-image challenge-submission-placeholder">
+          <span>No preview image</span>
+        </div>
+      )}
+      <div className="challenge-submission-body">
+        <div className="challenge-submission-meta">
+          <span>{challengeArchiveDate(submission.publishedAt)}</span>
+          <span>{submission.likes || 0} likes</span>
+          <span>{submission.comments || 0} comments</span>
+        </div>
+        <h2>{submission.title}</h2>
+        <p className="challenge-submission-author">{submission.author}</p>
+        <p>{submission.summary}</p>
+        <div className="challenge-submission-tags">
+          {(submission.sourceTags || []).slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+        </div>
+        <div className="challenge-submission-actions">
+          <a href={submission.url} target="_blank" rel="noreferrer">Open post</a>
+          {submission.hubLinks?.[0] && <a href={submission.hubLinks[0]} target="_blank" rel="noreferrer">Open hub</a>}
+        </div>
+      </div>
+    </article>
   );
 }
 

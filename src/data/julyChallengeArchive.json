@@ -1,0 +1,2940 @@
+{
+  "scrapedAt": "2026-07-29T20:28:18.493Z",
+  "source": "Circle Admin API v2",
+  "sourceUrl": "https://community.aiadvantage.com/c/challenge-submissions/",
+  "month": "july",
+  "label": "July",
+  "title": "July Challenge Submission Registry",
+  "theme": "Paint Your AI Hub",
+  "description": "Member submissions from the AI Mastery Challenge Submissions space, filtered for real challenge posts with summaries, source links, reactions, comments, and available hub screenshots.",
+  "rawPostCount": 72,
+  "excludedPostCount": 2,
+  "submissionCount": 70,
+  "imageAssetCount": 207,
+  "interestCategories": [
+    "All",
+    "Mobile-first",
+    "Dark / cinematic",
+    "Minimal / calm",
+    "Business branded",
+    "Personal identity",
+    "Rich visual proof"
+  ],
+  "excluded": [
+    {
+      "id": "34956944",
+      "title": "Stuck after the GitHub/Lovable session — looking for a quick assist",
+      "author": "Deretta Faigin",
+      "reason": "Not an actual challenge submission",
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/stuck-after-the-github-lovable-session-looking-for-a-quick-assist"
+    },
+    {
+      "id": "34414136",
+      "title": "From dashboard to cockpit: Mattias HQ",
+      "author": "Mattias Herzig | AIA Team",
+      "reason": "Not an actual challenge submission",
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/from-dashboard-to-cockpit-mattias-hq"
+    }
+  ],
+  "submissions": [
+    {
+      "id": "34960840",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge Submission",
+      "author": "Jess McCarty",
+      "publishedAt": "2026-07-29T19:37:06.583Z",
+      "comments": 0,
+      "likes": 0,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-29a4ac",
+      "hubLinks": [],
+      "summary": "1 1 phone 2 Dark, square, and card-less — rows on hairlines under a dusk shot of the suite I sell.",
+      "excerpt": "1 1 phone 2 Dark, square, and card-less — rows on hairlines under a dusk shot of the suite I sell. Built for a one-handed read in bad light, because that's when I actually use it. Declan's Hub — Design Brief Direction: E · Manifest. Dark-first. No cards — full-bleed rows on hairlines, oversized titles, nothing decorative. A printed manifest you can read at arm's length, one-handed, in a truck at night. Mobile...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/01-34960840-1.jpg",
+          "alt": "Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/02-34960840-2.jpg",
+          "alt": "Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/03-34960840-3.jpg",
+          "alt": "Challenge Submission screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34956801",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Labora Et Ora",
+      "author": "Michael Klyne",
+      "publishedAt": "2026-07-29T17:43:55.549Z",
+      "comments": 1,
+      "likes": 1,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/labora-et-ora",
+      "hubLinks": [
+        "https://labora-ora-hub-vault.lovable.app/",
+        "http://lovable-ui-handoff.md/"
+      ],
+      "summary": "It did not carry everything over from the full build, but it will still give you a good idea of what the live version looks like, how it functions, and how it feels for the most part: Please take a look on your phone to...",
+      "excerpt": "July 29, 2026 Here is my link to the Remix version. It did not carry everything over from the full build, but it will still give you a good idea of what the live version looks like, how it functions, and how it feels for the most part: https://labora-ora-hub-vault.lovable.app Please take a look on your phone to get the full sense of the functionality. I hope you enjoy the overall vibe. I built my user interface this...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/04-34956801-1.jpg",
+          "alt": "Labora Et Ora screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/05-34956801-2.jpg",
+          "alt": "Labora Et Ora screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/06-34956801-3.jpg",
+          "alt": "Labora Et Ora screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/07-34956801-4.jpg",
+          "alt": "Labora Et Ora screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34948030",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge submission",
+      "author": "Michael Harris",
+      "publishedAt": "2026-07-29T13:41:58.036Z",
+      "comments": 3,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-852cf4",
+      "hubLinks": [],
+      "summary": "I’m a 69 year old who started as a mainframe code a long time ago.",
+      "excerpt": "Finally got my icons and fonts looking reasonable. I’ve learnt a lot and realise theres a lot more to go. I’m a 69 year old who started as a mainframe code a long time ago. slow progress is becoming easier as I get my head around how modern websites are structured. Here is my submission to help me navigate my way. a retro 50’s sci fi theme reflecting my age and love of sci fi. I started with trying to build a...",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/08-34948030-1.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/09-34948030-2.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/10-34948030-3.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/11-34948030-4.jpg",
+          "alt": "Challenge submission screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34936224",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "62 and learning",
+      "author": "Danny Castle",
+      "publishedAt": "2026-07-29T03:38:19.373Z",
+      "comments": 0,
+      "likes": 2,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/62-and-learning-665111",
+      "hubLinks": [],
+      "summary": "I got a cheat sheet app in my hub finally, and my sign in is done.",
+      "excerpt": "I got a cheat sheet app in my hub finally, and my sign in is done.",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/12-34936224-1.jpg",
+          "alt": "62 and learning screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/13-34936224-2.jpg",
+          "alt": "62 and learning screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34935757",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Analysis Paralysis",
+      "author": "Jerzy Zych",
+      "publishedAt": "2026-07-29T02:58:14.453Z",
+      "comments": 1,
+      "likes": 4,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/analysis-paralysis",
+      "hubLinks": [],
+      "summary": "Phew, I might have just scraped in on time with my submission.",
+      "excerpt": "Phew, I might have just scraped in on time with my submission. I lost more than 2 weeks before I started to build since I was trying to understand every aspect and nuance of the build architecture before I tried and so completely paralysed myself in the process…and it’s continued into this week as well. I then threw in a load of other issues into the mix to put myself in a straitjacket that not even Houdini could...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 12,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/14-34935757-1.jpg",
+          "alt": "Analysis Paralysis screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/15-34935757-2.jpg",
+          "alt": "Analysis Paralysis screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/16-34935757-3.jpg",
+          "alt": "Analysis Paralysis screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/17-34935757-4.jpg",
+          "alt": "Analysis Paralysis screenshot"
+        }
+      ],
+      "attachmentCount": 12,
+      "status": "eligible"
+    },
+    {
+      "id": "34934065",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Shruti's AI Hub: Human imagination leads, AI powers it ",
+      "author": "Shruti Patel",
+      "publishedAt": "2026-07-29T01:33:10.504Z",
+      "comments": 0,
+      "likes": 3,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/shruti-s-ai-hub-human-imagination-leads-ai-powers-it",
+      "hubLinks": [],
+      "summary": "Together, we built the same hub in class - Ideas, Wins, Images - a solid foundation that inspired my thinking.",
+      "excerpt": "Together, we built the same hub in class - Ideas, Wins, Images - a solid foundation that inspired my thinking. Then I completely rebuilt it from scratch. Customizing it clarified how I want to work with AI — and, more importantly, how Lovable, Claude, and GitHub fit together, so I can keep extending it with new tools and agents over time . It's themed around Polaris, the north star — also the heart of my advisory...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Brand-driven",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/18-34934065-1.jpg",
+          "alt": "Shruti's AI Hub: Human imagination leads, AI powers it  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/19-34934065-2.jpg",
+          "alt": "Shruti's AI Hub: Human imagination leads, AI powers it  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/20-34934065-3.jpg",
+          "alt": "Shruti's AI Hub: Human imagination leads, AI powers it  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/21-34934065-4.jpg",
+          "alt": "Shruti's AI Hub: Human imagination leads, AI powers it  screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34920899",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Veronica´s Clarity  HUB — one screen, full focus",
+      "author": "Veronica Martin Tolosa",
+      "publishedAt": "2026-07-28T17:33:52.787Z",
+      "comments": 4,
+      "likes": 4,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/veronica-s-clarity-hub-one-screen-full-focus-078e4e",
+      "hubLinks": [],
+      "summary": "pptx The problem As a CEO, I make dozens of decisions every day.",
+      "excerpt": "Morning-Command-Design-Challenge.pptx The problem As a CEO, I make dozens of decisions every day. The noise is constant — emails, pipeline, proposals, follow-ups, market signals — and without a clear structure, urgent always wins over important. I needed focus: to know exactly what moves the needle today, without having to search for it. The solution A personal command center that filters the noise and gives me only...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/22-34920899-1.jpg",
+          "alt": "Veronica´s Clarity  HUB — one screen, full focus screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/23-34920899-2.jpg",
+          "alt": "Veronica´s Clarity  HUB — one screen, full focus screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/24-34920899-3.jpg",
+          "alt": "Veronica´s Clarity  HUB — one screen, full focus screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34908040",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Release Candidate V3 - My first week in Mastery",
+      "author": "Seamae Erfani",
+      "publishedAt": "2026-07-28T11:08:01.008Z",
+      "comments": 3,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/release-candidate-v3-my-first-week-in-mastery",
+      "hubLinks": [],
+      "summary": "Somehow, I followed Igor’s OG video to create a hub (while pausing of course, as I watched it on replay).",
+      "excerpt": "Longtime Bootcamper, first time Mastery participant. Inspired by some of the submissions. Somehow, I followed Igor’s OG video to create a hub (while pausing of course, as I watched it on replay). Lovable kicked me out, thus V1 & V2, and so I upgraded on Lovable to finish (don’t let credit limits be the enemy of done). Thought, “I can do this.” and like Henry Ford said, “Whether we think we can or think we can’t,...",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/25-34908040-1.jpg",
+          "alt": "Release Candidate V3 - My first week in Mastery screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/26-34908040-2.jpg",
+          "alt": "Release Candidate V3 - My first week in Mastery screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/27-34908040-3.jpg",
+          "alt": "Release Candidate V3 - My first week in Mastery screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/28-34908040-4.jpg",
+          "alt": "Release Candidate V3 - My first week in Mastery screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34905089",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "The best upgrade to my Hub this month? -> I took things AWAY.",
+      "author": "Silke Jacobi",
+      "publishedAt": "2026-07-28T08:29:04.373Z",
+      "comments": 5,
+      "likes": 3,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/the-best-upgrade-to-my-hub-this-month-i-took-things-away",
+      "hubLinks": [],
+      "summary": "After setting up my Hub and designing it, my focus went on taking things away rather than adding them.",
+      "excerpt": "After setting up my Hub and designing it, my focus went on taking things away rather than adding them. I've been reducing it visually, step by step, so less pulls at my attention and more actually helps me understand what I'm looking at. »The detail makes the difference« So a few things from my latest round: The weekly review card turns a quiet red the moment it's due and hasn't happened yet — no pop-up, no nagging,...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Brand-driven",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/29-34905089-1.jpg",
+          "alt": "The best upgrade to my Hub this month? -> I took things AWAY. screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/30-34905089-2.jpg",
+          "alt": "The best upgrade to my Hub this month? -> I took things AWAY. screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34904445",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Hard hat on before you scroll.🛠️🚧",
+      "author": "Jonas Knoll",
+      "publishedAt": "2026-07-28T08:00:27.994Z",
+      "comments": 12,
+      "likes": 11,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/hard-hat-on-before-you-scroll",
+      "hubLinks": [],
+      "summary": "The clock says 9:41 on every screen, because that is the time in Apple ads and I never wired the real one up.",
+      "excerpt": "This is my Hub and it is an active construction site. The clock says 9:41 on every screen, because that is the time in Apple ads and I never wired the real one up. The Trading page has a debug line in the corner reading \"Columns: 1044 + 24 + 330 = 1398,\" left over from checking my own layout math. Watch your step. There are nails. Submitting it anyway, because that is the honest version. What I want is everything in...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/31-34904445-1.jpg",
+          "alt": "Hard hat on before you scroll.🛠️🚧 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/32-34904445-2.jpg",
+          "alt": "Hard hat on before you scroll.🛠️🚧 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/33-34904445-3.jpg",
+          "alt": "Hard hat on before you scroll.🛠️🚧 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/34-34904445-4.jpg",
+          "alt": "Hard hat on before you scroll.🛠️🚧 screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34900324",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Hobson here.  I trust your travels were enlightening...",
+      "author": "Bradley McDonald",
+      "publishedAt": "2026-07-28T02:47:20.447Z",
+      "comments": 4,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/hobson-here-i-trust-your-travels-were-enlightening",
+      "hubLinks": [],
+      "summary": "This AI Hub started as a plain dashboard with good bones: fourteen pages, three backend functions, a markdown vault, all doing real work behind a default template look.",
+      "excerpt": "This AI Hub started as a plain dashboard with good bones: fourteen pages, three backend functions, a markdown vault, all doing real work behind a default template look. The whole redesign traces back to one sentence: a calm English house, seen in daylight, and Hobson : the butler who is always there, never in the way. The marble, the brass, the cornflower glass, the man standing quietly behind every page, that's...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/35-34900324-1.jpg",
+          "alt": "Hobson here.  I trust your travels were enlightening... screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34900240",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "💥 What a LIFE-CHANGING first month! Content Creation on Steroids💥",
+      "author": "Marek Wyszynski",
+      "publishedAt": "2026-07-28T02:42:55.828Z",
+      "comments": 4,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/what-a-life-changing-first-month-content-creation-on-steroids",
+      "hubLinks": [],
+      "summary": "Thank you, Igor, Dean, Tony, and the entire team, for the life-changing lessons.",
+      "excerpt": "I am having so much fun applying all these new tools. Thank you, Igor, Dean, Tony, and the entire team, for the life-changing lessons. Many micro- and macro-wins. One of them is finally posting on social media every day for the past seven days. Something I’ve been struggling with in the last 2-3 years of working on my business. Here is the proof: https://www.instagram.com/feldenkraisnyc/ I followed the basic...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Brand-driven",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/36-34900240-1.jpg",
+          "alt": "💥 What a LIFE-CHANGING first month! Content Creation on Steroids💥 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/37-34900240-2.jpg",
+          "alt": "💥 What a LIFE-CHANGING first month! Content Creation on Steroids💥 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/38-34900240-3.jpg",
+          "alt": "💥 What a LIFE-CHANGING first month! Content Creation on Steroids💥 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/39-34900240-4.jpg",
+          "alt": "💥 What a LIFE-CHANGING first month! Content Creation on Steroids💥 screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34894818",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Cabo AI Hub - Steve Nakamoto",
+      "author": "STEVEN NAKAMOTO",
+      "publishedAt": "2026-07-27T23:24:58.889Z",
+      "comments": 6,
+      "likes": 4,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/cabo-ai-hub-steve-nakamoto",
+      "hubLinks": [],
+      "summary": "For a color scheme, I asked Lovable to create vibrant CABO SAN LUCAS colors.",
+      "excerpt": "Here’s is my submission that suits my tastes. I added some cards to match my key projects. For a color scheme, I asked Lovable to create vibrant CABO SAN LUCAS colors. I also asked what else I could do to make the site more appealing and it suggested rotating the background colors. And finally I asked for the top section to have more readable text and the words “Cabo AI Hub” was done in black so it stood out...",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Minimal / calm"
+      ],
+      "sourceTags": [
+        "Dark mode",
+        "Minimal",
+        "Visual redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/40-34894818-1.jpg",
+          "alt": "Cabo AI Hub - Steve Nakamoto screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34870851",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "FELICES → earroyo.ai",
+      "author": "Eduardo Arroyo",
+      "publishedAt": "2026-07-27T12:55:20.821Z",
+      "comments": 5,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/felices-earroyo-ai",
+      "hubLinks": [
+        "http://felices.earroyo.ai",
+        "http://earroyo.ai",
+        "http://earroyo.ai",
+        "http://earroyo.ai"
+      ],
+      "summary": "My AI Hub — what it is, what it does, and the card that now builds the rest Revised Submission Note: First submission was hurried on July 15th just as I got back from AZ, thinking I was late.",
+      "excerpt": "My AI Hub — what it is, what it does, and the card that now builds the rest Revised Submission Note: First submission was hurried on July 15th just as I got back from AZ, thinking I was late. Last Friday, I realized I had time to clean it up, get nicer pics, etc. Little did I know that a spur-of-the-moment curiosity—“Could I create a card that builds cards, even cards with APPS?”—would start a WWF fight. What...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 11,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/41-34870851-1.jpg",
+          "alt": "FELICES → earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/42-34870851-2.jpg",
+          "alt": "FELICES → earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/43-34870851-3.jpg",
+          "alt": "FELICES → earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/44-34870851-4.jpg",
+          "alt": "FELICES → earroyo.ai screenshot"
+        }
+      ],
+      "attachmentCount": 15,
+      "status": "eligible"
+    },
+    {
+      "id": "34857912",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "I showed up with two weeks of design work. The Challenge wanted a repaint. 🎨🤣",
+      "author": "Stephanie Klein",
+      "publishedAt": "2026-07-26T22:09:56.617Z",
+      "comments": 2,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/i-showed-up-with-two-weeks-of-design-work-the-challenge-wanted-a-repaint",
+      "hubLinks": [],
+      "summary": "Special welcome to all the new Mastery and Inner Circle folks 👋 The July Amplifier and monthly challenge actually started for me back in June when Igor showed us Alfredo's hub for the first time.",
+      "excerpt": "Hi everyone! Special welcome to all the new Mastery and Inner Circle folks 👋 The July Amplifier and monthly challenge actually started for me back in June when Igor showed us Alfredo's hub for the first time. I had been thinking about something like a hub long before I knew it existed or Igor showed us an example. Once I understood what it was, I immediately wanted to build my own, but I didn't want mine to be...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/45-34857912-1.jpg",
+          "alt": "I showed up with two weeks of design work. The Challenge wanted a repaint. 🎨🤣 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/46-34857912-2.jpg",
+          "alt": "I showed up with two weeks of design work. The Challenge wanted a repaint. 🎨🤣 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/47-34857912-3.jpg",
+          "alt": "I showed up with two weeks of design work. The Challenge wanted a repaint. 🎨🤣 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/48-34857912-4.jpg",
+          "alt": "I showed up with two weeks of design work. The Challenge wanted a repaint. 🎨🤣 screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34842126",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge - 2026",
+      "author": "Kirt Roiz",
+      "publishedAt": "2026-07-26T02:16:47.604Z",
+      "comments": 5,
+      "likes": 2,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-2026",
+      "hubLinks": [],
+      "summary": "I've been allowing myself to be too busy at work and with family all these months I’ve been in AI Mastery, but the event in Phoenix made me realize I can and should participate more.",
+      "excerpt": "Hello! This is my first challenge submission! I've been allowing myself to be too busy at work and with family all these months I’ve been in AI Mastery, but the event in Phoenix made me realize I can and should participate more. Thank you to the very cool people I met who were so inspiring! There are so many awesome looking hubs! I think my next hub will take a few ideas from some of them. They are too good! So, for...",
+      "interests": [
+        "All",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34831034",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Ruby's Hub",
+      "author": "Karl Goldkamp",
+      "publishedAt": "2026-07-25T14:14:11.140Z",
+      "comments": 1,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/ruby-s-hub",
+      "hubLinks": [],
+      "summary": "Here’s my AI Hub an phone icon",
+      "excerpt": "Here’s my AI Hub an phone icon",
+      "interests": [
+        "All",
+        "Mobile-first"
+      ],
+      "sourceTags": [
+        "Mobile-first"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/49-34831034-1.jpg",
+          "alt": "Ruby's Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/50-34831034-2.jpg",
+          "alt": "Ruby's Hub screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34804258",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My Hub - My Sanctuary !",
+      "author": "Donatella Battistella",
+      "publishedAt": "2026-07-24T14:11:55.358Z",
+      "comments": 5,
+      "likes": 13,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-hub-my-sanctuary",
+      "hubLinks": [],
+      "summary": "my homepage - I wanted to create a sanctuary for my Soul to be enriched and feel nourished.",
+      "excerpt": "my homepage - I wanted to create a sanctuary for my Soul to be enriched and feel nourished. A magical space of beauty and love. my idea: My win: my win on mobile view: my mobile view: LOVABLE-UI-HANDOFF.md",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 10,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/51-34804258-1.jpg",
+          "alt": "My Hub - My Sanctuary ! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/52-34804258-2.jpg",
+          "alt": "My Hub - My Sanctuary ! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/53-34804258-3.jpg",
+          "alt": "My Hub - My Sanctuary ! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/54-34804258-4.jpg",
+          "alt": "My Hub - My Sanctuary ! screenshot"
+        }
+      ],
+      "attachmentCount": 10,
+      "status": "eligible"
+    },
+    {
+      "id": "34793768",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Hub V2  - Next time I won't make the images inside lovable as took up all my credits.... thanks for the tip, Mattias...",
+      "author": "Seamae Erfani",
+      "publishedAt": "2026-07-24T03:48:25.740Z",
+      "comments": 7,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/hub-v2-next-time-i-won-t-make-the-images-inside-lovable-as-took-up-all-my-credits-thanks-for-the-tip-mattias",
+      "hubLinks": [],
+      "summary": "Hub V2 - Next time I won't make the images inside lovable as took up all my credits.... thanks for the tip, Mattias...",
+      "excerpt": "",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/55-34793768-1.jpg",
+          "alt": "Hub V2  - Next time I won't make the images inside lovable as took up all my credits.... thanks for the tip, Mattias... screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34791548",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Marcala Holding's AI HUB",
+      "author": "J. Benjamin Membreno",
+      "publishedAt": "2026-07-24T01:17:12.213Z",
+      "comments": 2,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/marcala-holding-s-ai-hub",
+      "hubLinks": [
+        "https://bens-aihub.lovable.app/"
+      ],
+      "summary": "I first created this HUB with the idea just for me, but after seeing what I think is possible, I am inclining to make it for all my companies and for my key people.",
+      "excerpt": "I first created this HUB with the idea just for me, but after seeing what I think is possible, I am inclining to make it for all my companies and for my key people. But before doing this I am not running and taking my time to design everything The website is https://bens-aihub.lovable.app/ The First Page is the Landing Page, which is Marin and it sort of gives you what we are, that we have 6 pillars to our group and...",
+      "interests": [
+        "All",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 10,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/56-34791548-1.jpg",
+          "alt": "Marcala Holding's AI HUB screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/57-34791548-2.jpg",
+          "alt": "Marcala Holding's AI HUB screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/58-34791548-3.jpg",
+          "alt": "Marcala Holding's AI HUB screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/59-34791548-4.jpg",
+          "alt": "Marcala Holding's AI HUB screenshot"
+        }
+      ],
+      "attachmentCount": 11,
+      "status": "eligible"
+    },
+    {
+      "id": "34777856",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "I Believe Overcoming Is a Choice!🐯💞🌍 My Hub 🫢",
+      "author": "Catherine Hunter",
+      "publishedAt": "2026-07-23T16:39:47.735Z",
+      "comments": 6,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/i-believe-overcoming-is-a-choice-my-hub",
+      "hubLinks": [],
+      "summary": "This is VERY awkward for me in multiple ways, but I am trying desperately to participate.",
+      "excerpt": "This is VERY awkward for me in multiple ways, but I am trying desperately to participate. I go by Faith, and I’m an Overcomer! I hope to Stop the Extinction of the Tiger, the Planet and End the housing crisis with Tiny homes/ADU’s. I was diagnosed at 50 with Asperger syndrome, after decades of misdiagnoses. I had a broken neck for 10 years and 11 months until the Lord provided me with a two level disc replacement...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Personal theme"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/60-34777856-1.jpg",
+          "alt": "I Believe Overcoming Is a Choice!🐯💞🌍 My Hub 🫢 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/61-34777856-2.jpg",
+          "alt": "I Believe Overcoming Is a Choice!🐯💞🌍 My Hub 🫢 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/62-34777856-3.jpg",
+          "alt": "I Believe Overcoming Is a Choice!🐯💞🌍 My Hub 🫢 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/63-34777856-4.jpg",
+          "alt": "I Believe Overcoming Is a Choice!🐯💞🌍 My Hub 🫢 screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34776806",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "V1 of hub (as lovable credits done)- Q- can images in image generation part be edited/iterated (ex/can we change the cat's hat in a way that replaces rather than makes a new image so as not to use up credits/not to repeat prompts?)   ideas list is long :)",
+      "author": "Seamae Erfani",
+      "publishedAt": "2026-07-23T16:04:41.606Z",
+      "comments": 1,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/v1-of-hub-as-lovable-credits-done-q-can-images-in-image-generation-part-be-edited-iterated-ex-can-we-change-the-cat-s-hat-in-a-way-that-replaces-rather-than-makes-a-new-image-so-as-not-to-use-up-credits-not-to-repeat-prompts-ideas-list-is-long",
+      "hubLinks": [],
+      "summary": "V1 of hub (as lovable credits done)- Q- can images in image generation part be edited/iterated (ex/can we change the cat's hat in a way that replaces rather than makes a new image so as not to use up credits/not to...",
+      "excerpt": "",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/64-34776806-1.jpg",
+          "alt": "V1 of hub (as lovable credits done)- Q- can images in image generation part be edited/iterated (ex/can we change the cat's hat in a way that replaces rather than makes a new image so as not to use up credits/not to repeat prompts?)   ideas list is long :) screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34771213",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": " PG Remix ",
+      "author": "Nanda Sears",
+      "publishedAt": "2026-07-23T13:30:05.937Z",
+      "comments": 3,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/pg-remix",
+      "hubLinks": [
+        "https://pgassignment.lovable.app"
+      ],
+      "summary": "Mobile Hub Win I did not use any of the directions from the assignment, instead I ran the prompt and added my brand guidelines.",
+      "excerpt": "Mobile Hub Win I did not use any of the directions from the assignment, instead I ran the prompt and added my brand guidelines. The designed brief that Claude wrote is attached, my final layout is different. The MD file read ok but the actual display was not my vision. I used approximately 50 credits due mainly to adjusting the logo on the mobile version and setting up the meeting notes automation and display...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Brand-driven",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/65-34771213-1.jpg",
+          "alt": " PG Remix  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/66-34771213-2.jpg",
+          "alt": " PG Remix  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/67-34771213-3.jpg",
+          "alt": " PG Remix  screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34755953",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge",
+      "author": "Isabel De Haro",
+      "publishedAt": "2026-07-22T22:52:29.573Z",
+      "comments": 7,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge",
+      "hubLinks": [],
+      "summary": "So far…this has been a great learning experience, and I am looking forward to the next steps.",
+      "excerpt": "So far…this has been a great learning experience, and I am looking forward to the next steps. In the mean time, here is my homework! Desktop Hub screenshot Mobile Hub screenshot Board screenshot showing Done. My one-sentence direction: Design my AI Hub with a refined, minimalist style to make it feel organized, and easy to navigate on both desktop and mobile. My Design Brief LOVABLE-UI-HANDOFF.md",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/68-34755953-1.jpg",
+          "alt": "July Challenge screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/69-34755953-2.jpg",
+          "alt": "July Challenge screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/70-34755953-3.jpg",
+          "alt": "July Challenge screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34727438",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge Complete",
+      "author": "Scott Newson",
+      "publishedAt": "2026-07-22T03:40:23.350Z",
+      "comments": 1,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-complete",
+      "hubLinks": [],
+      "summary": "I built my hub to have a Dark Mode because it’s easier on my eyes I feel.",
+      "excerpt": "I built my hub to have a Dark Mode because it’s easier on my eyes I feel. I like everything to be really simple and minimalist. I don’t like clutter. I will be working more on removing unnecessary words and other things. Design Brief — AgentHub \"Command Deck\" Character: Bold, high-contrast, dark-first command center. Crisp corners, confident motion, electric-blue accent used sparingly on what matters. Mobile is the...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Visual redesign"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/71-34727438-1.jpg",
+          "alt": "July Challenge Complete screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/72-34727438-2.jpg",
+          "alt": "July Challenge Complete screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/73-34727438-3.jpg",
+          "alt": "July Challenge Complete screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34718390",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Fast Sprint Submission",
+      "author": "Angela Hardy",
+      "publishedAt": "2026-07-21T20:53:10.500Z",
+      "comments": 5,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/fast-sprint-submission",
+      "hubLinks": [],
+      "summary": "I hadn’t even started the Mastery Courses, until after the Amplify event, but it was my goal to get a Hub submitted before the next class…so, here is my submission.",
+      "excerpt": "I hadn’t even started the Mastery Courses, until after the Amplify event, but it was my goal to get a Hub submitted before the next class…so, here is my submission. I have several wings to my business and home, so I created this hub to house all of them.",
+      "interests": [
+        "All",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Personal theme"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/74-34718390-1.jpg",
+          "alt": "Fast Sprint Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/75-34718390-2.jpg",
+          "alt": "Fast Sprint Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/76-34718390-3.jpg",
+          "alt": "Fast Sprint Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/77-34718390-4.jpg",
+          "alt": "Fast Sprint Submission screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34658204",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Chris Sedlak Ai Hub ",
+      "author": "Chris Sedlak",
+      "publishedAt": "2026-07-20T05:11:53.961Z",
+      "comments": 1,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/chris-sedlak-ai-hub",
+      "hubLinks": [
+        "http://LOVABLE-UI-HANDOFF.md"
+      ],
+      "summary": "Like a big bright pulsing sphere with the cards orbiting around it.",
+      "excerpt": "The Hub Name is Jarvis. So…… That is how it came to look like this. can't believe i'm saying this. I think this should look very tech / science fiction-ish. It's name is Jarvis for a reason. Like a big bright pulsing sphere with the cards orbiting around it. something like that. Thought process Thought process Now it came through — and that's a great reference. I can see exactly what you're after: a big soft...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/78-34658204-1.jpg",
+          "alt": "Chris Sedlak Ai Hub  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/79-34658204-2.jpg",
+          "alt": "Chris Sedlak Ai Hub  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/80-34658204-3.jpg",
+          "alt": "Chris Sedlak Ai Hub  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/81-34658204-4.jpg",
+          "alt": "Chris Sedlak Ai Hub  screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34650404",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "The Constellation AI  ",
+      "author": "Angelique Blitch",
+      "publishedAt": "2026-07-19T20:25:48.539Z",
+      "comments": 8,
+      "likes": 11,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/the-constellation-ai",
+      "hubLinks": [],
+      "summary": "I had Claude and Chat GPT help me describe the visual direction to Lovable.",
+      "excerpt": "Well this was fun! I had Claude and Chat GPT help me describe the visual direction to Lovable. The idea is that the constellation creates the “big picture”, grounding all of these disparate ideas and roles into one place that relentlessly tackles daily grunt-work and keeps me on track. For the design what better way to proceed than to combine a few of my favorite things… impressionist art, a coastal Florida vibe,...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/82-34650404-1.jpg",
+          "alt": "The Constellation AI   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/83-34650404-2.jpg",
+          "alt": "The Constellation AI   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/84-34650404-3.jpg",
+          "alt": "The Constellation AI   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/85-34650404-4.jpg",
+          "alt": "The Constellation AI   screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34650062",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Spreadsheets never gave me that much satisfaction-Month1 - JULY CHALLENGE SUBMISSION",
+      "author": "Mateja Labauri",
+      "publishedAt": "2026-07-19T20:05:14.131Z",
+      "comments": 5,
+      "likes": 12,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/spreadsheets-never-gave-me-that-much-satisfaction-month1-july-challenge-submission",
+      "hubLinks": [],
+      "summary": "Spreadsheets never gave me satisfaction — rows and columns pretending to be a system, when really I was just doing the thinking myself, over and over.",
+      "excerpt": "Spreadsheets never gave me satisfaction — rows and columns pretending to be a system, when really I was just doing the thinking myself, over and over. That ends now. This month I started building instead of managing. Not another task list — a system that thinks alongside me. For someone who runs on structure, thit shift feels less like a milestone and more like coming home to how I always wanted to work. Eleven...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/86-34650062-1.jpg",
+          "alt": "Spreadsheets never gave me that much satisfaction-Month1 - JULY CHALLENGE SUBMISSION screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/87-34650062-2.jpg",
+          "alt": "Spreadsheets never gave me that much satisfaction-Month1 - JULY CHALLENGE SUBMISSION screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/88-34650062-3.jpg",
+          "alt": "Spreadsheets never gave me that much satisfaction-Month1 - JULY CHALLENGE SUBMISSION screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/89-34650062-4.jpg",
+          "alt": "Spreadsheets never gave me that much satisfaction-Month1 - JULY CHALLENGE SUBMISSION screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34636368",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My AI Hub is Published!  ",
+      "author": "Mareko Hedquist",
+      "publishedAt": "2026-07-19T01:13:18.781Z",
+      "comments": 2,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub-is-published",
+      "hubLinks": [],
+      "summary": "It was fun watching Igor’s 2nd video and I did pretty well keeping up with him with a few stops and reviews.",
+      "excerpt": "It was fun watching Igor’s 2nd video and I did pretty well keeping up with him with a few stops and reviews. I’m happy with my look and feel that matches my new business colors of orange and teal.",
+      "interests": [
+        "All",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/90-34636368-1.jpg",
+          "alt": "My AI Hub is Published!   screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34630712",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge - Simona's AI Hub ",
+      "author": "Simona Stokes",
+      "publishedAt": "2026-07-18T17:57:14.834Z",
+      "comments": 3,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-simona-s-ai-hub",
+      "hubLinks": [],
+      "summary": "After many hours of catching up with everything from the July’s learning, I managed to get the challenge done too.",
+      "excerpt": "After many hours of catching up with everything from the July’s learning, I managed to get the challenge done too. No more credits left, so I could not improve any further. Sign of relief.",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/91-34630712-1.jpg",
+          "alt": "July Challenge - Simona's AI Hub  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/92-34630712-2.jpg",
+          "alt": "July Challenge - Simona's AI Hub  screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34592223",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge - Allen's Alley Managment Hub",
+      "author": "Kelly Allen",
+      "publishedAt": "2026-07-17T03:53:38.275Z",
+      "comments": 8,
+      "likes": 11,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-allen-s-alley-managment-hub",
+      "hubLinks": [],
+      "summary": "After getting a delayed start on my homework for July, I got brave and just dreamed up something I wanted my hub to do for me.",
+      "excerpt": "After getting a delayed start on my homework for July, I got brave and just dreamed up something I wanted my hub to do for me. My vision is to create a tool that really helps me not have to keep track of so many things so I can have more fun. I’ve built tools in the past (coder in several programming languages) and I was overwhelmed with the scope of what I really want to be able to track. What the heck! I told...",
+      "interests": [
+        "All",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 10,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/93-34592223-1.jpg",
+          "alt": "July Challenge - Allen's Alley Managment Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/94-34592223-2.jpg",
+          "alt": "July Challenge - Allen's Alley Managment Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/95-34592223-3.jpg",
+          "alt": "July Challenge - Allen's Alley Managment Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/96-34592223-4.jpg",
+          "alt": "July Challenge - Allen's Alley Managment Hub screenshot"
+        }
+      ],
+      "attachmentCount": 10,
+      "status": "eligible"
+    },
+    {
+      "id": "34586840",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Bob's AI Hub",
+      "author": "Robert Scoggin",
+      "publishedAt": "2026-07-16T22:38:53.060Z",
+      "comments": 6,
+      "likes": 14,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/bob-s-ai-hub",
+      "hubLinks": [],
+      "summary": "I can post screenshots of my hub, and maybe I will do that later.",
+      "excerpt": "I can post screenshots of my hub, and maybe I will do that later. However, it seems that a short video will do a much better job of showing and explaining what I developed, so here goes… 2026-07-16 15-51-02.mp4",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34585447",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Jennylle's Inspirational Hub - Found 💞LOVE💞 in a tropical paradise!! 🌴🍹😎",
+      "author": "Jennylle Zanzi",
+      "publishedAt": "2026-07-16T21:46:28.357Z",
+      "comments": 10,
+      "likes": 12,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/jennylle-s-inspirational-hub-found-love-in-a-tropical-paradise",
+      "hubLinks": [
+        "https://jennylle-inspiration-hub.lovable.app"
+      ],
+      "summary": "Screenshot - your Hub's new UI, including a phone screenshot proving it is flawless on mobile.",
+      "excerpt": "https://jennylle-inspiration-hub.lovable.app 1. Screenshot - your Hub's new UI, including a phone screenshot proving it is flawless on mobile. See below… Desktop screenshot of my Hub’s new UI. Phone screenshot. Flawless. 2. A screenshot of your board with the idea in Done (and the Win). See below… Desktop screenshot. Screenshot from phone. 3. Your direction in one line - Combine the gold with earth & apothecary and...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/97-34585447-1.jpg",
+          "alt": "Jennylle's Inspirational Hub - Found 💞LOVE💞 in a tropical paradise!! 🌴🍹😎 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/98-34585447-2.jpg",
+          "alt": "Jennylle's Inspirational Hub - Found 💞LOVE💞 in a tropical paradise!! 🌴🍹😎 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/99-34585447-3.jpg",
+          "alt": "Jennylle's Inspirational Hub - Found 💞LOVE💞 in a tropical paradise!! 🌴🍹😎 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/100-34585447-4.jpg",
+          "alt": "Jennylle's Inspirational Hub - Found 💞LOVE💞 in a tropical paradise!! 🌴🍹😎 screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34576518",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Agent HUB - From FELICES to earroyo.ai",
+      "author": "Eduardo Arroyo",
+      "publishedAt": "2026-07-16T17:07:59.899Z",
+      "comments": 15,
+      "likes": 10,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/agent-hub-from-felices-to-earroyo-ai",
+      "hubLinks": [
+        "http://earroyo.ai",
+        "http://earroyo.ai",
+        "http://earroyo.ai",
+        "http://earroyo.ai"
+      ],
+      "summary": "A changelog of how the hub grew up ▶ Each addition below is paired with a cropped screenshot from the live hub at earroyo.",
+      "excerpt": "A changelog of how the hub grew up ▶ Each addition below is paired with a cropped screenshot from the live hub at earroyo.ai showing exactly where it appears. Captured 2026-07-16. The name The hub was born as FELICES — my mother's maiden name, which means HAPPY in Spanish. It carried a personal, family feeling. Over time, as the hub grew into a real working tool tied to my professional identity, it was rebranded to...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 18,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/101-34576518-1.jpg",
+          "alt": "Agent HUB - From FELICES to earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/102-34576518-2.jpg",
+          "alt": "Agent HUB - From FELICES to earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/103-34576518-3.jpg",
+          "alt": "Agent HUB - From FELICES to earroyo.ai screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/104-34576518-4.jpg",
+          "alt": "Agent HUB - From FELICES to earroyo.ai screenshot"
+        }
+      ],
+      "attachmentCount": 22,
+      "status": "eligible"
+    },
+    {
+      "id": "34559969",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge Shared Vision and Purpose ",
+      "author": "Karen Donn",
+      "publishedAt": "2026-07-16T03:51:28.495Z",
+      "comments": 1,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-shared-vision-and-purpose",
+      "hubLinks": [
+        "https://svp-agent-hub-2026.lovable.app/"
+      ],
+      "summary": "I like it on my phone, but I do not know how to take a screen shot on an android phone and put it here.",
+      "excerpt": "I like it on my phone, but I do not know how to take a screen shot on an android phone and put it here. https://svp-agent-hub-2026.lovable.app/ ipad",
+      "interests": [
+        "All",
+        "Mobile-first"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Published hub"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/105-34559969-1.jpg",
+          "alt": "July Challenge Shared Vision and Purpose  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/106-34559969-2.jpg",
+          "alt": "July Challenge Shared Vision and Purpose  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/107-34559969-3.jpg",
+          "alt": "July Challenge Shared Vision and Purpose  screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34559439",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My AI Hub",
+      "author": "Chris Gubbels",
+      "publishedAt": "2026-07-16T03:07:01.956Z",
+      "comments": 1,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub",
+      "hubLinks": [],
+      "summary": "Nothing fancy but done.",
+      "excerpt": "Nothing fancy but done.",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/108-34559439-1.jpg",
+          "alt": "My AI Hub screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34544217",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge, Under Construction",
+      "author": "Duke Monk",
+      "publishedAt": "2026-07-15T17:26:55.756Z",
+      "comments": 4,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-under-construction",
+      "hubLinks": [],
+      "summary": "All, I have really enjoyed bringing this to life, here is a sneak peak.",
+      "excerpt": "All, I have really enjoyed bringing this to life, here is a sneak peak. It even has shooting stars that go across the backdrop.",
+      "interests": [
+        "All",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Personal theme"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/109-34544217-1.jpg",
+          "alt": "July Challenge, Under Construction screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/110-34544217-2.jpg",
+          "alt": "July Challenge, Under Construction screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34511499",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge - Nigel's Nook Looks Nifty!",
+      "author": "Savannah Simpson",
+      "publishedAt": "2026-07-14T18:22:30.956Z",
+      "comments": 21,
+      "likes": 17,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-nigel-s-nook-looks-nifty",
+      "hubLinks": [],
+      "summary": "We've been busy turning Nigel's Nook into something that feels less like software and more like a space to land.",
+      "excerpt": "We've been busy turning Nigel's Nook into something that feels less like software and more like a space to land. It now feels like a warm, cozy, masculine library where ideas are explored, refined, and brought to life. Nigel has become much more than a research assistant. He's a true creative partner, helping me think through challenges, troubleshoot problems, organize complex ideas, and transform information into...",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/111-34511499-1.jpg",
+          "alt": "July Challenge - Nigel's Nook Looks Nifty! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/112-34511499-2.jpg",
+          "alt": "July Challenge - Nigel's Nook Looks Nifty! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/113-34511499-3.jpg",
+          "alt": "July Challenge - Nigel's Nook Looks Nifty! screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/114-34511499-4.jpg",
+          "alt": "July Challenge - Nigel's Nook Looks Nifty! screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34482600",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge Submission",
+      "author": "Rebecca Lister",
+      "publishedAt": "2026-07-13T20:42:34.554Z",
+      "comments": 7,
+      "likes": 12,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-9030fa",
+      "hubLinks": [],
+      "summary": "My direction: I am a wildlife photographer and am currently working on editing a gallery of my work from the Ecuadorian Amazon as well as working with Claude to build my new website called loveforthewild.",
+      "excerpt": "My direction: I am a wildlife photographer and am currently working on editing a gallery of my work from the Ecuadorian Amazon as well as working with Claude to build my new website called loveforthewild.com, so I wanted something to inspire and keep me focused on this project. My original design brief (clearly things changed along the way): Restyle my AI Hub exactly as specified below. Change only the look - no...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 8,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/115-34482600-1.jpg",
+          "alt": "Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/116-34482600-2.jpg",
+          "alt": "Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/117-34482600-3.jpg",
+          "alt": "Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/118-34482600-4.jpg",
+          "alt": "Challenge Submission screenshot"
+        }
+      ],
+      "attachmentCount": 8,
+      "status": "eligible"
+    },
+    {
+      "id": "34464999",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge Submission - My AI Hub",
+      "author": "Stacey Sparks",
+      "publishedAt": "2026-07-13T12:59:02.254Z",
+      "comments": 5,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-submission-my-ai-hub",
+      "hubLinks": [],
+      "summary": "July Challenge Submission - My AI Hub",
+      "excerpt": "",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/119-34464999-1.jpg",
+          "alt": "July Challenge Submission - My AI Hub screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34453600",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My private HUB — built in the Lounge, finished at the gate ✈️",
+      "author": "Istvan Takacs",
+      "publishedAt": "2026-07-13T00:36:12.430Z",
+      "comments": 9,
+      "likes": 11,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-private-hub-built-in-the-lounge-finished-at-the-gate",
+      "hubLinks": [
+        "https://massive-action.eu/"
+      ],
+      "summary": "Not sure this is even a submission this time, but I got carried away in the Lounge before we left Phoenix, so here's where I landed.",
+      "excerpt": "Not sure this is even a submission this time, but I got carried away in the Lounge before we left Phoenix, so here's where I landed. Started with Dirk's prompts — connect Claude, GitHub, Lovable. Basic setup, works. Then I got curious: what else can I push from Claude into GitHub and get to show up on the HUB? Turns out: quite a lot. So the HUB now has: A skills & plugins repository — everything I've built, in one...",
+      "interests": [
+        "All",
+        "Minimal / calm"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Visual redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/120-34453600-1.jpg",
+          "alt": "My private HUB — built in the Lounge, finished at the gate ✈️ screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34449911",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Paint my AI Hub!",
+      "author": "George Guillory",
+      "publishedAt": "2026-07-12T21:19:01.861Z",
+      "comments": 3,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/paint-my-ai-hub",
+      "hubLinks": [],
+      "summary": "Paint my AI Hub….pdf",
+      "excerpt": "Paint my AI Hub….pdf",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Visual redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34448974",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge - Paint your Hub - Submission",
+      "author": "Carolyn Sims",
+      "publishedAt": "2026-07-12T20:23:42.117Z",
+      "comments": 3,
+      "likes": 10,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-hub-submission",
+      "hubLinks": [],
+      "summary": "Direction in brief, from Claude, before screenshots and details: The palette should feel like an open window rather than a logo.",
+      "excerpt": "Direction in brief, from Claude, before screenshots and details: The palette should feel like an open window rather than a logo. And since your actual life is set against Idaho sky and forest, I'd lean into that rather than the usual cliché. Here's a palette built around that idea — sky, light, and growth, grounded by something steady. NOTE: I did the reskin before reading the Challenge Submission. Today, I went...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 9,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/121-34448974-1.jpg",
+          "alt": "July Challenge - Paint your Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/122-34448974-2.jpg",
+          "alt": "July Challenge - Paint your Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/123-34448974-3.jpg",
+          "alt": "July Challenge - Paint your Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/124-34448974-4.jpg",
+          "alt": "July Challenge - Paint your Hub - Submission screenshot"
+        }
+      ],
+      "attachmentCount": 9,
+      "status": "eligible"
+    },
+    {
+      "id": "34446802",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Christina Amplified",
+      "author": "Christina Marcos",
+      "publishedAt": "2026-07-12T18:34:19.140Z",
+      "comments": 1,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/christina-amplified",
+      "hubLinks": [],
+      "summary": ") and played with it quite a bit - so my Caude design brief was the basis but I refined it quite a bit.",
+      "excerpt": "I truly started to enjoy this (it’s proper magic!) and played with it quite a bit - so my Caude design brief was the basis but I refined it quite a bit. I have recently started a new platform of a bi-weekly newsletter (herloom.world) specifically aimed to make an impact on women in agriculture, but with a wider reach. The tagline is from my grandmother. This was the basis for my design template. As this will become...",
+      "interests": [
+        "All",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/125-34446802-1.jpg",
+          "alt": "Christina Amplified screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/126-34446802-2.jpg",
+          "alt": "Christina Amplified screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/127-34446802-3.jpg",
+          "alt": "Christina Amplified screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34444965",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Céline’ Hub - Painted, published, secured and with a prompt library",
+      "author": "Céline THOMAS",
+      "publishedAt": "2026-07-12T16:51:52.596Z",
+      "comments": 4,
+      "likes": 10,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/celine-hub",
+      "hubLinks": [],
+      "summary": "Your direction in one line : Mary Oliver (extraits, recueil Thirst , 2006) - It is your life, which is so close to my own that I would not know where to drop the knife of separation.",
+      "excerpt": "Your direction in one line : Mary Oliver (extraits, recueil Thirst , 2006) - It is your life, which is so close to my own that I would not know where to drop the knife of separation. And what does this have to do with love, except everything? … as it feeds, as we all do, as we must, upon the invisible gift: our purest, sweet necessity: the air. 03 - LOVABLE-UI-HANDOFF copie.md",
+      "interests": [
+        "All",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/128-34444965-1.jpg",
+          "alt": "Céline’ Hub - Painted, published, secured and with a prompt library screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/129-34444965-2.jpg",
+          "alt": "Céline’ Hub - Painted, published, secured and with a prompt library screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/130-34444965-3.jpg",
+          "alt": "Céline’ Hub - Painted, published, secured and with a prompt library screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/131-34444965-4.jpg",
+          "alt": "Céline’ Hub - Painted, published, secured and with a prompt library screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34444331",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge Submission",
+      "author": "Clare Furlonger",
+      "publishedAt": "2026-07-12T16:15:34.327Z",
+      "comments": 3,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-submission",
+      "hubLinks": [],
+      "summary": "Wanted to keep that simple, “Apple” feel, so restyled with a “Field Notes” theme.",
+      "excerpt": "Restyled my AI Agent hub. Wanted to keep that simple, “Apple” feel, so restyled with a “Field Notes” theme. Warm cream/ink palette, hairline borders, tap friendly buttons and the mobile navigation is fixed to the bottom bar. Very happy with the result. Screenshots below: I also restyled the daily briefing. Very happy with how that turned out. Then moved idea to done, and captured the win. As my first step into AI...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/132-34444331-1.jpg",
+          "alt": "July Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/133-34444331-2.jpg",
+          "alt": "July Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/134-34444331-3.jpg",
+          "alt": "July Challenge Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/135-34444331-4.jpg",
+          "alt": "July Challenge Submission screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34435926",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge: Paint your AI Hub (The Watch Shop)",
+      "author": "Paul Wagner",
+      "publishedAt": "2026-07-12T03:27:00.209Z",
+      "comments": 12,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-ai-hub-9851ab",
+      "hubLinks": [],
+      "summary": "Hello, I've been collecting watches for years, so I incorporated a watch shop in my updated hub.",
+      "excerpt": "Hello, I've been collecting watches for years, so I incorporated a watch shop in my updated hub. It does work and looks nice on my phone, but I was not able to share it. See the attached photos from the web version.",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/136-34435926-1.jpg",
+          "alt": "July Challenge: Paint your AI Hub (The Watch Shop) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/137-34435926-2.jpg",
+          "alt": "July Challenge: Paint your AI Hub (The Watch Shop) screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34434761",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Jehol's HUB Est.2026 is on",
+      "author": "Carole Garnier Louvat",
+      "publishedAt": "2026-07-12T01:19:01.362Z",
+      "comments": 6,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/jehol-s-hub-est-2026-is-on",
+      "hubLinks": [],
+      "summary": "I worked hard to customize in details the look and the words so it could be an emanation of my future business project and incorporated therefore all the symbolic elements from my project to my Hub.",
+      "excerpt": "I worked hard to customize in details the look and the words so it could be an emanation of my future business project and incorporated therefore all the symbolic elements from my project to my Hub. I transferred to my Hub Library most of the md documents I had created through the bootcamp with Clause so I decided to create within the Library Chapters cards to obtain a cleaner and more organized look. I also...",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Dark mode",
+        "Minimal",
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 13,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/138-34434761-1.jpg",
+          "alt": "Jehol's HUB Est.2026 is on screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/139-34434761-2.jpg",
+          "alt": "Jehol's HUB Est.2026 is on screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/140-34434761-3.jpg",
+          "alt": "Jehol's HUB Est.2026 is on screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/141-34434761-4.jpg",
+          "alt": "Jehol's HUB Est.2026 is on screenshot"
+        }
+      ],
+      "attachmentCount": 13,
+      "status": "eligible"
+    },
+    {
+      "id": "34428850",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge: Paint your AI Hub - Submission",
+      "author": "Stephen Hodge",
+      "publishedAt": "2026-07-11T18:24:39.368Z",
+      "comments": 6,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-ai-hub",
+      "hubLinks": [],
+      "summary": "Started with Claude's style options, blending two together and tweaking from there.",
+      "excerpt": "Started with Claude's style options, blending two together and tweaking from there. Created a custom logo by transforming the AI Mastery Course image in ChatGPT — keeping the background color as a nod to the original — then swapped it in as the favicon and header in Lovable. Did some early styling directly in Lovable, until I realized I was burning through tokens faster than I wanted. Switched to Claude, which could...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 15,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/142-34428850-1.jpg",
+          "alt": "July Challenge: Paint your AI Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/143-34428850-2.jpg",
+          "alt": "July Challenge: Paint your AI Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/144-34428850-3.jpg",
+          "alt": "July Challenge: Paint your AI Hub - Submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/145-34428850-4.jpg",
+          "alt": "July Challenge: Paint your AI Hub - Submission screenshot"
+        }
+      ],
+      "attachmentCount": 15,
+      "status": "eligible"
+    },
+    {
+      "id": "34406355",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge July 2026: Paint your AI Hub 🎨",
+      "author": "Samantha Landwehr",
+      "publishedAt": "2026-07-10T17:40:29.389Z",
+      "comments": 2,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-7-paint-your-ai-hub",
+      "hubLinks": [
+        "https://remix-sam-squared.lovable.app/"
+      ],
+      "summary": "I paint watercolors (when I’m not at work) and write weekly blog posts.",
+      "excerpt": "I paint watercolors (when I’m not at work) and write weekly blog posts. 🎨 So my challenge submission combined the two! Take a blog post idea from start to finish by dragging the posts right as they move through the buckets. (After publication, they move to the Archive.) See images below and the .md file attached. P.S. I was also a barista in my former life and LOVE coffee… so dark mode reflects that. Super fun...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Personal theme"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/146-34406355-1.jpg",
+          "alt": "Challenge July 2026: Paint your AI Hub 🎨 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/147-34406355-2.jpg",
+          "alt": "Challenge July 2026: Paint your AI Hub 🎨 screenshot"
+        }
+      ],
+      "attachmentCount": 4,
+      "status": "eligible"
+    },
+    {
+      "id": "34393956",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "First win : Antoinette/Anthony AI Hub - look & feel chief engineers",
+      "author": "Antoinette Willemsen",
+      "publishedAt": "2026-07-10T10:26:32.999Z",
+      "comments": 4,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/first-win-antoinette-anthony-ai-hub-look-feel-chief-engineers",
+      "hubLinks": [],
+      "summary": "💃 Woohoo 💦 Claude built it based on my CSI business website which focuses on engine room systems for chief engineers in the marine industry, with transparent look and deep blue for dark mode on the bridge.",
+      "excerpt": "💃 Woohoo 💦 Claude built it based on my CSI business website which focuses on engine room systems for chief engineers in the marine industry, with transparent look and deep blue for dark mode on the bridge. The drop shapes are for the fluids that we measure on board of ships 🚢⚓ It took me & Lovable a few hours yet we are there woohoo. Unbelievable, this is fun and amazing!!",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Dark mode",
+        "Brand-driven",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/148-34393956-1.jpg",
+          "alt": "First win : Antoinette/Anthony AI Hub - look & feel chief engineers screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/149-34393956-2.jpg",
+          "alt": "First win : Antoinette/Anthony AI Hub - look & feel chief engineers screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34381973",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge submission",
+      "author": "Darlene Morse",
+      "publishedAt": "2026-07-09T21:31:06.823Z",
+      "comments": 7,
+      "likes": 10,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission",
+      "hubLinks": [],
+      "summary": "Screen shot of board: My design brief— Here is your copy-pasteable design recipe: Dar's Vault Hub — Design Recipe - Paper background: `#faf6ef` - Card surface: `#f7f0e2` - Ink text: `#2b2420` - Muted text: `#8a7d6c` -...",
+      "excerpt": "I will try to include everything. Phone screen shot 3. Screen shot of board: My design brief— Here is your copy-pasteable design recipe: Dar's Vault Hub — Design Recipe - Paper background: `#faf6ef` - Card surface: `#f7f0e2` - Ink text: `#2b2420` - Muted text: `#8a7d6c` - Accent: `#b1552f` - Lines/dividers: `#e8ddc9` - Headings: Lora (serif) - Body text: Inter (sans) - Layout: Sticky top nav with pill-shaped tabs,...",
+      "interests": [
+        "All",
+        "Mobile-first"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Visual redesign"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/150-34381973-1.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/151-34381973-2.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/152-34381973-3.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/153-34381973-4.jpg",
+          "alt": "Challenge submission screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34380561",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "62 and learning",
+      "author": "Danny Castle",
+      "publishedAt": "2026-07-09T20:39:48.694Z",
+      "comments": 3,
+      "likes": 8,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/62-and-learning",
+      "hubLinks": [],
+      "summary": "Sign in is complete, and waiting for it to connect to my URL",
+      "excerpt": "Sign in is complete, and waiting for it to connect to my URL",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/154-34380561-1.jpg",
+          "alt": "62 and learning screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34365144",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "One session. That’s all it took… 🤯🚀",
+      "author": "Mateja Labauri",
+      "publishedAt": "2026-07-09T13:22:35.264Z",
+      "comments": 3,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/one-session-that-s-all-it-took",
+      "hubLinks": [],
+      "summary": "Today I officially created my own hub, published it, built the login flow, and I’m having an absolute blast experimenting with new cards and features.",
+      "excerpt": "Today I officially created my own hub, published it, built the login flow, and I’m having an absolute blast experimenting with new cards and features. Seeing it come to life feels surreal. Next stop… July’s Challenge! 💜 I honestly couldn’t be more excited. Being alive at a time when we can build systems like this is such a gift. I’m building the foundations of my empire, one system at a time, and if there’s one...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Personal theme",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/155-34365144-1.jpg",
+          "alt": "One session. That’s all it took… 🤯🚀 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/156-34365144-2.jpg",
+          "alt": "One session. That’s all it took… 🤯🚀 screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34354963",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My Phoenix Nest (New AI Hub Look and Name)",
+      "author": "Negar Ashtari",
+      "publishedAt": "2026-07-09T02:53:43.454Z",
+      "comments": 7,
+      "likes": 10,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-phoenix-nest-new-ai-hub-look-and-name",
+      "hubLinks": [],
+      "summary": "Here is the new look for my AI hub 🤩 I followed the instruction for the July challenge, had Claude to consider my business voice file, combined two of the collor pallets it suggested and came up with the first version.",
+      "excerpt": "Here is the new look for my AI hub 🤩 I followed the instruction for the July challenge, had Claude to consider my business voice file, combined two of the collor pallets it suggested and came up with the first version. And then I wanted it to reflect something really personal about me and I came up with the phoenix image (there is a astrology reason behind it). and then I changed the name to Phoenix Nest and the...",
+      "interests": [
+        "All",
+        "Business branded",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/157-34354963-1.jpg",
+          "alt": "My Phoenix Nest (New AI Hub Look and Name) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/158-34354963-2.jpg",
+          "alt": "My Phoenix Nest (New AI Hub Look and Name) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/159-34354963-3.jpg",
+          "alt": "My Phoenix Nest (New AI Hub Look and Name) screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34353043",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "A NEW LOOK FOR MY HUB",
+      "author": "MARIO Jimenez Rodriguez",
+      "publishedAt": "2026-07-09T01:14:37.133Z",
+      "comments": 4,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/a-new-look-for-my-hub",
+      "hubLinks": [],
+      "summary": "A NEW LOOK FOR MY HUB",
+      "excerpt": "",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/160-34353043-1.jpg",
+          "alt": "A NEW LOOK FOR MY HUB screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/161-34353043-2.jpg",
+          "alt": "A NEW LOOK FOR MY HUB screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34332194",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge 1",
+      "author": "Megumi Shimonaka",
+      "publishedAt": "2026-07-08T13:51:40.229Z",
+      "comments": 6,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1",
+      "hubLinks": [],
+      "summary": "I left the brief to ClaudeCo-work to create based on the context it already had on me and the logo of my nonprofit etc.",
+      "excerpt": "This was really fun! I left the brief to ClaudeCo-work to create based on the context it already had on me and the logo of my nonprofit etc. (ended up taking it out cuz it didn’t match the design). What it created was quite different than what it is now, so I did tons of tweaks directly by chatting on Loveable and probably used way too many credits, but it was nice to know it can be done and so easily.",
+      "interests": [
+        "All",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 2,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/162-34332194-1.jpg",
+          "alt": "Challenge 1 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/163-34332194-2.jpg",
+          "alt": "Challenge 1 screenshot"
+        }
+      ],
+      "attachmentCount": 2,
+      "status": "eligible"
+    },
+    {
+      "id": "34324210",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "🎨 Machined, not coded — my 'Swiss Precision' AI Hub 🇨🇭",
+      "author": "Marcel Mollet",
+      "publishedAt": "2026-07-08T07:11:41.551Z",
+      "comments": 2,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub-swiss-precision",
+      "hubLinks": [],
+      "summary": "Swiss editorial design meets mollet DNA — a bordeaux, anthracite and white hub with YouTube-style bottom navigation, built mobile-first.",
+      "excerpt": "To post this is way past my comfort zone! Swiss editorial design meets mollet DNA — a bordeaux, anthracite and white hub with YouTube-style bottom navigation, built mobile-first. It started with five words: \"Let's begin with Day 1.\" That was my first prompt to Claude in Cowork. The rest is this story. I run a precision mechanics company in Switzerland — we machine parts for medical technology, where a tolerance of a...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/164-34324210-1.jpg",
+          "alt": "🎨 Machined, not coded — my 'Swiss Precision' AI Hub 🇨🇭 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/165-34324210-2.jpg",
+          "alt": "🎨 Machined, not coded — my 'Swiss Precision' AI Hub 🇨🇭 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/166-34324210-3.jpg",
+          "alt": "🎨 Machined, not coded — my 'Swiss Precision' AI Hub 🇨🇭 screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/167-34324210-4.jpg",
+          "alt": "🎨 Machined, not coded — my 'Swiss Precision' AI Hub 🇨🇭 screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34321496",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "I had to re design. I looked at some of the samples and just had to re design. Thank you to all for your inspiration! ",
+      "author": "Lynda Anderson",
+      "publishedAt": "2026-07-08T03:08:02.698Z",
+      "comments": 3,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/i-had-to-re-design-i-looked-at-some-of-the-samples-and-just-had-to-re-design-thank-you-to-all-for-your-inspiration",
+      "hubLinks": [],
+      "summary": "This hub will help me be a better leader and person for my family.",
+      "excerpt": "This hub will help me be a better leader and person for my family. I put a quote and my photo on Wonder Woman’s body to help anchor it down.",
+      "interests": [
+        "All",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/168-34321496-1.jpg",
+          "alt": "I had to re design. I looked at some of the samples and just had to re design. Thank you to all for your inspiration!  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/169-34321496-2.jpg",
+          "alt": "I had to re design. I looked at some of the samples and just had to re design. Thank you to all for your inspiration!  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/170-34321496-3.jpg",
+          "alt": "I had to re design. I looked at some of the samples and just had to re design. Thank you to all for your inspiration!  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/171-34321496-4.jpg",
+          "alt": "I had to re design. I looked at some of the samples and just had to re design. Thank you to all for your inspiration!  screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34321049",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Untitled challenge submission",
+      "author": "Lynda Anderson",
+      "publishedAt": "2026-07-08T02:34:24.128Z",
+      "comments": 2,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/dad8d4",
+      "hubLinks": [],
+      "summary": "Image-only challenge submission with visual proof attached.",
+      "excerpt": "",
+      "interests": [
+        "All",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/172-34321049-1.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/173-34321049-2.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/174-34321049-3.jpg",
+          "alt": "Challenge submission screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/175-34321049-4.jpg",
+          "alt": "Challenge submission screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34290543",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge 1: First confusion, then step by step into action",
+      "author": "Silke Jacobi",
+      "publishedAt": "2026-07-07T07:49:35.545Z",
+      "comments": 8,
+      "likes": 9,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/first-confusion-then-step-by-step-into-action",
+      "hubLinks": [],
+      "summary": "To be truely honest: at the start, everything was a bit of a mess, because — however I managed it — I had somehow created several repositories.",
+      "excerpt": "To be truely honest: at the start, everything was a bit of a mess, because — however I managed it — I had somehow created several repositories. Which meant my GitHub access was all tangled up too. To start with such confusion wasn't an option, so I went through everything step by step with Claude Cowork, and eventually, it actually worked and I had my win, YESSSS! So yesterday I wanted to move on and spend »just...",
+      "interests": [
+        "All",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Dark mode",
+        "Minimal",
+        "Brand-driven",
+        "Personal theme"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/176-34290543-1.jpg",
+          "alt": "Challenge 1: First confusion, then step by step into action screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/177-34290543-2.jpg",
+          "alt": "Challenge 1: First confusion, then step by step into action screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/178-34290543-3.jpg",
+          "alt": "Challenge 1: First confusion, then step by step into action screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/179-34290543-4.jpg",
+          "alt": "Challenge 1: First confusion, then step by step into action screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34281584",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Igor and Dirk....CHALLENGE ACCEPTED....this 60 year old, grandmom, realtor, with a clinical education,who spent 25 years away from my profession to raise two attorneys with limited skills...published her hub and added a google sign in and GOT A WIN!!!!!  ",
+      "author": "Manjiri Rao-Kostas",
+      "publishedAt": "2026-07-06T22:11:52.720Z",
+      "comments": 9,
+      "likes": 11,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/igor-and-dirk-challenge-accepted-this-60-year-old-grandmom-realtor-with-a-clinical-education-who-spent-25-years-away-from-my-profession-to-raise-two-attorneys-with-limited-skills-published-her-hub-and-added-a-google-sign-in-and-got-a-win",
+      "hubLinks": [],
+      "summary": "37020995-5508-477B-9680-F932F0E274DE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic",
+      "excerpt": "37020995-5508-477B-9680-F932F0E274DE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic",
+      "interests": [
+        "All",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Published hub"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/180-34281584-1.jpg",
+          "alt": "Igor and Dirk....CHALLENGE ACCEPTED....this 60 year old, grandmom, realtor, with a clinical education,who spent 25 years away from my profession to raise two attorneys with limited skills...published her hub and added a google sign in and GOT A WIN!!!!!   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/181-34281584-2.jpg",
+          "alt": "Igor and Dirk....CHALLENGE ACCEPTED....this 60 year old, grandmom, realtor, with a clinical education,who spent 25 years away from my profession to raise two attorneys with limited skills...published her hub and added a google sign in and GOT A WIN!!!!!   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/182-34281584-3.jpg",
+          "alt": "Igor and Dirk....CHALLENGE ACCEPTED....this 60 year old, grandmom, realtor, with a clinical education,who spent 25 years away from my profession to raise two attorneys with limited skills...published her hub and added a google sign in and GOT A WIN!!!!!   screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/183-34281584-4.jpg",
+          "alt": "Igor and Dirk....CHALLENGE ACCEPTED....this 60 year old, grandmom, realtor, with a clinical education,who spent 25 years away from my profession to raise two attorneys with limited skills...published her hub and added a google sign in and GOT A WIN!!!!!   screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34281240",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Untitled challenge submission",
+      "author": "Manjiri Rao-Kostas",
+      "publishedAt": "2026-07-06T22:00:47.945Z",
+      "comments": 1,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/e9fc06",
+      "hubLinks": [],
+      "summary": "Image-only challenge submission with visual proof attached.",
+      "excerpt": "",
+      "interests": [
+        "All"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 1,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/184-34281240-1.jpg",
+          "alt": "Challenge submission screenshot"
+        }
+      ],
+      "attachmentCount": 1,
+      "status": "eligible"
+    },
+    {
+      "id": "34274462",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "The Only Way Around Is Through",
+      "author": "Karl Goldkamp",
+      "publishedAt": "2026-07-06T18:57:08.422Z",
+      "comments": 2,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/the-only-way-around-is-through",
+      "hubLinks": [],
+      "summary": "To start this journey knowing the reward is real, and life changing, means there’s nothing to do but the work of doing it.",
+      "excerpt": "To start this journey knowing the reward is real, and life changing, means there’s nothing to do but the work of doing it. For whatever reason getting My AI Hub (Ruby) wasn’t easy. The guides were great, what was better was just asking loveble.dev what do i do, or what’s not working. ￼ ￼And to think that I thought that cliff climbing was challenging in believing the end can be achieved. Now that it’s done. It’s...",
+      "interests": [
+        "All",
+        "Personal identity"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/185-34274462-1.jpg",
+          "alt": "The Only Way Around Is Through screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/186-34274462-2.jpg",
+          "alt": "The Only Way Around Is Through screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/187-34274462-3.jpg",
+          "alt": "The Only Way Around Is Through screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34244729",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge #1:  Paint you Hub…",
+      "author": "ty tallman",
+      "publishedAt": "2026-07-05T21:34:37.709Z",
+      "comments": 3,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-you-hub",
+      "hubLinks": [
+        "https://imphub.lovable.app/"
+      ],
+      "summary": "Built by Claude, collaborators: AI Mastery, My Mastery DNA. I has a simplistic and refined look. Published link: DARK MOde |Role |Hex | |----------|-----------| |Background|#14100C | |Surface |#1E1813 | |Text |#F1EADF |...",
+      "excerpt": "Built by Claude, collaborators: AI Mastery, My Mastery DNA. I has a simplistic and refined look. Published link: https://imphub.lovable.app/ DARK MOde |Role |Hex | |----------|-----------| |Background|#14100C | |Surface |#1E1813 | |Text |#F1EADF | |**Accent**|**#E08A4F**| Light mode |Role |Hex | |-----------|------------------------| |Background |#F7F3EC (warm cream) | |Surface |#FFFDF9 | |Line/border|#E7DFD1 |...",
+      "interests": [
+        "All",
+        "Dark / cinematic"
+      ],
+      "sourceTags": [
+        "Dark mode",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 4,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/188-34244729-1.jpg",
+          "alt": "Challenge #1:  Paint you Hub… screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/189-34244729-2.jpg",
+          "alt": "Challenge #1:  Paint you Hub… screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/190-34244729-3.jpg",
+          "alt": "Challenge #1:  Paint you Hub… screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/191-34244729-4.jpg",
+          "alt": "Challenge #1:  Paint you Hub… screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34244020",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": " Challenge #1: Paint your AI Hub",
+      "author": "Jacqueline Terzieva",
+      "publishedAt": "2026-07-05T20:58:03.275Z",
+      "comments": 7,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub-cedec3",
+      "hubLinks": [],
+      "summary": "Website version in dark mode 🌙 Website version in light mode ☀️ ✨mobile-first version (light mode) 📱☺️ ✨mobile-first version (dark mode) 📱☺️ Thanks for the great creative challenge!",
+      "excerpt": "Website version in dark mode 🌙 Website version in light mode ☀️ ✨mobile-first version (light mode) 📱☺️ ✨mobile-first version (dark mode) 📱☺️ Thanks for the great creative challenge! 🧑‍🎨🫶",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/192-34244020-1.jpg",
+          "alt": " Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/193-34244020-2.jpg",
+          "alt": " Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/194-34244020-3.jpg",
+          "alt": " Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/195-34244020-4.jpg",
+          "alt": " Challenge #1: Paint your AI Hub screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34241316",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Published",
+      "author": "Elizabeth Collado",
+      "publishedAt": "2026-07-05T18:43:30.591Z",
+      "comments": 3,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/published",
+      "hubLinks": [],
+      "summary": "I used Claude to assist me in setting up a sign-in with a passcode.",
+      "excerpt": "I used Claude to assist me in setting up a sign-in with a passcode. It took a while, but it has been tested several times for security issues, and poof! It’s there on my phone, asking for the passcode. Love it! A new look for my Hub - simple, bright, and reassuring, with larger text and clear buttons so I can check tasks, wins, and ideas without feeling overwhelmed.",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Visual redesign",
+        "Published hub"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/196-34241316-1.jpg",
+          "alt": "Published screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/197-34241316-2.jpg",
+          "alt": "Published screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/198-34241316-3.jpg",
+          "alt": "Published screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/199-34241316-4.jpg",
+          "alt": "Published screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34237335",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge 1: Paint Your AI Hub",
+      "author": "Mindy Veissid",
+      "publishedAt": "2026-07-05T15:06:07.642Z",
+      "comments": 2,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub-2e49dc",
+      "hubLinks": [],
+      "summary": "I’m proud of myself for doing this and love how it came out!",
+      "excerpt": "Here is my submission. I’m proud of myself for doing this and love how it came out! My direction in one line: A new look for my Hub - simple, bright, and reassuring, with larger text and clear buttons so I can check tasks, wins, and ideas without feeling overwhelmed. My design brief: The md file was my original design brief but I wasn’t happy with it at all. In lovable I gave it my logo colors and it was much...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 5,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/200-34237335-1.jpg",
+          "alt": "Challenge 1: Paint Your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/201-34237335-2.jpg",
+          "alt": "Challenge 1: Paint Your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/202-34237335-3.jpg",
+          "alt": "Challenge 1: Paint Your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/203-34237335-4.jpg",
+          "alt": "Challenge 1: Paint Your AI Hub screenshot"
+        }
+      ],
+      "attachmentCount": 5,
+      "status": "eligible"
+    },
+    {
+      "id": "34213176",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge #1: Paint your AI Hub",
+      "author": "Viktor Hung",
+      "publishedAt": "2026-07-04T07:13:41.923Z",
+      "comments": 8,
+      "likes": 7,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub",
+      "hubLinks": [],
+      "summary": "My direction in one line: \"Quiet Command (Paper/Ink) — warm notebook tones + one consistent forest-green accent everywhere, because 'quiet vs loud' is my own rule: restrained and personal, not performative.",
+      "excerpt": "I made it - FINALLY!!! 1. My direction in one line: \"Quiet Command (Paper/Ink) — warm notebook tones + one consistent forest-green accent everywhere, because 'quiet vs loud' is my own rule: restrained and personal, not performative.\" 2. My Design Brief: LOVABLE-UI-HANDOFF.md",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 8,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/204-34213176-1.jpg",
+          "alt": "Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/205-34213176-2.jpg",
+          "alt": "Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/206-34213176-3.jpg",
+          "alt": "Challenge #1: Paint your AI Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/207-34213176-4.jpg",
+          "alt": "Challenge #1: Paint your AI Hub screenshot"
+        }
+      ],
+      "attachmentCount": 8,
+      "status": "eligible"
+    }
+  ]
+}
