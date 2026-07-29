@@ -750,33 +750,6 @@ export default function AdminBackend({ navigate }) {
     setMonth((current) => ({ ...current, ...patch }));
   }
 
-  function applyMonthlyTemplate() {
-    setMonth((current) => {
-      if (!current?.slug) return current;
-      const template = createMonthTemplate({
-        slug: current.slug,
-        label: current.label || current.slug,
-        topic: current.topic || "To be announced",
-        focus: current.focus || `${current.label || current.slug} Mastery Workshop`,
-        outcome: current.outcome || "",
-      });
-
-      return {
-        ...current,
-        hero: template.hero,
-        resources: template.resources,
-        guide_markdown: template.guide_markdown,
-        challenge_markdown: template.challenge_markdown,
-        challenge_prompt: template.challenge_prompt,
-        prompts: template.prompts,
-        extras: template.extras,
-        admin_notes: current.admin_notes || template.admin_notes,
-      };
-    });
-    setActiveResourceIndex(null);
-    setActiveTab("content");
-  }
-
   function updateHero(field, value) {
     setMonth((current) => ({
       ...current,
@@ -1175,7 +1148,6 @@ export default function AdminBackend({ navigate }) {
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={loadMonths}>Refresh months</button>
             </div>
 
             {!month ? (
@@ -1204,7 +1176,6 @@ export default function AdminBackend({ navigate }) {
                       addResource={addResource}
                       removeResource={removeResource}
                       moveResource={moveResource}
-                      applyMonthlyTemplate={applyMonthlyTemplate}
                       activeResourceIndex={activeResourceIndex}
                       onEditResource={(item, index) => {
                         const nextTab = resourceEditorTab(item);
@@ -1470,7 +1441,6 @@ function BasicsEditor({
   addResource,
   removeResource,
   moveResource,
-  applyMonthlyTemplate,
   activeResourceIndex,
   onEditResource,
   publishMonth,
@@ -1596,9 +1566,6 @@ function BasicsEditor({
             <p className="admin-order-label">3 · Frontend card order</p>
             <h2>Resource cards</h2>
             <p className="muted">Categories stay in the same frontend order. Flip status to Published when a card is ready for members.</p>
-          </div>
-          <div className="admin-inline-actions">
-            <button type="button" onClick={applyMonthlyTemplate}>Apply July Page Template</button>
           </div>
         </div>
         <div className="admin-resource-sections" aria-label="Resource cards">
