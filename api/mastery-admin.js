@@ -32,6 +32,7 @@ const CONTENT_STATUSES = new Set([
   "ready to publish",
   "published",
 ]);
+const RESOURCE_CATEGORIES = new Set(["Workshop", "Challenge", "Other", "Next month"]);
 
 function json(res, status, payload) {
   res.status(status).setHeader("Content-Type", "application/json");
@@ -102,7 +103,7 @@ function cleanResource(input = {}) {
   const legacyStatus = input.status === "tested" ? "testing" : input.status === "final" ? "final draft" : input.status;
   const isPublished = Boolean(input.is_published) || legacyStatus === "published";
   return {
-    category: input.category || "Workshop",
+    category: cleanResourceCategory(input.category),
     type: input.type || "Resource",
     title: input.title || "",
     description: input.description || "",
@@ -110,6 +111,12 @@ function cleanResource(input = {}) {
     is_published: isPublished,
     url: input.url || "",
   };
+}
+
+function cleanResourceCategory(category) {
+  if (category === "Extras" || category === "Follow up resources") return "Other";
+  if (category === "Coming next" || category === "Coming Next") return "Next month";
+  return RESOURCE_CATEGORIES.has(category) ? category : "Other";
 }
 
 function monthSnapshot(input = {}) {

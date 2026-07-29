@@ -55,7 +55,7 @@ const PRESET_ORDER = UPCOMING_MONTH_PRESETS.reduce((acc, preset, index) => {
 const CONTENT_TABS = ["content", "month-setup"];
 const RESOURCE_EDITOR_TABS = ["guide", "challenge", "prompts", "extras"];
 const ADMIN_SECTIONS = ["content", "analytics", "requests"];
-const RESOURCE_CATEGORIES = ["Workshop", "Extras", "Other"];
+const RESOURCE_CATEGORIES = ["Workshop", "Challenge", "Other", "Next month"];
 const RESOURCE_STATUSES = ["idea", "outline", "first draft", "testing", "final draft", "ready to publish", "published"];
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
@@ -461,7 +461,7 @@ function createMonthTemplate(preset = {}) {
         url: "",
       },
       {
-        category: "Other",
+        category: "Challenge",
         type: "Challenge",
         title: `${label} Challenge`,
         description: "Use what you built this month, submit your version, and see what other members made.",
@@ -470,13 +470,22 @@ function createMonthTemplate(preset = {}) {
         url: `/challenges/${slug}`,
       },
       {
-        category: "Extras",
+        category: "Other",
         type: "Video + Prompts",
         title: "Go Deeper",
         description: "Use optional follow-up prompts when members are ready to extend the system after the live workshop.",
         status: "idea",
         is_published: false,
         url: `/monthly-resources/${slug}/extras`,
+      },
+      {
+        category: "Next month",
+        type: "Event",
+        title: "Next Mastery Workshop",
+        description: "Add the next workshop calendar or announcement link here when it is ready.",
+        status: "idea",
+        is_published: false,
+        url: "",
       },
     ],
     guide_markdown: monthTemplateGuide(label),
@@ -557,6 +566,12 @@ function normalizedResourceStatus(status) {
   if (status === "tested") return "testing";
   if (status === "final") return "final draft";
   return RESOURCE_STATUSES.includes(status) ? status : "idea";
+}
+
+function normalizedResourceCategory(category) {
+  if (category === "Extras" || category === "Follow up resources") return "Other";
+  if (category === "Coming next" || category === "Coming Next") return "Next month";
+  return RESOURCE_CATEGORIES.includes(category) ? category : "Other";
 }
 
 function normalizeAdminToken(value = "") {
@@ -767,11 +782,12 @@ export default function AdminBackend({ navigate }) {
   }
 
   function addResource(category = "Workshop") {
+    const cleanCategory = normalizedResourceCategory(category);
     setMonth((current) => ({
       ...current,
       resources: [
         ...(current?.resources || []),
-        { category, type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
+        { category: cleanCategory, type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
       ],
     }));
   }
@@ -786,10 +802,10 @@ export default function AdminBackend({ navigate }) {
   function moveResource(index, direction) {
     setMonth((current) => {
       const resources = [...(current?.resources || [])];
-      const category = resources[index]?.category || "Other";
+      const category = normalizedResourceCategory(resources[index]?.category);
       const categoryIndexes = resources
         .map((item, itemIndex) => ({ item, itemIndex }))
-        .filter(({ item }) => (item.category || "Other") === category)
+        .filter(({ item }) => normalizedResourceCategory(item.category) === category)
         .map(({ itemIndex }) => itemIndex);
       const currentCategoryIndex = categoryIndexes.indexOf(index);
       const nextIndex = categoryIndexes[currentCategoryIndex + direction];
@@ -799,10 +815,10 @@ export default function AdminBackend({ navigate }) {
     });
     setActiveResourceIndex((current) => {
       const resources = monthRef.current?.resources || [];
-      const category = resources[index]?.category || "Other";
+      const category = normalizedResourceCategory(resources[index]?.category);
       const categoryIndexes = resources
         .map((item, itemIndex) => ({ item, itemIndex }))
-        .filter(({ item }) => (item.category || "Other") === category)
+        .filter(({ item }) => normalizedResourceCategory(item.category) === category)
         .map(({ itemIndex }) => itemIndex);
       const currentCategoryIndex = categoryIndexes.indexOf(index);
       const nextIndex = categoryIndexes[currentCategoryIndex + direction];
@@ -1569,7 +1585,7 @@ function BasicsEditor({
           {RESOURCE_CATEGORIES.map((category) => {
             const categoryItems = (month.resources || [])
               .map((item, index) => ({ item, index }))
-              .filter(({ item }) => (item.category || "Other") === category);
+              .filter(({ item }) => normalizedResourceCategory(item.category) === category);
 
             return (
               <section className="admin-resource-category" key={category}>

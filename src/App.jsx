@@ -1699,6 +1699,12 @@ function CmsMonthGroup({ months = [], basePath, navigate }) {
   );
 }
 
+function normalizedResourceCategory(category) {
+  if (category === "Extras" || category === "Follow up resources") return "Other";
+  if (category === "Coming next" || category === "Coming Next") return "Next month";
+  return ["Workshop", "Challenge", "Other", "Next month"].includes(category) ? category : "Other";
+}
+
 function CmsResourcesMenu({ month, navigate }) {
   const displayMonth = cmsMonthToMonth(month);
   const hasGuide = cmsHasContent(month, "guide");
@@ -1706,11 +1712,11 @@ function CmsResourcesMenu({ month, navigate }) {
   const hasExtras = cmsHasContent(month, "extras");
   const resourceCards = Array.isArray(month.resources) ? month.resources.filter((item) => item?.title) : [];
   const groupedResources = resourceCards.reduce((groups, item) => {
-    const category = item.category || "Workshop";
+    const category = normalizedResourceCategory(item.category);
     groups[category] = [...(groups[category] || []), item];
     return groups;
   }, {});
-  const categoryOrder = ["Workshop", "Extras", "Other", ...Object.keys(groupedResources).filter((category) => !["Workshop", "Extras", "Other"].includes(category))];
+  const categoryOrder = ["Workshop", "Challenge", "Other", "Next month", ...Object.keys(groupedResources).filter((category) => !["Workshop", "Challenge", "Other", "Next month"].includes(category))];
 
   function openResource(item) {
     if (!item.url) return;
@@ -1742,7 +1748,7 @@ function CmsResourcesMenu({ month, navigate }) {
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
                 <p className="section-kicker">{category}</p>
-                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category === "Other" ? "Challenge" : category === "Extras" ? "Follow up resources" : "Coming next"}</h3>
+                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
                 {groupedResources[category].map((item, index) => (
