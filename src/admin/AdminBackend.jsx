@@ -774,7 +774,7 @@ export default function AdminBackend({ navigate }) {
       };
     });
     setActiveResourceIndex(null);
-    setActiveTab("basics");
+    setActiveTab("content");
   }
 
   function updateHero(field, value) {
@@ -793,12 +793,12 @@ export default function AdminBackend({ navigate }) {
     }));
   }
 
-  function addResource() {
+  function addResource(category = "Workshop") {
     setMonth((current) => ({
       ...current,
       resources: [
         ...(current?.resources || []),
-        { category: "Workshop", type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
+        { category, type: "Resource", title: "New Resource", description: "", status: "idea", is_published: false, url: "" },
       ],
     }));
   }
@@ -813,14 +813,29 @@ export default function AdminBackend({ navigate }) {
   function moveResource(index, direction) {
     setMonth((current) => {
       const resources = [...(current?.resources || [])];
-      const nextIndex = index + direction;
-      if (nextIndex < 0 || nextIndex >= resources.length) return current;
+      const category = resources[index]?.category || "Other";
+      const categoryIndexes = resources
+        .map((item, itemIndex) => ({ item, itemIndex }))
+        .filter(({ item }) => (item.category || "Other") === category)
+        .map(({ itemIndex }) => itemIndex);
+      const currentCategoryIndex = categoryIndexes.indexOf(index);
+      const nextIndex = categoryIndexes[currentCategoryIndex + direction];
+      if (nextIndex == null) return current;
       [resources[index], resources[nextIndex]] = [resources[nextIndex], resources[index]];
       return { ...current, resources };
     });
     setActiveResourceIndex((current) => {
-      if (current === index) return index + direction;
-      if (current === index + direction) return index;
+      const resources = monthRef.current?.resources || [];
+      const category = resources[index]?.category || "Other";
+      const categoryIndexes = resources
+        .map((item, itemIndex) => ({ item, itemIndex }))
+        .filter(({ item }) => (item.category || "Other") === category)
+        .map(({ itemIndex }) => itemIndex);
+      const currentCategoryIndex = categoryIndexes.indexOf(index);
+      const nextIndex = categoryIndexes[currentCategoryIndex + direction];
+      if (nextIndex == null) return current;
+      if (current === index) return nextIndex;
+      if (current === nextIndex) return index;
       return current;
     });
   }
@@ -1580,73 +1595,71 @@ function BasicsEditor({
           <div>
             <p className="admin-order-label">3 · Frontend card order</p>
             <h2>Resource cards</h2>
-            <p className="muted">The month-level publish toggle opens the shell. A card appears to members only when its Published checkbox is on.</p>
+            <p className="muted">Categories stay in the same frontend order. Flip status to Published when a card is ready for members.</p>
           </div>
           <div className="admin-inline-actions">
             <button type="button" onClick={applyMonthlyTemplate}>Apply July Page Template</button>
-            <button type="button" onClick={addResource}>Add Card</button>
           </div>
         </div>
-        <div className="admin-resource-table" role="table" aria-label="Resource cards">
-          <div className="admin-resource-row admin-resource-head" role="row">
-            <span>Category</span>
-            <span>Type</span>
-            <span>Title</span>
-            <span>Description</span>
-            <span>Status</span>
-            <span>Published</span>
-            <span>Link</span>
-            <span>Order & actions</span>
-          </div>
-          {(month.resources || []).map((item, index) => (
-            <div className="admin-resource-row" role="row" key={`${item.type}-${index}`}>
-              <label className="admin-resource-field"><span>Category</span><select value={item.category || "Workshop"} onChange={(event) => updateResource(index, "category", event.target.value)} aria-label="Category">
-                {RESOURCE_CATEGORIES.map((category) => <option value={category} key={category}>{category}</option>)}
-              </select></label>
-              <label className="admin-resource-field"><span>Type</span><input value={item.type || ""} onChange={(event) => updateResource(index, "type", event.target.value)} placeholder="Type" aria-label="Type" /></label>
-              <label className="admin-resource-field"><span>Title</span><input value={item.title || ""} onChange={(event) => updateResource(index, "title", event.target.value)} placeholder="Title" aria-label="Title" /></label>
-              <label className="admin-resource-field"><span>Description</span><textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={2} aria-label="Description" /></label>
-              <label className="admin-resource-field"><span>Status</span><select
-                value={normalizedResourceStatus(item.status)}
-                onChange={(event) => {
-	                  const nextStatus = event.target.value;
-	                  updateResource(index, "status", nextStatus);
-	                  updateResource(index, "is_published", nextStatus === "published");
-	                }}
-                aria-label="Status"
-              >
-                {RESOURCE_STATUSES.map((status) => <option value={status} key={status}>{status}</option>)}
-              </select></label>
-              <label className="admin-resource-field admin-resource-publish-field">
-                <span>Published</span>
-                <input
-                  type="checkbox"
-                  checked={Boolean(item.is_published)}
-                  onChange={(event) => {
-                    updateResource(index, "is_published", event.target.checked);
-                    updateResource(index, "status", event.target.checked ? "published" : "ready to publish");
-                  }}
-                  aria-label={`Publish ${item.title || `resource ${index + 1}`}`}
-                />
-              </label>
-              <label className="admin-resource-field"><span>Link</span><textarea value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" rows={2} aria-label="Link" /></label>
-              <div className="admin-resource-actions">
-                <div className="admin-order-actions" aria-label={`Reorder ${item.title || `resource ${index + 1}`}`}>
-                  <span>#{index + 1}</span>
-                  <button type="button" onClick={() => moveResource(index, -1)} disabled={index === 0} aria-label="Move up">↑</button>
-                  <button type="button" onClick={() => moveResource(index, 1)} disabled={index === (month.resources || []).length - 1} aria-label="Move down">↓</button>
+        <div className="admin-resource-sections" aria-label="Resource cards">
+          {RESOURCE_CATEGORIES.map((category) => {
+            const categoryItems = (month.resources || [])
+              .map((item, index) => ({ item, index }))
+              .filter(({ item }) => (item.category || "Other") === category);
+
+            return (
+              <section className="admin-resource-category" key={category}>
+                <div className="admin-resource-category-head">
+                  <div>
+                    <h3>{category}</h3>
+                    <p>{categoryItems.length ? `${categoryItems.length} card${categoryItems.length === 1 ? "" : "s"}` : "No cards yet"}</p>
+                  </div>
+                  <button type="button" onClick={() => addResource(category)}>Add {category} Card</button>
                 </div>
-                <button
-                  type="button"
-                  className={activeResourceIndex === index ? "active" : ""}
-                  onClick={() => onEditResource(item, index)}
-                >
-                  Edit
-                </button>
-                <button type="button" className="danger" onClick={() => removeResource(index)}>Remove</button>
-              </div>
-            </div>
-          ))}
+
+                <div className="admin-resource-card-list">
+                  {categoryItems.map(({ item, index }, categoryIndex) => (
+                    <article className={`admin-resource-editor-card${activeResourceIndex === index ? " active" : ""}`} key={`${item.type}-${index}`}>
+                      <div className="admin-resource-editor-main">
+                        <div className="admin-resource-editor-top">
+                          <label className="admin-resource-field admin-resource-type"><span>Type</span><input value={item.type || ""} onChange={(event) => updateResource(index, "type", event.target.value)} placeholder="Type" aria-label="Type" /></label>
+                          <label className="admin-resource-field admin-resource-title"><span>Title</span><input value={item.title || ""} onChange={(event) => updateResource(index, "title", event.target.value)} placeholder="Title" aria-label="Title" /></label>
+                          <label className="admin-resource-field admin-resource-status"><span>Status</span><select
+                            value={normalizedResourceStatus(item.status)}
+                            onChange={(event) => {
+                              const nextStatus = event.target.value;
+                              updateResource(index, "status", nextStatus);
+                              updateResource(index, "is_published", nextStatus === "published");
+                            }}
+                            aria-label="Status"
+                          >
+                            {RESOURCE_STATUSES.map((status) => <option value={status} key={status}>{status}</option>)}
+                          </select></label>
+                        </div>
+                        <label className="admin-resource-field"><span>Description</span><textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={3} aria-label="Description" /></label>
+                        <label className="admin-resource-field"><span>Link</span><input value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" aria-label="Link" /></label>
+                      </div>
+
+                      <div className="admin-resource-actions">
+                        <div className="admin-order-actions" aria-label={`Reorder ${item.title || `resource card`}`}>
+                          <button type="button" onClick={() => moveResource(index, -1)} disabled={categoryIndex === 0} aria-label="Move up">↑</button>
+                          <button type="button" onClick={() => moveResource(index, 1)} disabled={categoryIndex === categoryItems.length - 1} aria-label="Move down">↓</button>
+                        </div>
+                        <button
+                          type="button"
+                          className={activeResourceIndex === index ? "active" : ""}
+                          onClick={() => onEditResource(item, index)}
+                        >
+                          Edit content
+                        </button>
+                        <button type="button" className="danger" onClick={() => removeResource(index)}>Remove</button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
       )}

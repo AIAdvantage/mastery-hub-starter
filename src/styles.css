@@ -5093,92 +5093,119 @@ h1 {
   line-height: 1.4;
 }
 
-.admin-resource-table,
+.admin-resource-sections,
+.admin-resource-card-list,
 .admin-stack {
   display: grid;
   gap: 14px;
 }
 
-.admin-resource-table {
-  overflow-x: auto;
-  padding-bottom: 4px;
+.admin-resource-sections {
+  gap: 18px;
 }
 
-.admin-resource-row {
+.admin-resource-category {
   display: grid;
-  grid-template-columns: 100px 120px minmax(155px, 0.95fr) minmax(220px, 1.35fr) 135px 86px minmax(220px, 1.25fr) 104px;
-  gap: 12px;
-  align-items: stretch;
-  min-width: 0;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(49, 40, 32, 0.1);
+  border-radius: 8px;
+  background: rgba(248, 243, 234, 0.72);
 }
 
-.admin-resource-head {
+.admin-resource-category-head {
+  display: flex;
   align-items: center;
-  min-height: auto;
-  padding: 0 2px 2px;
-  color: #76695d;
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(49, 40, 32, 0.1);
 }
 
-.admin-resource-row input,
-.admin-resource-row select,
-.admin-resource-row textarea {
-  min-height: 52px;
+.admin-resource-category-head h3 {
+  margin: 0;
+  color: #312820;
+  font-size: 18px;
+}
+
+.admin-resource-category-head p {
+  margin: 3px 0 0;
+  color: #76695d;
+  font-size: 13px;
+}
+
+.admin-resource-editor-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  gap: 14px;
+  align-items: stretch;
+  padding: 14px;
+  border: 1px solid rgba(49, 40, 32, 0.12);
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.admin-resource-editor-card.active {
+  border-color: rgba(143, 105, 41, 0.46);
+  box-shadow: 0 8px 18px rgba(49, 40, 32, 0.07);
+}
+
+.admin-resource-editor-main {
+  display: grid;
+  gap: 10px;
   min-width: 0;
-  overflow: visible;
-  white-space: normal;
+}
+
+.admin-resource-editor-top {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.65fr) minmax(260px, 1.7fr) minmax(150px, 0.65fr);
+  gap: 10px;
+  align-items: start;
 }
 
 .admin-card label.admin-resource-field {
-  display: block;
+  display: grid;
+  gap: 5px;
   min-width: 0;
   margin: 0;
 }
 
 .admin-resource-field > span {
-  display: none;
+  color: #76695d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.admin-resource-row textarea {
+.admin-resource-editor-card input,
+.admin-resource-editor-card select,
+.admin-resource-editor-card textarea {
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+.admin-resource-editor-card textarea {
+  min-height: 88px;
   resize: vertical;
-}
-
-.admin-resource-publish-field {
-  display: grid !important;
-  place-items: center;
-}
-
-.admin-resource-publish-field input[type="checkbox"] {
-  width: 26px;
-  min-height: 26px;
-  height: 26px;
-  accent-color: #8f6929;
 }
 
 .admin-resource-actions {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 8px;
+  align-content: start;
   min-width: 0;
 }
 
 .admin-order-actions {
   display: grid;
-  grid-template-columns: 1fr 34px 34px;
-  gap: 5px;
-  align-items: center;
-}
-
-.admin-order-actions span {
-  color: #76695d;
-  font-size: 12px;
-  font-weight: 900;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 .admin-order-actions button {
-  min-height: 34px;
+  min-height: 40px;
   padding: 4px;
 }
 
@@ -5187,7 +5214,8 @@ h1 {
   opacity: 0.35;
 }
 
-.admin-resource-row button,
+.admin-resource-category-head button,
+.admin-resource-editor-card button,
 .admin-resource-actions button {
   min-height: 42px;
   padding: 8px 10px;
@@ -5660,7 +5688,8 @@ h1 {
   .admin-card-grid,
   .analytics-kpis,
   .analytics-grid,
-  .admin-resource-row {
+  .admin-resource-editor-card,
+  .admin-resource-editor-top {
     grid-template-columns: 1fr;
   }
 
@@ -5669,30 +5698,13 @@ h1 {
     grid-template-columns: repeat(14, 34px);
   }
 
-  .admin-resource-row {
-    min-width: 0;
+  .admin-resource-category-head {
+    align-items: stretch;
+    flex-direction: column;
   }
 
-  .admin-resource-head {
-    display: none;
-  }
-
-  .admin-resource-row:not(.admin-resource-head) {
-    gap: 8px;
-    padding: 14px;
-    border: 1px solid rgba(49, 40, 32, 0.1);
-    border-radius: 8px;
-    background: #fffdf8;
-  }
-
-  .admin-resource-field > span {
-    display: block;
-    margin-bottom: 5px;
-    color: #76695d;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+  .admin-resource-actions {
+    grid-template-columns: 1fr;
   }
 
   .admin-head {
