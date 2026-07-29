@@ -1191,7 +1191,7 @@ export default function AdminBackend({ navigate }) {
                     <section className="admin-card admin-card-wide" id="admin-resource-editor">
                       <div className="admin-section-actions">
                         <div>
-                          <p className="admin-order-label">4 · Selected card content</p>
+                          <h2>Selected card content</h2>
                         </div>
                         {activeResourceTab === "guide" && (
                           <EditorModeToggle mode={guideEditorMode} onChange={setGuideEditorMode} />
@@ -1498,7 +1498,6 @@ function BasicsEditor({
       {mode === "month-setup" && (
       <>
       <div className="admin-card">
-        <p className="admin-order-label">1 · Page settings</p>
         <div className="admin-section-actions">
           <h2>Month setup</h2>
           <PublicationToggle month={month} onChange={publishMonth} />
@@ -1525,8 +1524,7 @@ function BasicsEditor({
         </div>
       </div>
       <div className="admin-card">
-        <p className="admin-order-label">2 · Top of workshop page</p>
-        <h2>Hero</h2>
+        <h2>Workshop Page</h2>
         <input
           ref={heroFileInputRef}
           className="admin-file-input"
@@ -1563,7 +1561,6 @@ function BasicsEditor({
       <div className="admin-card admin-card-wide">
         <div className="admin-section-actions">
           <div>
-            <p className="admin-order-label">3 · Frontend card order</p>
             <h2>Resource cards</h2>
             <p className="muted">Categories stay in the same frontend order. Flip status to Published when a card is ready for members.</p>
           </div>
