@@ -9,7 +9,6 @@ import { JULY_CATCHUP_FAQ } from "./data/julyCatchupFaq.js";
 import FundamentalsJulyPage from "./FundamentalsJulyPage.jsx";
 import {
   ADD_PROMPT_LIBRARY_CARD_PROMPT,
-  AGENTHUB_BUILDER_PROMPT,
   AGENTHUB_PROJECT_INSTRUCTIONS_PROMPT,
 } from "./agentHubBuilderPrompt.js";
 
@@ -658,7 +657,12 @@ const JULY_EXTRAS_CONTENT = {
     },
     {
       title: "Skill: AgentHub Builder",
-      text: AGENTHUB_BUILDER_PROMPT,
+      description:
+        "Download this Claude skill and install it so Claude can add cards, prompt libraries, and AI tools to your hub without pasting the long builder prompt.",
+      file: "/july/agenthub-builder.skill",
+      filename: "agenthub-builder.skill",
+      downloadLabel: "Download skill",
+      summaryLabel: "Skill file",
     },
     {
       title: "Add a prompt library card to my hub",
@@ -2880,6 +2884,7 @@ function LinkButton({ href, children }) {
 
 function PromptCard({ prompt }) {
   const [copied, setCopied] = useState(false);
+  const isDownload = Boolean(prompt.file);
 
   async function copyPrompt() {
     await navigator.clipboard.writeText(prompt.text);
@@ -2891,6 +2896,34 @@ function PromptCard({ prompt }) {
     });
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  if (isDownload) {
+    return (
+      <article className="prompt-card prompt-download-card">
+        <div className="prompt-download-head">
+          <span>{prompt.title}</span>
+          <small>{prompt.summaryLabel || "Download"}</small>
+        </div>
+        {prompt.description && <p>{prompt.description}</p>}
+        <div className="prompt-actions">
+          <a
+            className="link-button"
+            href={prompt.file}
+            download={prompt.filename || true}
+            onClick={() => trackEvent("download_skill_click", {
+              metadata: {
+                prompt_title: prompt.title || "Skill card",
+                filename: prompt.filename || prompt.file,
+                source: "prompt_card",
+              },
+            })}
+          >
+            {prompt.downloadLabel || "Download file"}
+          </a>
+        </div>
+      </article>
+    );
   }
 
   return (

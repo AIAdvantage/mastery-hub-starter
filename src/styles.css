@@ -3002,6 +3002,35 @@ h1 {
   text-transform: uppercase;
 }
 
+.prompt-download-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px 10px;
+  color: var(--cream);
+  font-family: var(--serif);
+  font-size: 25px;
+  line-height: 1.08;
+}
+
+.prompt-download-head small {
+  color: var(--gold-2);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.prompt-download-card p {
+  margin: 0;
+  padding: 0 20px 18px;
+  color: rgba(255, 253, 248, 0.74);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
 .prompt-actions {
   display: flex;
   gap: 10px;
@@ -4305,7 +4334,8 @@ h1 {
   }
 
   .resource-card h4,
-  .prompt-card summary {
+  .prompt-card summary,
+  .prompt-download-head {
     font-size: 24px;
   }
 
@@ -4346,12 +4376,14 @@ h1 {
     text-align: left;
   }
 
-  .prompt-card summary {
+  .prompt-card summary,
+  .prompt-download-head {
     align-items: flex-start;
     padding: 18px;
   }
 
-  .prompt-card summary small {
+  .prompt-card summary small,
+  .prompt-download-head small {
     flex: 0 0 auto;
     max-width: 90px;
     text-align: right;
