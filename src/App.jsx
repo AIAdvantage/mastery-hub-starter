@@ -231,6 +231,14 @@ const CHALLENGE_HELP_CONTEXTS = {
     aiInstruction: "Help me complete this exact challenge step. Ask me for only the missing information you need. Keep the instructions practical, specific, and focused on the July AI Hub redesign workflow.",
   },
 };
+
+const MONTH_HELP_OVERRIDES = {
+  august: {
+    guideName: "AI Mastery August Personal Secretary guide",
+    overallGoal: "Build a private personal secretary app in Lovable: a contact memory, birthday reminders, context files, Gmail and Google Calendar connections, automated jobs, a polished app interface, and secure login.",
+    aiInstruction: "Help me complete this exact step of the August personal secretary build. Stay specific to Lovable, the visible database/table progression, contacts, birthday reminders, context files, Gmail, Google Calendar, scheduled jobs, and secure login when relevant. Do not skip ahead. Ask me for only the missing information you need, then give me the next concrete action.",
+  },
+};
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
 const GITHUB_URL = "https://github.com/";
 const LOVABLE_URL = "https://lovable.dev/";
@@ -1442,13 +1450,17 @@ function cmsExtrasToContent(month) {
 
 function cmsGuideHelpContext(month, type = "guide") {
   const isChallenge = type === "challenge";
+  const override = !isChallenge ? MONTH_HELP_OVERRIDES[month.slug] : null;
   return {
-    guideName: `AI Mastery ${month.label} ${isChallenge ? "Challenge" : "guide"}`,
+    guideName: override?.guideName || `AI Mastery ${month.label} ${isChallenge ? "Challenge" : "guide"}`,
     guideLink: `https://mastery.aiadvantage.com/${isChallenge ? "challenges" : "monthly-resources"}/${month.slug}${isChallenge ? "/guide" : "/guide"}`,
-    overallGoal: month.outcome || month.focus || `Complete the ${month.label} Mastery month.`,
-    aiInstruction: isChallenge
+    overallGoal: override?.overallGoal || month.outcome || month.focus || `Complete the ${month.label} Mastery month.`,
+    aiInstruction: override?.aiInstruction || (isChallenge
       ? "Help me complete this exact challenge step. Ask me for only the missing information you need. Keep the instructions practical and specific to this month."
-      : "Help me complete this exact guide step. Ask me for only the missing information you need. Keep the instructions practical and specific to this month.",
+      : "Help me complete this exact guide step. Ask me for only the missing information you need. Keep the instructions practical and specific to this month."),
+    monthSlug: month.slug,
+    monthLabel: month.label,
+    monthFocus: month.focus || month.topic || "",
   };
 }
 
@@ -3139,6 +3151,23 @@ function GenericGuideCards({ content }) {
   );
 }
 
+function deriveStepSummary(section = {}) {
+  if (STEP_SUBHEADLINES[section.title]) return STEP_SUBHEADLINES[section.title];
+
+  const firstUsefulBlock = (section.blocks || []).find((block) => {
+    if (!block?.text) return false;
+    return ["paragraph", "quote", "bullet", "check"].includes(block.type);
+  });
+
+  const text = blocksToPlainText(firstUsefulBlock ? [firstUsefulBlock] : section.blocks || [])
+    .replace(/\s+/g, " ")
+    .replace(/^[-*]\s+/, "")
+    .trim();
+
+  if (!text) return `Complete ${section.title.replace(/^Step\s+\d+:\s*/, "")}.`;
+  return text.length > 210 ? `${text.slice(0, 207).trim()}...` : text;
+}
+
 function ChallengeWorkbench({
   content,
   helpContext,
@@ -3154,7 +3183,7 @@ function ChallengeWorkbench({
         title,
         shortTitle: challengeTocLabel(title),
         stepNumber: index + 1,
-        summary: explainers[title] || "",
+        summary: explainers[title] || deriveStepSummary({ title, blocks: section.blocks.slice(1) }),
         explainer: explainers[title] || "",
         blocks: section.blocks.slice(1),
       };
@@ -3203,12 +3232,13 @@ function getGuideModel(content) {
     if (section.title.startsWith("PART 1")) phase = "Demo";
     if (section.title.startsWith("PART 2")) phase = "Your files";
     if (section.title.startsWith("Step ")) {
+      const summary = deriveStepSummary(section);
       steps.push({
         ...section,
         phase,
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
-        summary: STEP_SUBHEADLINES[section.title] || "",
+        summary,
         explainer: STEP_EXPLAINERS[section.title] || "",
       });
     }
@@ -3254,12 +3284,16 @@ async function copyText(text) {
 }
 
 function buildModHelpMessage(helpContext, step, stepNumber) {
+  const stepPurpose = step.summary || deriveStepSummary(step);
   return [
     `Hi mods, I need help with the ${helpContext.guideName}.`,
     "",
     `Guide link: ${helpContext.guideLink}`,
     `Current location: Step ${stepNumber}: ${step.shortTitle}`,
-    `What this step is for: ${step.summary}`,
+    `What this step is for: ${stepPurpose}`,
+    "",
+    "Step instructions I am following:",
+    blocksToPlainText(step.blocks).slice(0, 1400),
     "",
     "What I need help with:",
     "[Write what happened, what you tried, and any extra context here. Add a screenshot if useful.]",
@@ -3268,20 +3302,27 @@ function buildModHelpMessage(helpContext, step, stepNumber) {
 
 function buildAiHelpMessage(guide, helpContext, step, stepNumber) {
   const stepList = guide.steps
-    .map((item, index) => `${index + 1}. ${item.shortTitle}: ${item.summary}`)
+    .map((item, index) => `${index + 1}. ${item.shortTitle}: ${item.summary || deriveStepSummary(item)}`)
     .join("\n");
+  const previousStep = guide.steps[stepNumber - 2];
+  const nextStep = guide.steps[stepNumber];
+  const stepPurpose = step.summary || deriveStepSummary(step);
 
   return [
     `You are helping me complete the ${helpContext.guideName}.`,
+    `Guide link: ${helpContext.guideLink}`,
     "",
     "Overall guide goal:",
     helpContext.overallGoal,
+    helpContext.monthFocus ? `Month focus: ${helpContext.monthFocus}` : "",
     "",
     "All guide steps:",
     stepList,
     "",
     `My current location: Step ${stepNumber}: ${step.title}`,
-    `What this step is for: ${step.summary}`,
+    previousStep ? `Previous step: Step ${stepNumber - 1}: ${previousStep.shortTitle}` : "",
+    nextStep ? `Next step: Step ${stepNumber + 1}: ${nextStep.shortTitle}` : "",
+    `What this step is for: ${stepPurpose}`,
     "",
     "Current step instructions:",
     blocksToPlainText(step.blocks),
@@ -3294,7 +3335,7 @@ function buildAiHelpMessage(guide, helpContext, step, stepNumber) {
     "",
     "Full guide context:",
     guide.fullContext,
-  ].join("\n");
+  ].filter((line) => line !== "").join("\n");
 }
 
 function blocksToPlainText(blocks = []) {

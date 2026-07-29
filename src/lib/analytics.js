@@ -52,6 +52,8 @@ export function trackStepHelpClick(eventName, helpContext, step, stepNumber) {
     step_title: step?.shortTitle || step?.title || null,
     metadata: {
       full_step_title: step?.title || null,
+      step_summary: step?.summary || null,
+      month_slug: helpContext?.monthSlug || null,
     },
   });
 }
