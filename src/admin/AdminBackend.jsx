@@ -52,7 +52,8 @@ const PRESET_ORDER = UPCOMING_MONTH_PRESETS.reduce((acc, preset, index) => {
   return acc;
 }, {});
 
-const CONTENT_TABS = ["basics", "guide", "challenge", "prompts", "extras"];
+const CONTENT_TABS = ["content", "month-setup"];
+const RESOURCE_EDITOR_TABS = ["guide", "challenge", "prompts", "extras"];
 const ADMIN_SECTIONS = ["content", "analytics", "requests"];
 const RESOURCE_CATEGORIES = ["Workshop", "Extras", "Other"];
 const RESOURCE_STATUSES = ["idea", "outline", "first draft", "testing", "final draft", "ready to publish", "published"];
@@ -529,7 +530,7 @@ function mergePresetMonths(items = []) {
   return sortMonthsForAdmin([...items, ...templateMonths]);
 }
 
-function adminDeepLink(slug, tab = "basics") {
+function adminDeepLink(slug, tab = "content") {
   return `/admin?month=${encodeURIComponent(slug)}&tab=${encodeURIComponent(tab)}`;
 }
 
@@ -543,7 +544,8 @@ function resourceEditorTab(item = {}) {
 
 function resourceEditorLabel(tab) {
   return {
-    basics: "Month setup",
+    content: "Content",
+    "month-setup": "Month setup",
     guide: "Guide markdown",
     challenge: "Challenge content",
     prompts: "Live prompts",
@@ -594,7 +596,9 @@ export default function AdminBackend({ navigate }) {
   const [selectedSlug, setSelectedSlug] = useState("");
   const [month, setMonth] = useState(null);
   const [adminSection, setAdminSection] = useState("content");
-  const [activeTab, setActiveTab] = useState("guide");
+  const [activeTab, setActiveTab] = useState("content");
+  const [activeResourceTab, setActiveResourceTab] = useState("guide");
+  const [guideEditorMode, setGuideEditorMode] = useState("edit");
   const [activeResourceIndex, setActiveResourceIndex] = useState(null);
   const [analytics, setAnalytics] = useState([]);
   const [analyticsReport, setAnalyticsReport] = useState(null);
@@ -624,6 +628,10 @@ export default function AdminBackend({ navigate }) {
     } else if (tabParam && CONTENT_TABS.includes(tabParam)) {
       setAdminSection("content");
       setActiveTab(tabParam);
+    } else if (tabParam && RESOURCE_EDITOR_TABS.includes(tabParam)) {
+      setAdminSection("content");
+      setActiveTab("content");
+      setActiveResourceTab(tabParam);
     }
   }, []);
 
@@ -1070,7 +1078,6 @@ export default function AdminBackend({ navigate }) {
           >
             Version History
           </button>
-          <PublicationToggle month={month} onChange={publishMonth} />
         </div>}
       </div>
 
@@ -1138,6 +1145,21 @@ export default function AdminBackend({ navigate }) {
                   ))}
                 </select>
               </label>
+              <div className="admin-tabs admin-tabs-inline" aria-label="Month editor tabs">
+                {CONTENT_TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    className={activeTab === tab ? "active" : ""}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      window.history.replaceState({}, "", adminDeepLink(selectedSlug || getDefaultMonthSlug(months), tab));
+                    }}
+                  >
+                    {resourceEditorLabel(tab)}
+                  </button>
+                ))}
+              </div>
               <button type="button" onClick={loadMonths}>Refresh months</button>
             </div>
 
@@ -1148,97 +1170,112 @@ export default function AdminBackend({ navigate }) {
               </div>
             ) : (
               <div className="admin-stack">
-                <BasicsEditor
-                  month={month}
-                  token={token}
-                  updateMonth={updateMonth}
-                  updateHero={updateHero}
-                  updateResource={updateResource}
-                  addResource={addResource}
-                  removeResource={removeResource}
-                  moveResource={moveResource}
-                  applyMonthlyTemplate={applyMonthlyTemplate}
-                  activeResourceIndex={activeResourceIndex}
-                  onEditResource={(item, index) => {
-                    const nextTab = resourceEditorTab(item);
-                    setActiveResourceIndex(index);
-                    setActiveTab(nextTab);
-                    window.history.replaceState({}, "", adminDeepLink(selectedSlug || getDefaultMonthSlug(months), nextTab));
-                    requestAnimationFrame(() => {
-                      document.getElementById("admin-resource-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    });
-                  }}
-                />
-
-                <section className="admin-card admin-card-wide" id="admin-resource-editor">
-                  <div className="admin-section-actions">
-                    <div>
-                      <p className="admin-order-label">4 · Selected card content</p>
-                    </div>
-                  </div>
-                  {activeTab === "basics" && (
-                    <p className="muted">Choose Edit on a resource card to open its content here.</p>
-                  )}
-                  {activeTab === "guide" && (
-                  <MarkdownBoxEditor
-                    title="Guide markdown"
-                    value={month.guide_markdown || ""}
-                    onChange={(value) => updateMonth({ guide_markdown: value })}
-                    previewKind="guide"
+                {activeTab === "month-setup" ? (
+                  <BasicsEditor
+                    mode="month-setup"
+                    month={month}
                     token={token}
-                    monthSlug={month.slug}
-                    documentKey="guide"
-                    actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                    updateMonth={updateMonth}
+                    updateHero={updateHero}
+                    publishMonth={publishMonth}
                   />
-                  )}
-                  {activeTab === "challenge" && (
-                  <div className="admin-stack">
-                    <MarkdownBoxEditor
-                      title="Challenge markdown"
-                    value={month.challenge_markdown || ""}
-                    onChange={(value) => updateMonth({ challenge_markdown: value })}
-                    previewKind="challenge"
+                ) : (
+                  <>
+                    <BasicsEditor
+                      mode="content"
+                      month={month}
                       token={token}
-                      monthSlug={month.slug}
-                      documentKey="challenge"
-                      actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
-                  />
-                    <MarkdownBoxEditor
-                      title="Challenge prompt"
-                    value={month.challenge_prompt || ""}
-                    onChange={(value) => updateMonth({ challenge_prompt: value })}
-                    previewKind="document"
-                    token={token}
-                    monthSlug={month.slug}
-                    documentKey="challenge-prompt"
-                    actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
-                  />
-                  </div>
-                  )}
-                  {activeTab === "prompts" && (
-                  <PromptEditor
-                    prompts={month.prompts || []}
-                    updatePrompt={updatePrompt}
-                    addPrompt={addPrompt}
-                    removePrompt={removePrompt}
-                    token={token}
-                    monthSlug={month.slug}
-                  />
-                  )}
-                  {activeTab === "extras" && (
-                  <ExtrasEditor
-                    extras={month.extras || {}}
-                    adminNotes={month.admin_notes || ""}
-                    updateExtras={updateExtras}
-                    updateAdminNotes={(value) => updateMonth({ admin_notes: value })}
-                    updateExtraPrompt={updateExtraPrompt}
-                    addExtraPrompt={addExtraPrompt}
-                    removeExtraPrompt={removeExtraPrompt}
-                    token={token}
-                    monthSlug={month.slug}
-                  />
-                  )}
-                </section>
+                      updateResource={updateResource}
+                      addResource={addResource}
+                      removeResource={removeResource}
+                      moveResource={moveResource}
+                      applyMonthlyTemplate={applyMonthlyTemplate}
+                      activeResourceIndex={activeResourceIndex}
+                      onEditResource={(item, index) => {
+                        const nextTab = resourceEditorTab(item);
+                        setActiveResourceIndex(index);
+                        setActiveResourceTab(nextTab);
+                        window.history.replaceState({}, "", adminDeepLink(selectedSlug || getDefaultMonthSlug(months), "content"));
+                        requestAnimationFrame(() => {
+                          document.getElementById("admin-resource-editor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        });
+                      }}
+                    />
+
+                    <section className="admin-card admin-card-wide" id="admin-resource-editor">
+                      <div className="admin-section-actions">
+                        <div>
+                          <p className="admin-order-label">4 · Selected card content</p>
+                        </div>
+                        {activeResourceTab === "guide" && (
+                          <EditorModeToggle mode={guideEditorMode} onChange={setGuideEditorMode} />
+                        )}
+                      </div>
+                      {activeResourceTab === "guide" && (
+                        <MarkdownBoxEditor
+                          title="Guide markdown"
+                          value={month.guide_markdown || ""}
+                          onChange={(value) => updateMonth({ guide_markdown: value })}
+                          previewKind="guide"
+                          token={token}
+                          monthSlug={month.slug}
+                          documentKey="guide"
+                          actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                          hideHeader
+                          mode={guideEditorMode}
+                          onModeChange={setGuideEditorMode}
+                        />
+                      )}
+                      {activeResourceTab === "challenge" && (
+                        <div className="admin-stack">
+                          <MarkdownBoxEditor
+                            title="Challenge markdown"
+                            value={month.challenge_markdown || ""}
+                            onChange={(value) => updateMonth({ challenge_markdown: value })}
+                            previewKind="challenge"
+                            token={token}
+                            monthSlug={month.slug}
+                            documentKey="challenge"
+                            actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                          />
+                          <MarkdownBoxEditor
+                            title="Challenge prompt"
+                            value={month.challenge_prompt || ""}
+                            onChange={(value) => updateMonth({ challenge_prompt: value })}
+                            previewKind="document"
+                            token={token}
+                            monthSlug={month.slug}
+                            documentKey="challenge-prompt"
+                            actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                          />
+                        </div>
+                      )}
+                      {activeResourceTab === "prompts" && (
+                        <PromptEditor
+                          prompts={month.prompts || []}
+                          updatePrompt={updatePrompt}
+                          addPrompt={addPrompt}
+                          removePrompt={removePrompt}
+                          token={token}
+                          monthSlug={month.slug}
+                        />
+                      )}
+                      {activeResourceTab === "extras" && (
+                        <ExtrasEditor
+                          extras={month.extras || {}}
+                          adminNotes={month.admin_notes || ""}
+                          updateExtras={updateExtras}
+                          updateAdminNotes={(value) => updateMonth({ admin_notes: value })}
+                          updateExtraPrompt={updateExtraPrompt}
+                          addExtraPrompt={addExtraPrompt}
+                          removeExtraPrompt={removeExtraPrompt}
+                          token={token}
+                          monthSlug={month.slug}
+                        />
+                      )}
+                    </section>
+                  </>
+                )}
               </div>
             )}
           </main>
@@ -1409,6 +1446,7 @@ function VersionHistoryPanel({ versions, state, onRefresh, onRestore }) {
 }
 
 function BasicsEditor({
+  mode = "content",
   month,
   token,
   updateMonth,
@@ -1420,6 +1458,7 @@ function BasicsEditor({
   applyMonthlyTemplate,
   activeResourceIndex,
   onEditResource,
+  publishMonth,
 }) {
   const [linkCopied, setLinkCopied] = useState(false);
   const [heroUploadState, setHeroUploadState] = useState("");
@@ -1471,9 +1510,14 @@ function BasicsEditor({
 
   return (
     <div className="admin-card-grid">
+      {mode === "month-setup" && (
+      <>
       <div className="admin-card">
         <p className="admin-order-label">1 · Page settings</p>
-        <h2>Month setup</h2>
+        <div className="admin-section-actions">
+          <h2>Month setup</h2>
+          <PublicationToggle month={month} onChange={publishMonth} />
+        </div>
         <p className="admin-system-value"><span>Editing month</span><strong>{month.label || month.month_number || "Month"}</strong></p>
         <label>Topic<input value={month.topic || ""} onChange={(event) => updateMonth({ topic: event.target.value })} /></label>
         <label>Focus<input value={month.focus || ""} onChange={(event) => updateMonth({ focus: event.target.value })} /></label>
@@ -1528,6 +1572,9 @@ function BasicsEditor({
           )}
         </div>
       </div>
+      </>
+      )}
+      {mode === "content" && (
       <div className="admin-card admin-card-wide">
         <div className="admin-section-actions">
           <div>
@@ -1602,12 +1649,24 @@ function BasicsEditor({
           ))}
         </div>
       </div>
+      )}
     </div>
   );
 }
 
-function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", token, monthSlug, documentKey = "document", actor }) {
-  const [mode, setMode] = useState("edit");
+function EditorModeToggle({ mode, onChange }) {
+  return (
+    <div className="markdown-editor-mode" aria-label="Editor mode">
+      <button type="button" className={mode === "edit" ? "active" : ""} onClick={() => onChange("edit")}>Edit</button>
+      <button type="button" className={mode === "preview" ? "active" : ""} onClick={() => onChange("preview")}>Preview</button>
+    </div>
+  );
+}
+
+function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", token, monthSlug, documentKey = "document", actor, hideHeader = false, mode: controlledMode, onModeChange }) {
+  const [localMode, setLocalMode] = useState("edit");
+  const mode = controlledMode || localMode;
+  const setMode = onModeChange || setLocalMode;
   const [uploadState, setUploadState] = useState("");
   const [comments, setComments] = useState([]);
   const [commentDraft, setCommentDraft] = useState("");
@@ -1768,14 +1827,13 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", t
   }
 
   return (
-    <article className="markdown-editor-box">
-      <div className="markdown-editor-head">
-        <h2>{title}</h2>
-        <div>
-          <button type="button" className={mode === "edit" ? "active" : ""} onClick={() => setMode("edit")}>Edit</button>
-          <button type="button" className={mode === "preview" ? "active" : ""} onClick={() => setMode("preview")}>Preview</button>
+    <article className={`markdown-editor-box${hideHeader ? " markdown-editor-box-embedded" : ""}`}>
+      {!hideHeader && (
+        <div className="markdown-editor-head">
+          <h2>{title}</h2>
+          <EditorModeToggle mode={mode} onChange={setMode} />
         </div>
-      </div>
+      )}
       {mode === "edit" && (
         <div className="notion-editor-toolbar" aria-label={`${title} block controls`}>
           <div className="notion-editor-row">

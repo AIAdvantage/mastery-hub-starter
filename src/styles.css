@@ -4504,7 +4504,8 @@ h1 {
 .admin-section-actions,
 .admin-side-top,
 .admin-content-toolbar,
-.markdown-editor-head {
+.markdown-editor-head,
+.markdown-editor-mode {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -4645,6 +4646,7 @@ h1 {
 .admin-history-panel button,
 .notion-editor-toolbar button,
 .markdown-editor-head button,
+.markdown-editor-mode button,
 .admin-lock button {
   border: 1px solid rgba(49, 40, 32, 0.16);
   border-radius: 8px;
@@ -4846,6 +4848,7 @@ h1 {
 .admin-content-toolbar button,
 .notion-editor-toolbar button,
 .markdown-editor-head button,
+.markdown-editor-mode button,
 .admin-section-actions button {
   padding: 8px 10px;
   font-size: 13px;
@@ -4853,7 +4856,8 @@ h1 {
 
 .admin-top-tabs button.active,
 .admin-tabs button.active,
-.markdown-editor-head button.active {
+.markdown-editor-head button.active,
+.markdown-editor-mode button.active {
   border-color: #8f6929;
   background: rgba(143, 105, 41, 0.12);
 }
@@ -4871,6 +4875,10 @@ h1 {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
+}
+
+.admin-tabs-inline {
+  margin: 0;
 }
 
 .admin-top-tabs {
@@ -4922,6 +4930,12 @@ h1 {
 .markdown-editor-box,
 .admin-empty {
   padding: 18px;
+}
+
+.markdown-editor-box-embedded {
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .admin-card-wide {
