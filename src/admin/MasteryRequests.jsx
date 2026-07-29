@@ -48,7 +48,7 @@ const PLANNING_PRESETS = [
   },
 ];
 
-const MAX_FILE_BYTES = 3 * 1024 * 1024;
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
 const FILE_ACCEPT = "image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/csv,.doc,.docx,.xls,.xlsx,.zip";
 
 function actorFromUser(user) {
@@ -86,7 +86,7 @@ function readFileAsDataUrl(file) {
 async function uploadFiles(token, files, requestKey) {
   const attachments = [];
   for (const file of files) {
-    if (file.size > MAX_FILE_BYTES) throw new Error(`${file.name} is larger than 3 MB.`);
+    if (file.size > MAX_FILE_BYTES) throw new Error(`${file.name} is larger than 2 MB.`);
     const extension = file.name.split(".").pop()?.toLowerCase();
     const contentType = file.type || {
       txt: "text/plain",
@@ -149,6 +149,7 @@ function summarizePlanNotes(notes) {
 
 function buildPlanningBrief(item, preset, actor, existingNotes = "") {
   const summary = summarizeText(item.description, 240);
+  const humanNotes = /Planning preset:/i.test(existingNotes) ? "" : existingNotes.trim();
   const lines = [
     `Summary: ${summary}`,
     "",
@@ -164,8 +165,8 @@ function buildPlanningBrief(item, preset, actor, existingNotes = "") {
     "",
     item.description,
   ];
-  if (existingNotes.trim()) {
-    lines.push("", "Existing notes", existingNotes.trim());
+  if (humanNotes) {
+    lines.push("", "Existing notes", humanNotes);
   }
   lines.push("", `Next step: Alfredo creates a concise plan and keeps this request as the source of truth.`);
   lines.push(`Queued by: ${actor.name}`);
@@ -252,6 +253,7 @@ export default function MasteryRequests({ token, user }) {
       await loadRequests();
     } catch (err) {
       setError(err.message);
+      await loadRequests();
     } finally {
       setSaving(false);
     }
@@ -268,6 +270,7 @@ export default function MasteryRequests({ token, user }) {
     } catch (err) {
       setError(err.message);
       await loadRequests();
+      throw err;
     }
   }
 
@@ -358,7 +361,7 @@ export default function MasteryRequests({ token, user }) {
             </select>
           </label>
           <label className="mastery-request-attachments">
-            Attach files <span className="muted">(optional, up to 3 MB each)</span>
+            Attach files <span className="muted">(optional, up to 2 MB each)</span>
             <input
               type="file"
               accept={FILE_ACCEPT}
@@ -439,6 +442,7 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [copied, setCopied] = useState("");
+  const [handoffFallback, setHandoffFallback] = useState("");
   const selectedPreset = PLANNING_PRESETS.find((preset) => preset.id === selectedPresetId) || PLANNING_PRESETS[0];
   const status = statusConfig(item.status);
   const planSummary = summarizePlanNotes(notes);
@@ -460,21 +464,49 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
   }
 
   async function copyPayload(payload, label) {
+    setHandoffFallback("");
     try {
       await navigator.clipboard?.writeText(payload);
       setCopied(label);
     } catch {
-      setCopied("Handoff ready");
+      setCopied("Copy blocked. Select the handoff text below.");
+      setHandoffFallback(payload);
     }
     window.setTimeout(() => setCopied(""), 2000);
   }
 
   async function sendToPlanning() {
     const planningNotes = buildPlanningBrief(item, selectedPreset, actor, notes);
+    const payload = buildAlfredoPayload({ ...item, status: "planned" }, planningNotes);
     setNotes(planningNotes);
     await updateRequest(item.id, { status: "planned", team_notes: planningNotes });
-    await addComment(item.id, `Planning handoff queued: ${selectedPreset.label}.`);
-    await copyPayload(buildAlfredoPayload({ ...item, status: "planned" }, planningNotes), "Planning handoff copied");
+    await addComment(item.id, `Planning handoff prepared: ${selectedPreset.label}.`);
+    await copyPayload(payload, "Planning handoff copied");
+  }
+
+  async function openAttachment(attachment) {
+    if (attachment.path) {
+      const data = await requestFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({ action: "request-file-url", path: attachment.path }),
+      });
+      if (data.url) window.open(data.url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (attachment.url) window.open(attachment.url, "_blank", "noopener,noreferrer");
+  }
+
+  async function removeAttachment(attachment) {
+    if (!window.confirm(`Remove "${attachment.name}" from this request?`)) return;
+    if (attachment.path) {
+      await requestFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({ action: "delete-request-file", path: attachment.path }),
+      });
+    }
+    await updateRequest(item.id, {
+      attachments: (item.attachments || []).filter((entry) => (entry.path || entry.url) !== (attachment.path || attachment.url)),
+    });
   }
 
   return (
@@ -531,14 +563,16 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
       <div className="mastery-request-planning-panel">
         <div>
           <h4>Need a plan?</h4>
-          <p>Choose the shape, then send this request into Planning. The request stays the source of truth.</p>
+          <p>Choose the shape, move this request into Planning, and copy the Alfredo handoff. The request stays the source of truth.</p>
         </div>
-        <div className="mastery-request-preset-grid">
+        <div className="mastery-request-preset-grid" role="radiogroup" aria-label="Planning preset">
           {PLANNING_PRESETS.map((preset) => (
             <button
               type="button"
               key={preset.id}
               className={preset.id === selectedPresetId ? "active" : ""}
+              role="radio"
+              aria-checked={preset.id === selectedPresetId}
               onClick={() => setSelectedPresetId(preset.id)}
             >
               <strong>{preset.label}</strong>
@@ -548,13 +582,23 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
         </div>
         <div className="mastery-request-panel-actions">
           <button type="button" className="admin-primary-button" onClick={sendToPlanning}>
-            Send to Alfredo to plan
+            Prepare Alfredo handoff
           </button>
           <button type="button" onClick={() => copyPayload(buildAlfredoPayload(item, notes), "Request copied")}>
             Copy handoff
           </button>
-          {copied && <span>{copied}</span>}
+          {copied && <span role="status" aria-live="polite">{copied}</span>}
         </div>
+        {handoffFallback && (
+          <textarea
+            className="mastery-request-handoff-fallback"
+            value={handoffFallback}
+            readOnly
+            rows="6"
+            aria-label="Alfredo handoff text"
+            onFocus={(event) => event.target.select()}
+          />
+        )}
       </div>
 
       <label>
@@ -573,18 +617,16 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
           <div className="mastery-request-attachment-list">
             {item.attachments.map((attachment) => (
               <div className="mastery-request-attachment" key={attachment.path || attachment.url}>
-                {String(attachment.type || "").startsWith("image/") && (
-                  <a href={attachment.url} target="_blank" rel="noreferrer">
+                {String(attachment.type || "").startsWith("image/") && attachment.url && (
+                  <button type="button" onClick={() => openAttachment(attachment)}>
                     <img src={attachment.url} alt={attachment.name} loading="lazy" />
-                  </a>
+                  </button>
                 )}
-                <a href={attachment.url} target="_blank" rel="noreferrer">{attachment.name}</a>
+                <button type="button" className="mastery-request-attachment-link" onClick={() => openAttachment(attachment)}>{attachment.name}</button>
                 <button
                   type="button"
                   className="request-delete-link"
-                  onClick={() => updateRequest(item.id, {
-                    attachments: (item.attachments || []).filter((entry) => entry.url !== attachment.url),
-                  })}
+                  onClick={() => removeAttachment(attachment)}
                 >
                   Remove
                 </button>
@@ -607,7 +649,7 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
             }}
           />
         </label>
-        {uploadError && <p className="admin-upload-status">{uploadError}</p>}
+        {uploadError && <p className="admin-upload-status" role="alert">{uploadError}</p>}
       </div>
 
       <div className="mastery-request-thread">
@@ -630,7 +672,7 @@ function RequestDetails({ item, token, actor, updateRequest, deleteRequest, addC
           setComment("");
         }}>
           <textarea value={comment} onChange={(event) => setComment(event.target.value)} rows="2" placeholder="Reply to the team..." />
-          <button type="submit" disabled={!comment.trim()}>Reply</button>
+          <button type="submit" className="admin-primary-button" disabled={!comment.trim()}>Reply</button>
         </form>
       </div>
 

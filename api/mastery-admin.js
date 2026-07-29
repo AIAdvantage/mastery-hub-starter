@@ -5,9 +5,9 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_TOKEN = process.env.MASTERY_ADMIN_TOKEN;
 const IMAGE_BUCKET = "mastery-guide-images";
-const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const REQUEST_FILE_BUCKET = "mastery-request-files";
-const MAX_REQUEST_FILE_BYTES = 3 * 1024 * 1024;
+const MAX_REQUEST_FILE_BYTES = 2 * 1024 * 1024;
 const REQUEST_FILE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -99,8 +99,8 @@ function cleanMonth(input = {}) {
 }
 
 function cleanResource(input = {}) {
-  const isPublished = Boolean(input.is_published);
   const legacyStatus = input.status === "tested" ? "testing" : input.status === "final" ? "final draft" : input.status;
+  const isPublished = Boolean(input.is_published) || legacyStatus === "published";
   return {
     category: input.category || "Workshop",
     type: input.type || "Resource",
@@ -249,6 +249,17 @@ function cleanRequestText(value, max = 5000) {
   return String(value || "").trim().slice(0, max);
 }
 
+function cleanRequestAttachments(value) {
+  if (!Array.isArray(value) || value.length > 10) return null;
+  return value.map((attachment) => ({
+    name: cleanRequestText(attachment?.name, 240),
+    url: cleanRequestText(attachment?.url, 2000),
+    path: cleanRequestText(attachment?.path, 500),
+    type: cleanRequestText(attachment?.type, 160),
+    size: Number(attachment?.size) || 0,
+  })).filter((attachment) => attachment.name && (attachment.path || attachment.url));
+}
+
 async function ensureImageBucket(supabase) {
   const { data: buckets, error } = await supabase.storage.listBuckets();
   if (error) throw error;
@@ -268,10 +279,18 @@ async function ensureImageBucket(supabase) {
 async function ensureRequestFileBucket(supabase) {
   const { data: buckets, error } = await supabase.storage.listBuckets();
   if (error) throw error;
-  if ((buckets || []).some((bucket) => bucket.name === REQUEST_FILE_BUCKET)) return;
+  if ((buckets || []).some((bucket) => bucket.name === REQUEST_FILE_BUCKET)) {
+    const { error: updateError } = await supabase.storage.updateBucket(REQUEST_FILE_BUCKET, {
+      public: false,
+      fileSizeLimit: MAX_REQUEST_FILE_BYTES,
+      allowedMimeTypes: [...REQUEST_FILE_TYPES],
+    });
+    if (updateError && !/not found/i.test(updateError.message || "")) throw updateError;
+    return;
+  }
 
   const { error: createError } = await supabase.storage.createBucket(REQUEST_FILE_BUCKET, {
-    public: true,
+    public: false,
     fileSizeLimit: MAX_REQUEST_FILE_BYTES,
     allowedMimeTypes: [...REQUEST_FILE_TYPES],
   });
@@ -499,9 +518,11 @@ export default async function handler(req, res) {
       const description = cleanRequestText(body.description);
       const priority = REQUEST_PRIORITIES.has(body.priority) ? body.priority : "medium";
       const area = REQUEST_AREAS.has(body.area) ? body.area : "Platform";
+      const attachments = body.attachments === undefined ? [] : cleanRequestAttachments(body.attachments);
       if (!actor.id || !title || !description) {
         return json(res, 400, { error: "Author, title, and details are required." });
       }
+      if (attachments === null) return json(res, 400, { error: "A request can have up to 10 attachments." });
 
       const { data, error } = await supabase.from("mastery_admin_requests").insert({
         title,
@@ -509,7 +530,7 @@ export default async function handler(req, res) {
         area,
         priority,
         status: "new",
-        attachments: Array.isArray(body.attachments) ? body.attachments.slice(0, 10) : [],
+        attachments,
         submitted_by: actor.id,
         submitted_by_name: actor.name,
         submitted_by_email: actor.email,
@@ -542,17 +563,14 @@ export default async function handler(req, res) {
       if (patch.team_notes !== undefined) update.team_notes = cleanRequestText(patch.team_notes);
       if (patch.title !== undefined) update.title = cleanRequestText(patch.title, 240);
       if (patch.description !== undefined) update.description = cleanRequestText(patch.description);
+      if (patch.title !== undefined && !update.title) return json(res, 400, { error: "Request title cannot be blank." });
+      if (patch.description !== undefined && !update.description) return json(res, 400, { error: "Request details cannot be blank." });
       if (patch.attachments !== undefined) {
-        if (!Array.isArray(patch.attachments) || patch.attachments.length > 10) {
+        const attachments = cleanRequestAttachments(patch.attachments);
+        if (attachments === null) {
           return json(res, 400, { error: "A request can have up to 10 attachments." });
         }
-        update.attachments = patch.attachments.map((attachment) => ({
-          name: cleanRequestText(attachment?.name, 240),
-          url: cleanRequestText(attachment?.url, 2000),
-          path: cleanRequestText(attachment?.path, 500),
-          type: cleanRequestText(attachment?.type, 160),
-          size: Number(attachment?.size) || 0,
-        })).filter((attachment) => attachment.name && attachment.url);
+        update.attachments = attachments;
       }
 
       const { data, error } = await supabase
@@ -569,12 +587,17 @@ export default async function handler(req, res) {
       const actor = cleanActor(body.actor);
       const requestId = String(body.request_id || "").trim();
       if (!actor.id || !requestId) return json(res, 400, { error: "Author and request are required." });
-      const { error: existingError } = await supabase
+      const { data: existing, error: existingError } = await supabase
         .from("mastery_admin_requests")
-        .select("submitted_by")
+        .select("attachments")
         .eq("id", requestId)
         .single();
       if (existingError) throw existingError;
+      const paths = (existing.attachments || []).map((file) => file?.path).filter(Boolean);
+      if (paths.length) {
+        const { error: removeError } = await supabase.storage.from(REQUEST_FILE_BUCKET).remove(paths);
+        if (removeError) throw removeError;
+      }
       const { error } = await supabase.from("mastery_admin_requests").delete().eq("id", requestId);
       if (error) throw error;
       return json(res, 200, { ok: true });
@@ -710,7 +733,7 @@ export default async function handler(req, res) {
 
       const buffer = Buffer.from(base64, "base64");
       if (!buffer.length || buffer.length > MAX_IMAGE_BYTES) {
-        return json(res, 400, { error: "Image must be under 6 MB." });
+        return json(res, 400, { error: "Image must be under 3 MB." });
       }
 
       await ensureImageBucket(supabase);
@@ -741,7 +764,7 @@ export default async function handler(req, res) {
 
       const buffer = Buffer.from(base64, "base64");
       if (!buffer.length || buffer.length > MAX_REQUEST_FILE_BYTES) {
-        return json(res, 400, { error: "Files must be under 3 MB each." });
+        return json(res, 400, { error: "Files must be under 2 MB each." });
       }
 
       await ensureRequestFileBucket(supabase);
@@ -754,16 +777,38 @@ export default async function handler(req, res) {
         .upload(path, buffer, { contentType, upsert: false });
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage.from(REQUEST_FILE_BUCKET).getPublicUrl(path);
+      const { data: signed, error: signedError } = await supabase.storage
+        .from(REQUEST_FILE_BUCKET)
+        .createSignedUrl(path, 60 * 15);
+      if (signedError) throw signedError;
+
       return json(res, 200, {
         attachment: {
           name: cleanRequestText(body.file_name, 240) || fileName,
-          url: data.publicUrl,
+          url: signed.signedUrl,
           path,
           type: contentType,
           size: buffer.length,
         },
       });
+    }
+
+    if (action === "request-file-url") {
+      const path = cleanRequestText(body.path, 500);
+      if (!path || path.includes("..")) return json(res, 400, { error: "File path is required." });
+      const { data, error } = await supabase.storage
+        .from(REQUEST_FILE_BUCKET)
+        .createSignedUrl(path, 60 * 15);
+      if (error) throw error;
+      return json(res, 200, { url: data.signedUrl });
+    }
+
+    if (action === "delete-request-file") {
+      const path = cleanRequestText(body.path, 500);
+      if (!path || path.includes("..")) return json(res, 400, { error: "File path is required." });
+      const { error } = await supabase.storage.from(REQUEST_FILE_BUCKET).remove([path]);
+      if (error) throw error;
+      return json(res, 200, { ok: true });
     }
 
     if (action === "save") {

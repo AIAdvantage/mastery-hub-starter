@@ -101,6 +101,122 @@ const JULY_PREREQUISITES = [
   },
 ];
 
+const PREP_SERVICE_LINKS = [
+  { match: /\bgithub\b/i, link: GITHUB_URL, linkLabel: "Open GitHub" },
+  { match: /\blovable\b/i, link: LOVABLE_URL, linkLabel: "Open Lovable" },
+  { match: /\bmastery resources?\b|\bmastery account\b/i, link: "/sign-in", linkLabel: "Sign in to Mastery Resources", internal: true },
+  { match: /\bclaude desktop\b/i, link: CLAUDE_DESKTOP_URL, linkLabel: "Download Claude Desktop" },
+  { match: /\bclaude (pro|max|team|plan|account)\b/i, link: "https://claude.com/settings/billing", linkLabel: "Check Claude plan" },
+  { match: /\bprompts?\b|\blive materials?\b/i, linkLabel: "Open Prompts", internal: true },
+];
+
+function inferPrepServiceLink(title = "", detail = "", monthSlug = "") {
+  const haystack = `${title} ${detail}`;
+  const match = PREP_SERVICE_LINKS.find((item) => item.match.test(haystack));
+  if (!match) return {};
+  const link = match.link || (match.linkLabel === "Open Prompts" && monthSlug ? `/monthly-resources/${monthSlug}/prompts` : "");
+  return link ? { link, linkLabel: match.linkLabel, internal: match.internal } : {};
+}
+
+function extractMarkdownLink(text = "") {
+  const linkMatch = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
+  if (!linkMatch) return { text };
+  return {
+    text: text.replace(linkMatch[0], "").replace(/\s{2,}/g, " ").trim(),
+    linkLabel: linkMatch[1].replace(/\*\*/g, ""),
+    link: linkMatch[2],
+  };
+}
+
+function cleanPrepText(text = "") {
+  return text
+    .replace(/^[-*]\s+/, "")
+    .replace(/^💡\s*/, "")
+    .replace(/\*\*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function splitPrepChecklistText(text = "") {
+  const linked = extractMarkdownLink(cleanPrepText(text));
+  const value = linked.text;
+  const colonMatch = value.match(/^(.{3,80}?):\s+(.+)$/);
+  const dashMatch = value.match(/^(.{3,80}?)\s+[—–-]\s+(.+)$/);
+  const [, title, detail] = colonMatch || dashMatch || [];
+  return {
+    title: title || value,
+    detail: detail || "",
+    link: linked.link,
+    linkLabel: linked.linkLabel,
+  };
+}
+
+function isPrepExperienceBlock(block) {
+  const text = cleanPrepText(block?.text || "");
+  return /^previous experience required\b/i.test(text)
+    || /^lightbulb:/i.test(text)
+    || String(block?.text || "").trim().startsWith("💡");
+}
+
+function prepExperienceText(text = "") {
+  return cleanPrepText(text)
+    .replace(/^(previous experience required|tip|note|lightbulb):\s*/i, "")
+    .trim();
+}
+
+function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
+  const items = [];
+  const notes = [];
+  const experience = [];
+  let current = null;
+
+  blocks.forEach((block) => {
+    if (block.type === "check") {
+      const item = splitPrepChecklistText(block.text);
+      current = {
+        ...item,
+        detailParts: item.detail ? [item.detail] : [],
+      };
+      items.push(current);
+      return;
+    }
+
+    if (isPrepExperienceBlock(block)) {
+      experience.push(prepExperienceText(block.text));
+      current = null;
+      return;
+    }
+
+    if (isNoteBlock(block.text)) {
+      notes.push(noteText(block.text));
+      current = null;
+      return;
+    }
+
+    if (current && ["paragraph", "bullet", "quote"].includes(block.type)) {
+      const linked = extractMarkdownLink(cleanPrepText(block.text));
+      if (linked.text) current.detailParts.push(linked.text);
+      if (linked.link && !current.link) {
+        current.link = linked.link;
+        current.linkLabel = linked.linkLabel;
+      }
+    }
+  });
+
+  return {
+    items: items.map((item) => {
+      const detail = item.detailParts.join(" ").replace(/\s+/g, " ").trim();
+      return {
+        label: item.title,
+        detail,
+        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : inferPrepServiceLink(item.title, detail, monthSlug)),
+      };
+    }),
+    notes: notes.filter(Boolean),
+    experience: experience.filter(Boolean).join(" "),
+  };
+}
+
 const STEP_SUBHEADLINES = {
   "Step 1: Create Your Paperwork Folder + Connect Cowork": "Connect Claude Cowork to one clean workspace so it can create, read, and update your paperwork files.",
   "Step 2: Get Your Materials Bundle": "Download the June materials and let Claude unpack the exact folder structure for the workflow.",
@@ -140,7 +256,7 @@ const STEP_EXPLAINERS = {
 const MARKDOWN_BLOCKS = [
   { label: "Page Title", template: "# Page Title\n\n" },
   { label: "Generic Card", template: "## New Card\n\nWrite the card content here.\n\n" },
-  { label: "Prep Card", template: "## Before You Start\n\nUse this card for the setup checklist members need before the guide.\n\n" },
+  { label: "Prep Card", template: "## Before You Start\n\n- [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)\n- [ ] **Starter files ready:** Download or prepare the files you will use during the workshop.\n- [ ] **Workspace ready:** Open the tool or folder where you will build today.\n\n> 💡 No previous experience required. You only need the accounts, files, and workspace listed above.\n\n" },
   { label: "Outcome Card", template: "## What You'll Have When Done\n\n- [ ] Clear outcome one\n- [ ] Clear outcome two\n\n" },
   { label: "Step Card", template: "## Step 1: New Step\n\nWrite one clear sentence explaining the outcome.\n\n1. First instruction.\n2. Second instruction.\n\n" },
   { label: "Bonus Card", template: "## 🏆 Bonus: New Bonus\n\n1. First bonus instruction.\n\n" },
@@ -148,7 +264,7 @@ const MARKDOWN_BLOCKS = [
   { label: "Subheading", template: "### New Subheading\n\n" },
   { label: "Bullet", template: "- New bullet\n" },
   { label: "Check", template: "- [ ] New checklist item\n" },
-  { label: "Callout", template: "💡 **Tip:** Add a helpful note here.\n\n" },
+  { label: "Callout", template: "**Note:** Add Igor's note here.\n\n" },
   { label: "Warning", template: "🛟 **Heads up:** Add the important warning here.\n\n" },
   { label: "Code", template: "```\nPaste code or prompt text here.\n```\n\n" },
   { label: "Quote", template: "> Add a quote or key teaching line here.\n\n" },
@@ -200,9 +316,12 @@ function monthTemplateGuide(label) {
 
 ## Before You Start
 
-- [ ] Account or tool one ready
-- [ ] Account or tool two ready
-- [ ] Any starter file, DNA, or template ready
+- [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)
+- [ ] **Second account ready:** Make sure your second account is created, verified, and ready in the same browser.
+- [ ] **Starter files ready:** Download or prepare any starter file, DNA, prompt, or template you will use during the workshop.
+- [ ] **Workspace ready:** Open the app, folder, or project where you will build today.
+
+> 💡 No previous experience required. You only need the accounts, files, and workspace listed above.
 
 ---
 
@@ -852,14 +971,14 @@ export default function AdminBackend({ navigate }) {
 
   async function publishMonth(isPublished) {
     if (!month?.slug) return;
+    const currentSnapshot = JSON.stringify(monthRef.current);
+    if (currentSnapshot !== lastSavedSnapshotRef.current) {
+      const savedMonth = await persistMonth(monthRef.current, { source: "manual" });
+      if (!savedMonth) return;
+    }
     if (isPublished) {
       const confirmed = window.confirm(`Publish ${month.label || month.slug} now? Members will be able to access this month's content.`);
       if (!confirmed) return;
-      const currentSnapshot = JSON.stringify(monthRef.current);
-      if (currentSnapshot !== lastSavedSnapshotRef.current) {
-        const savedMonth = await persistMonth(monthRef.current, { source: "manual" });
-        if (!savedMonth) return;
-      }
     }
 
     setStatus(isPublished ? "Publishing..." : "Unpublishing...");
@@ -1443,10 +1562,10 @@ function BasicsEditor({
               <label className="admin-resource-field"><span>Status</span><select
                 value={normalizedResourceStatus(item.status)}
                 onChange={(event) => {
-                  const nextStatus = event.target.value;
-                  updateResource(index, "status", nextStatus);
-                  if (nextStatus === "published") updateResource(index, "is_published", true);
-                }}
+	                  const nextStatus = event.target.value;
+	                  updateResource(index, "status", nextStatus);
+	                  updateResource(index, "is_published", nextStatus === "published");
+	                }}
                 aria-label="Status"
               >
                 {RESOURCE_STATUSES.map((status) => <option value={status} key={status}>{status}</option>)}
@@ -1733,21 +1852,21 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", t
         </div>
       ) : (
         <div className="markdown-editor-preview">
-          <CustomerMarkdownPreview content={value} kind={previewKind} />
+          <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} />
         </div>
       )}
     </article>
   );
 }
 
-function CustomerMarkdownPreview({ content, kind }) {
+function CustomerMarkdownPreview({ content, kind, monthSlug = "" }) {
   if (!content?.trim()) return <p className="admin-preview-empty">Nothing written yet.</p>;
-  if (kind === "guide") return <GuideCustomerPreview content={content} />;
+  if (kind === "guide") return <GuideCustomerPreview content={content} monthSlug={monthSlug} />;
   if (kind === "challenge") return <ChallengeCustomerPreview content={content} />;
   return <MarkdownBlocks blocks={blocksWithHeadingIds(content)} />;
 }
 
-function GuideCustomerPreview({ content }) {
+function GuideCustomerPreview({ content, monthSlug = "" }) {
   const guide = useMemo(() => getGuideModel(content), [content]);
 
   if (!guide.introSections.length && !guide.steps.length && !guide.closingSections.length) {
@@ -1759,7 +1878,7 @@ function GuideCustomerPreview({ content }) {
       <div className="workbench-layout">
         <div className="workbench-stack">
           {guide.introSections.map((section) => (
-            <IntroCustomerPreview section={section} key={section.title} />
+            <IntroCustomerPreview section={section} monthSlug={monthSlug} key={section.title} />
           ))}
           {guide.steps.map((step, index) => (
             <article className="workbench-step" id={step.id} key={step.id}>
@@ -1788,15 +1907,74 @@ function GuideCustomerPreview({ content }) {
   );
 }
 
-function IntroCustomerPreview({ section }) {
+function IntroCustomerPreview({ section, monthSlug = "" }) {
+  const isBeforeStart = section.title === "Before You Start";
+  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks, monthSlug) : { items: [], notes: [], experience: "" };
+  const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : dynamicPrep.items;
+
+  if (isBeforeStart && checklistItems.length) {
+    return (
+      <article className="workbench-step workbench-intro before-start-card" id={section.id}>
+        <div className="workbench-step-top">
+          <span>Prep checklist</span>
+        </div>
+        <div className="before-start-layout">
+          <div>
+            <h3>{section.title}</h3>
+            <p className="workbench-step-subtitle">
+              {monthSlug === "july"
+                ? "Get these six setup pieces ready before you start building your AI Hub."
+                : "Get these setup pieces ready before you start the guide."}
+            </p>
+          </div>
+        </div>
+        <BeforeStartChecklist items={checklistItems} />
+        {monthSlug !== "july" && dynamicPrep.notes.map((note) => (
+          <MarkdownNote text={`Note: ${note}`} key={note} />
+        ))}
+        {monthSlug !== "july" && dynamicPrep.experience && <PrepExperienceBox>{dynamicPrep.experience}</PrepExperienceBox>}
+      </article>
+    );
+  }
+
   return (
     <article className="workbench-step workbench-intro" id={section.id}>
       <div className="workbench-step-top">
-        <span>{section.title === "Before You Start" ? "Prep checklist" : "Prep"}</span>
+        <span>{isBeforeStart ? "Prep checklist" : "Prep"}</span>
       </div>
       <h3>{section.title}</h3>
       <MarkdownBlocks blocks={section.blocks} />
     </article>
+  );
+}
+
+function BeforeStartChecklist({ items = [] }) {
+  return (
+    <div className="before-start-checklist">
+      {items.map((item) => (
+        <div className="before-start-item" key={item.label}>
+          <span className="before-start-check" aria-hidden="true" />
+          <div>
+            <strong>{item.label}</strong>
+            {item.detail && <p>{item.detail}</p>}
+            {item.link && (
+              <a className="link-button" href={item.link} target={item.link.startsWith("/") ? undefined : "_blank"} rel={item.link.startsWith("/") ? undefined : "noreferrer"}>
+                {item.linkLabel || "Open"}
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PrepExperienceBox({ children }) {
+  return (
+    <aside className="prep-experience-box">
+      <span>Previous experience required</span>
+      <p>{renderInlineMarkdown(children)}</p>
+    </aside>
   );
 }
 
@@ -2073,11 +2251,34 @@ function MarkdownBlock({ block }) {
   if (block.type === "copy-prompt") return <AdminCopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "copy-challenge-prompt") return <AdminChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
+  if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function isNoteBlock(text = "") {
+  return /^[📌💡]?\s*(\*\*)?note(\*\*)?:/i.test(text.trim());
+}
+
+function noteText(text = "") {
+  return text
+    .trim()
+    .replace(/^[📌💡]\s*/, "")
+    .replace(/^(\*\*)?note(\*\*)?:\s*/i, "")
+    .trim();
+}
+
+function MarkdownNote({ text }) {
+  return (
+    <aside className="md-note">
+      <strong>Note from Igor</strong>
+      <p>{renderInlineMarkdown(noteText(text))}</p>
+    </aside>
+  );
 }
 
 function AdminCopyableCodeBlock({ text }) {

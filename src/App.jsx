@@ -514,6 +514,122 @@ const JULY_PREREQUISITES = [
   },
 ];
 
+const PREP_SERVICE_LINKS = [
+  { match: /\bgithub\b/i, link: GITHUB_URL, linkLabel: "Open GitHub" },
+  { match: /\blovable\b/i, link: LOVABLE_URL, linkLabel: "Open Lovable" },
+  { match: /\bmastery resources?\b|\bmastery account\b/i, link: "/sign-in", linkLabel: "Sign in to Mastery Resources", internal: true },
+  { match: /\bclaude desktop\b/i, link: CLAUDE_DESKTOP_URL, linkLabel: "Download Claude Desktop" },
+  { match: /\bclaude (pro|max|team|plan|account)\b/i, link: "https://claude.com/settings/billing", linkLabel: "Check Claude plan" },
+  { match: /\bprompts?\b|\blive materials?\b/i, linkLabel: "Open Prompts", internal: true },
+];
+
+function inferPrepServiceLink(title = "", detail = "", monthSlug = "") {
+  const haystack = `${title} ${detail}`;
+  const match = PREP_SERVICE_LINKS.find((item) => item.match.test(haystack));
+  if (!match) return {};
+  const link = match.link || (match.linkLabel === "Open Prompts" && monthSlug ? `/monthly-resources/${monthSlug}/prompts` : "");
+  return link ? { link, linkLabel: match.linkLabel, internal: match.internal } : {};
+}
+
+function extractMarkdownLink(text = "") {
+  const linkMatch = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
+  if (!linkMatch) return { text };
+  return {
+    text: text.replace(linkMatch[0], "").replace(/\s{2,}/g, " ").trim(),
+    linkLabel: linkMatch[1].replace(/\*\*/g, ""),
+    link: linkMatch[2],
+  };
+}
+
+function cleanPrepText(text = "") {
+  return text
+    .replace(/^[-*]\s+/, "")
+    .replace(/^💡\s*/, "")
+    .replace(/\*\*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function splitPrepChecklistText(text = "") {
+  const linked = extractMarkdownLink(cleanPrepText(text));
+  const value = linked.text;
+  const colonMatch = value.match(/^(.{3,80}?):\s+(.+)$/);
+  const dashMatch = value.match(/^(.{3,80}?)\s+[—–-]\s+(.+)$/);
+  const [, title, detail] = colonMatch || dashMatch || [];
+  return {
+    title: title || value,
+    detail: detail || "",
+    link: linked.link,
+    linkLabel: linked.linkLabel,
+  };
+}
+
+function isPrepExperienceBlock(block) {
+  const text = cleanPrepText(block?.text || "");
+  return /^previous experience required\b/i.test(text)
+    || /^lightbulb:/i.test(text)
+    || String(block?.text || "").trim().startsWith("💡");
+}
+
+function prepExperienceText(text = "") {
+  return cleanPrepText(text)
+    .replace(/^(previous experience required|tip|note|lightbulb):\s*/i, "")
+    .trim();
+}
+
+function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
+  const items = [];
+  const notes = [];
+  const experience = [];
+  let current = null;
+
+  blocks.forEach((block) => {
+    if (block.type === "check") {
+      const item = splitPrepChecklistText(block.text);
+      current = {
+        ...item,
+        detailParts: item.detail ? [item.detail] : [],
+      };
+      items.push(current);
+      return;
+    }
+
+    if (isPrepExperienceBlock(block)) {
+      experience.push(prepExperienceText(block.text));
+      current = null;
+      return;
+    }
+
+    if (isNoteBlock(block.text)) {
+      notes.push(noteText(block.text));
+      current = null;
+      return;
+    }
+
+    if (current && ["paragraph", "bullet", "quote"].includes(block.type)) {
+      const linked = extractMarkdownLink(cleanPrepText(block.text));
+      if (linked.text) current.detailParts.push(linked.text);
+      if (linked.link && !current.link) {
+        current.link = linked.link;
+        current.linkLabel = linked.linkLabel;
+      }
+    }
+  });
+
+  return {
+    items: items.map((item) => {
+      const detail = item.detailParts.join(" ").replace(/\s+/g, " ").trim();
+      return {
+        label: item.title,
+        detail,
+        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : inferPrepServiceLink(item.title, detail, monthSlug)),
+      };
+    }),
+    notes: notes.filter(Boolean),
+    experience: experience.filter(Boolean).join(" "),
+  };
+}
+
 const JULY_EXTRAS_CONTENT = {
   video: {
     eyebrow: "Follow up resources",
@@ -2340,12 +2456,17 @@ function MarkdownHeading({ block }) {
 function IntroSectionCard({ section, monthSlug = "june", navigate }) {
   const isBeforeStart = section.title === "Before You Start";
   const hasLegacyChecklist = monthSlug === "june" || monthSlug === "july";
-  const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS;
+  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks, monthSlug) : { items: [], notes: [], experience: "" };
+  const checklistItems = hasLegacyChecklist
+    ? (monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS)
+    : dynamicPrep.items;
   const checklistSubtitle = monthSlug === "july"
     ? "Get these six setup pieces ready before you start building your AI Hub."
-    : "Get these four pieces ready before you start the Paperwork workflow.";
+    : hasLegacyChecklist
+      ? "Get these four pieces ready before you start the Paperwork workflow."
+      : "Get these setup pieces ready before you start the guide.";
 
-  if (!isBeforeStart || !hasLegacyChecklist) {
+  if (!isBeforeStart || !checklistItems.length) {
     return (
       <article className="workbench-step workbench-intro" id={section.id}>
         <div className="workbench-step-top">
@@ -2371,6 +2492,12 @@ function IntroSectionCard({ section, monthSlug = "june", navigate }) {
         </div>
       </div>
       <BeforeStartChecklist items={checklistItems} navigate={navigate} />
+      {!hasLegacyChecklist && dynamicPrep.notes.map((note) => (
+        <MarkdownNote text={`Note: ${note}`} key={note} />
+      ))}
+      {!hasLegacyChecklist && dynamicPrep.experience && (
+        <PrepExperienceBox>{dynamicPrep.experience}</PrepExperienceBox>
+      )}
     </article>
   );
 }
@@ -2395,6 +2522,15 @@ function BeforeStartChecklist({ items = BEFORE_START_ITEMS, navigate }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function PrepExperienceBox({ children }) {
+  return (
+    <aside className="prep-experience-box">
+      <span>Previous experience required</span>
+      <p>{renderInlineMarkdown(children)}</p>
+    </aside>
   );
 }
 
@@ -3290,11 +3426,34 @@ function MarkdownBlock({ block }) {
   if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "copy-challenge-prompt") return <ChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
+  if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
   if (block.type === "check") return <p className="md-check">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function isNoteBlock(text = "") {
+  return /^[📌💡]?\s*(\*\*)?note(\*\*)?:/i.test(text.trim());
+}
+
+function noteText(text = "") {
+  return text
+    .trim()
+    .replace(/^[📌💡]\s*/, "")
+    .replace(/^(\*\*)?note(\*\*)?:\s*/i, "")
+    .trim();
+}
+
+function MarkdownNote({ text }) {
+  return (
+    <aside className="md-note">
+      <strong>Note from Igor</strong>
+      <p>{renderInlineMarkdown(noteText(text))}</p>
+    </aside>
+  );
 }
 
 function CopyableCodeBlock({ text }) {

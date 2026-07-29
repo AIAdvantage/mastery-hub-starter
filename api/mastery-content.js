@@ -34,7 +34,7 @@ function resourceContentKey(resource = {}) {
 }
 
 function isPublishedResource(resource = {}) {
-  return resource.is_published === true;
+  return resource.is_published === true || resource.status === "published";
 }
 
 function sanitizePublishedMonth(month) {
