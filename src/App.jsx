@@ -4125,11 +4125,6 @@ function JuneChallengeLanding({ month, navigate }) {
   );
 }
 
-function challengeArchiveDate(value) {
-  if (!value) return "Unknown date";
-  return new Date(value).toLocaleDateString([], { month: "short", day: "numeric" });
-}
-
 function ChallengeSubmissionRegistryPage({ archive, navigate }) {
   const [query, setQuery] = useState("");
   const [interest, setInterest] = useState("All");
@@ -4152,9 +4147,6 @@ function ChallengeSubmissionRegistryPage({ archive, navigate }) {
     return matchesQuery && matchesInterest && matchesVisual;
   });
 
-  const totalLikes = eligibleSubmissions.reduce((sum, submission) => sum + (submission.likes || 0), 0);
-  const totalComments = eligibleSubmissions.reduce((sum, submission) => sum + (submission.comments || 0), 0);
-
   return (
     <section className="section page-section challenge-registry-page" aria-labelledby="challenge-registry-title">
       <Breadcrumbs
@@ -4171,13 +4163,6 @@ function ChallengeSubmissionRegistryPage({ archive, navigate }) {
           <p className="muted">{archive.description}</p>
         </div>
         <a className="registry-source-button" href={archive.sourceUrl} target="_blank" rel="noreferrer">Open Circle space</a>
-      </div>
-
-      <div className="challenge-registry-stats" aria-label="Submission registry stats">
-        <div><strong>{eligibleSubmissions.length}</strong><span>submissions</span></div>
-        <div><strong>{archive.imageAssetCount}</strong><span>images</span></div>
-        <div><strong>{totalLikes}</strong><span>likes</span></div>
-        <div><strong>{totalComments}</strong><span>comments</span></div>
       </div>
 
       <div className="challenge-registry-controls">
@@ -4241,11 +4226,6 @@ function ChallengeSubmissionRegistryCard({ submission }) {
         </div>
       )}
       <div className="challenge-submission-body">
-        <div className="challenge-submission-meta">
-          <span>{challengeArchiveDate(submission.publishedAt)}</span>
-          <span>{submission.likes || 0} likes</span>
-          <span>{submission.comments || 0} comments</span>
-        </div>
         <h2>{submission.title}</h2>
         <p className="challenge-submission-author">{submission.author}</p>
         <p>{submission.summary}</p>

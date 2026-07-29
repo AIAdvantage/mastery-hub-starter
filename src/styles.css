@@ -5302,35 +5302,6 @@ h1 {
   text-decoration: none;
 }
 
-.challenge-registry-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.challenge-registry-stats div {
-  padding: 14px;
-  border: 1px solid rgba(49, 40, 32, 0.1);
-  border-radius: 8px;
-  background: #fffdf8;
-}
-
-.challenge-registry-stats strong {
-  display: block;
-  color: #312820;
-  font-family: var(--serif);
-  font-size: 32px;
-  line-height: 1;
-}
-
-.challenge-registry-stats span {
-  color: #76695d;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .challenge-registry-controls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 0.28fr);
@@ -5432,7 +5403,6 @@ h1 {
   padding: 14px;
 }
 
-.challenge-submission-meta,
 .challenge-submission-tags,
 .challenge-submission-actions {
   display: flex;
@@ -5440,7 +5410,6 @@ h1 {
   gap: 7px;
 }
 
-.challenge-submission-meta span,
 .challenge-submission-tags span {
   display: inline-flex;
   align-items: center;
@@ -5972,10 +5941,6 @@ h1 {
   .challenge-registry-controls,
   .challenge-submission-registry-grid {
     grid-template-columns: 1fr;
-  }
-
-  .challenge-registry-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .admin-head {
