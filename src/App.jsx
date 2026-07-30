@@ -3268,7 +3268,6 @@ function ChallengeWorkbench({
 
 function getGuideModel(content) {
   const sections = splitGuideSections(content);
-  const introTitles = new Set(["What You'll Have When Done", "Before You Start"]);
   const closingTitles = new Set([
     "🏆 Bonus: Generate Your Certificate",
     "🎨 Bonus: Your Own AI Image Studio",
@@ -3277,6 +3276,18 @@ function getGuideModel(content) {
   ]);
   const steps = [];
   let phase = "Prep";
+  const firstStepIndex = sections.findIndex((section) => section.title.startsWith("Step "));
+  const introSections = sections.filter((section, index) => {
+    if (firstStepIndex === -1 || index >= firstStepIndex) return false;
+    if (section.title.startsWith("PART ")) return false;
+    return !closingTitles.has(section.title);
+  });
+  const closingSections = sections
+    .filter((section) => closingTitles.has(section.title))
+    .map((section) => ({
+      ...section,
+      title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
+    }));
 
   sections.forEach((section) => {
     if (section.title.startsWith("PART 1")) phase = "Demo";
@@ -3295,23 +3306,13 @@ function getGuideModel(content) {
   });
 
   return {
-    introSections: sections.filter((section) => introTitles.has(section.title)),
+    introSections,
     steps,
-    closingSections: sections
-      .filter((section) => closingTitles.has(section.title))
-      .map((section) => ({
-        ...section,
-        title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
-      })),
+    closingSections,
     tocItems: guideTocItems({
-      introSections: sections.filter((section) => introTitles.has(section.title)),
+      introSections,
       steps,
-      closingSections: sections
-        .filter((section) => closingTitles.has(section.title))
-        .map((section) => ({
-          ...section,
-          title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
-        })),
+      closingSections,
     }),
     fullContext: content,
   };
