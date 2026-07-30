@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-07-29T20:28:18.493Z",
+  "scrapedAt": "2026-07-30T12:00:03.398Z",
   "source": "Circle Admin API v2",
   "sourceUrl": "https://community.aiadvantage.com/c/challenge-submissions/",
   "month": "july",
@@ -7,10 +7,10 @@
   "title": "July Challenge Submission Registry",
   "theme": "Paint Your AI Hub",
   "description": "Browse the July Paint Your AI Hub submissions from the AI Mastery community. Each card highlights the member's hub direction and identity signal when those details were included in the post.",
-  "rawPostCount": 72,
+  "rawPostCount": 80,
   "excludedPostCount": 4,
-  "submissionCount": 68,
-  "imageAssetCount": 204,
+  "submissionCount": 76,
+  "imageAssetCount": 234,
   "interestCategories": [
     "All",
     "Mobile-first",
@@ -21,6 +21,372 @@
     "Rich visual proof"
   ],
   "submissions": [
+    {
+      "id": "34982106",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July 2026 Challenge",
+      "author": "Vernessa Henderson",
+      "publishedAt": "2026-07-30T11:22:56.986Z",
+      "comments": 3,
+      "likes": 3,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-2026-challenge",
+      "hubLinks": [],
+      "summary": "Vernessa shaped her hub as a soft morning space with affirmations that can turn into small embodiment actions. Her identity signal is welcoming, reflective, and centered on starting the day with intention.",
+      "excerpt": "I wanted my hub to reflect how I feel and what I do in the morning. I wanted it to be soft and welcoming, plus include an affirmation. I included an area for affirmations. When I click the affirmation, it tells me what to do to embody that affirmation. LOVABLE-UI-HANDOFF_3.md LOVABLE-UI-HANDOFF_2.md",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Personal theme",
+        "Visual redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/208-34982106-1.jpg",
+          "alt": "July 2026 Challenge screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/209-34982106-2.jpg",
+          "alt": "July 2026 Challenge screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/210-34982106-3.jpg",
+          "alt": "July 2026 Challenge screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/211-34982106-4.jpg",
+          "alt": "July 2026 Challenge screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34982030",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Lovable AI Hub connected to Company Brand Guidelines",
+      "author": "Sonja Kirschner",
+      "publishedAt": "2026-07-30T11:18:17.944Z",
+      "comments": 0,
+      "likes": 0,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/lovable-ai-hub-connected-to-company-brand-guidelines",
+      "hubLinks": [],
+      "summary": "Sonja connected her AI Hub to existing company brand guidelines so the redesign looks intentionally simple and aligned with her business system. Her identity signal is practical brand stewardship: reusable standards first, visual polish second.",
+      "excerpt": "Earlier in the year, I created a whole new set of Brand Guidelines for our business with Lovable (a compact and a comprehensive version). I hooked my AI Hub to the brand guidelines I had diligently created - and guess what? It did it’s job perfectly. It looks simple, but it’s by design 🙂 PS. This was a nice exercise to do, but I’m still unclear on how we can truly leverage on the Hub. All my created skills,...",
+      "interests": [
+        "All",
+        "Minimal / calm",
+        "Business branded"
+      ],
+      "sourceTags": [
+        "Minimal",
+        "Brand-driven",
+        "Visual redesign"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/212-34982030-1.jpg",
+          "alt": "Lovable AI Hub connected to Company Brand Guidelines screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/213-34982030-2.jpg",
+          "alt": "Lovable AI Hub connected to Company Brand Guidelines screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/214-34982030-3.jpg",
+          "alt": "Lovable AI Hub connected to Company Brand Guidelines screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34980916",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "My Ai Hub",
+      "author": "Nga Blanchard",
+      "publishedAt": "2026-07-30T10:10:20.448Z",
+      "comments": 1,
+      "likes": 3,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub-e163b0",
+      "hubLinks": [],
+      "summary": "Nga shared a late hub submission with visual proof of the redesigned interface rather than a long written brief. The identity signal is participation and momentum: finished enough to share, even after the deadline window.",
+      "excerpt": "I am late for the submission but still want to share my hub!",
+      "interests": [
+        "All",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Hub redesign"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/215-34980916-1.jpg",
+          "alt": "My Ai Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/216-34980916-2.jpg",
+          "alt": "My Ai Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/217-34980916-3.jpg",
+          "alt": "My Ai Hub screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/218-34980916-4.jpg",
+          "alt": "My Ai Hub screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34972471",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge Submission - It's still Wednesday on the West Coast :)",
+      "author": "Tiffani Iselin",
+      "publishedAt": "2026-07-30T04:22:31.892Z",
+      "comments": 1,
+      "likes": 4,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-submission-it-s-still-wednesday-on-the-west-coast",
+      "hubLinks": [
+        "http://studio-mcgee.com",
+        "http://jlvcreative.com"
+      ],
+      "summary": "Tiffani turned her hub into a warm editorial pocket remote inspired by interior design studios, with greige surfaces, square edges, sage structure, and chocolate accents. Her identity signal is serene, classic, and measured: every design choice comes from real reference sites rather than a vague mood.",
+      "excerpt": "I built my Hub as a pocket remote for the Claude that runs on my desktop, so I styled it like the interior design studios I love: a warm greige page, white cards, forest sage accents, and zero rounded corners. I carefully selected fonts and changed the icons/emojis to more modern and elegant. I was aiming for serene, classic, and elevated. This was a lot of fun and I can’t wait to keep adding on to its functionality...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 8,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/219-34972471-1.jpg",
+          "alt": "July Challenge Submission - It's still Wednesday on the West Coast :) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/220-34972471-2.jpg",
+          "alt": "July Challenge Submission - It's still Wednesday on the West Coast :) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/221-34972471-3.jpg",
+          "alt": "July Challenge Submission - It's still Wednesday on the West Coast :) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/222-34972471-4.jpg",
+          "alt": "July Challenge Submission - It's still Wednesday on the West Coast :) screenshot"
+        }
+      ],
+      "attachmentCount": 10,
+      "status": "eligible"
+    },
+    {
+      "id": "34971364",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge: Paint your AI Hub - My AI Hub — Design Brief ",
+      "author": "Michael Kranich",
+      "publishedAt": "2026-07-30T03:09:45.677Z",
+      "comments": 2,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-ai-hub-my-ai-hub-design-brief",
+      "hubLinks": [],
+      "summary": "Michael built a card-first personal dashboard where scheduled AI briefings publish themselves as glanceable tiles. His identity signal is patriotic and archival, using an America 250th parchment, seal, and red-white-navy system to make the hub feel personally authored.",
+      "excerpt": "AI Hub, built my way — I made the design calls: card-first layout, briefings that publish themselves, a watchdog that flags its own failures, all dressed for America's 250th. The AI Team and community sparked it; I built it. AI Hub — Design Brief Hub: My AI Mastery Hub 2 · Built by: Michael · Theme: Americana / United States 250th Anniversary The direction in one line A card-first personal dashboard where my...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Dark mode",
+        "Minimal",
+        "Brand-driven"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/223-34971364-1.jpg",
+          "alt": "July Challenge: Paint your AI Hub - My AI Hub — Design Brief  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/224-34971364-2.jpg",
+          "alt": "July Challenge: Paint your AI Hub - My AI Hub — Design Brief  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/225-34971364-3.jpg",
+          "alt": "July Challenge: Paint your AI Hub - My AI Hub — Design Brief  screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/226-34971364-4.jpg",
+          "alt": "July Challenge: Paint your AI Hub - My AI Hub — Design Brief  screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
+    {
+      "id": "34970371",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Done, undone, redone, posting",
+      "author": "Brooke Cheney",
+      "publishedAt": "2026-07-30T02:06:19.718Z",
+      "comments": 3,
+      "likes": 6,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/done-undone-redone-posting",
+      "hubLinks": [],
+      "summary": "Brooke submitted an iterative, soft, welcoming hub after several rounds of adding, removing, and refining features. Her identity signal is playful persistence: ideas become \"Squirrels,\" completed work becomes a FLEX, and progress matters more than perfection.",
+      "excerpt": "So I have been working on this for roughly 4 hours now. About 2 hours ago my daughter suggested I take a break, I was like “I’m almost done”. It’s had many iterations. Add things, take things away, move things, change fonts, add buttons and features, take away buttons and features. So It’s bed time and progress not perfection is my guiding light. This is version 1.5 or more, there will continue to be iterations. and...",
+      "interests": [
+        "All",
+        "Minimal / calm"
+      ],
+      "sourceTags": [
+        "Visual redesign"
+      ],
+      "imageCount": 3,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/227-34970371-1.jpg",
+          "alt": "Done, undone, redone, posting screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/228-34970371-2.jpg",
+          "alt": "Done, undone, redone, posting screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/229-34970371-3.jpg",
+          "alt": "Done, undone, redone, posting screenshot"
+        }
+      ],
+      "attachmentCount": 3,
+      "status": "eligible"
+    },
+    {
+      "id": "34969672",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "July Challenge 2026 - Lori M",
+      "author": "Lori Modico",
+      "publishedAt": "2026-07-30T01:23:42.109Z",
+      "comments": 2,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-2026-lori-m",
+      "hubLinks": [],
+      "summary": "Lori built LuLu’s AI Hub as a clean magical command center with purple-and-gold styling, progressive disclosure, and simple navigation. Her identity signal is approachable wonder: a wizard-guide interface that makes powerful AI tools feel calm, organized, and inviting.",
+      "excerpt": "desk top version 🔝 mobile app ⬆️ 3. Your direction in one line I built a clean, magical AI workspace that combines an elegant purple-and-gold visual identity with simple navigation, organized cards, and progressive disclosure so powerful tools remain easy and calming to use. 4. Your Design Brief Design concept LuLu’s AI Hub is a personal AI command center presented as an elegant, modern magical realm. LuLu serves...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Dark / cinematic",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Brand-driven",
+        "Personal theme"
+      ],
+      "imageCount": 7,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/230-34969672-1.jpg",
+          "alt": "July Challenge 2026 - Lori M screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/231-34969672-2.jpg",
+          "alt": "July Challenge 2026 - Lori M screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/232-34969672-3.jpg",
+          "alt": "July Challenge 2026 - Lori M screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/233-34969672-4.jpg",
+          "alt": "July Challenge 2026 - Lori M screenshot"
+        }
+      ],
+      "attachmentCount": 7,
+      "status": "eligible"
+    },
+    {
+      "id": "34966952",
+      "month": "july",
+      "challenge": "Paint Your AI Hub",
+      "title": "Challenge submission I assume its still Wednesday in the US;)",
+      "author": "Dr Ailina Ismail",
+      "publishedAt": "2026-07-29T23:25:09.327Z",
+      "comments": 2,
+      "likes": 5,
+      "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-i-assume-its-still-wednesday-in-the-us",
+      "hubLinks": [],
+      "summary": "Ailina created a premium wellness command center with botanical green, lime accents, glass panels, and clinical-botanical icons pulled from her brand guidelines. Her identity signal is health-and-wellness authority, making the hub feel like a high-end dashboard she would actually want to open.",
+      "excerpt": "Hi all, I hope I did myself and Antonio justice;) I built a calm, premium wellness command center on deep botanical green, with frosted-glass cards, brand-true lime accents, and clinical-botanical line icons, so the Hub feels like a high-end health dashboard I'd actually want to open, not a generic Lovable tool. Design Brief Palette: Deep Green #0A4B39 as the dominant background/canvas, Lime #C1FF72 as the primary...",
+      "interests": [
+        "All",
+        "Mobile-first",
+        "Minimal / calm",
+        "Business branded",
+        "Personal identity",
+        "Rich visual proof"
+      ],
+      "sourceTags": [
+        "Mobile-first",
+        "Minimal",
+        "Brand-driven",
+        "Personal theme"
+      ],
+      "imageCount": 6,
+      "displayImages": [
+        {
+          "src": "/challenge-archive-assets/july-challenge/234-34966952-1.jpg",
+          "alt": "Challenge submission I assume its still Wednesday in the US;) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/235-34966952-2.jpg",
+          "alt": "Challenge submission I assume its still Wednesday in the US;) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/236-34966952-3.jpg",
+          "alt": "Challenge submission I assume its still Wednesday in the US;) screenshot"
+        },
+        {
+          "src": "/challenge-archive-assets/july-challenge/237-34966952-4.jpg",
+          "alt": "Challenge submission I assume its still Wednesday in the US;) screenshot"
+        }
+      ],
+      "attachmentCount": 6,
+      "status": "eligible"
+    },
     {
       "id": "34960840",
       "month": "july",
