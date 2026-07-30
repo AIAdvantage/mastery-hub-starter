@@ -79,10 +79,39 @@ Production logs lightweight UI events to Supabase when `VITE_SUPABASE_URL` and `
 Production also expects these Vercel environment variables:
 
 - `VITE_CLERK_PUBLISHABLE_KEY`
+- `VITE_MASTERY_ACCESS_GATE` (`off`, `community`, or `claim`; default is `off`)
+- `VITE_MASTERY_ACCESS_CLAIM_PATHS` (optional comma-separated Clerk claim or metadata paths for `claim` mode)
+- `VITE_MASTERY_ACCESS_ALLOWED_VALUES` (optional comma-separated values that grant `claim` mode access)
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `MASTERY_ADMIN_TOKEN`
+
+## Access gate
+
+The site stays public unless `VITE_MASTERY_ACCESS_GATE` is enabled.
+
+- `off`: current public behavior. This is the rollback switch.
+- `community`: require a signed-in Clerk session. This works with the current app shape and is effectively community-wide.
+- `claim`: require sign-in plus a Mastery-specific Clerk claim or public metadata value. This is the Mastery-area-only option, but it only works once Circle or another sync writes a reliable Mastery entitlement into Clerk.
+
+Suggested claim-mode env setup once the entitlement exists:
+
+```text
+VITE_MASTERY_ACCESS_GATE=claim
+VITE_MASTERY_ACCESS_CLAIM_PATHS=metadata.mastery_area,public_metadata.mastery_area,publicMetadata.mastery_area
+VITE_MASTERY_ACCESS_ALLOWED_VALUES=mastery,true,active,member,access
+```
+
+Emergency rollback options:
+
+```bash
+# Fastest: turn the gate off in Vercel and redeploy/restart the project env.
+VITE_MASTERY_ACCESS_GATE=off
+
+# Code rollback anchor created before the gate work:
+git checkout public-before-clerk-gate-2026-07-30
+```
 
 Tracked today:
 

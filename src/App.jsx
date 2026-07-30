@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { SignIn, SignUp, useClerk, useUser } from "@clerk/clerk-react";
+import { SignIn, SignUp, useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import { supabase } from "./lib/supabase.js";
 import { trackEvent, trackStepHelpClick } from "./lib/analytics.js";
 import AdminBackend from "./admin/AdminBackend.jsx";
@@ -252,6 +252,19 @@ const JULY_CHALLENGE_STATUS = {
   submitUrl: CHALLENGE_SUBMISSIONS_URL,
 };
 const HAS_CLERK = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+const ACCESS_GATE_MODE = (import.meta.env.VITE_MASTERY_ACCESS_GATE || "off").toLowerCase();
+const ACCESS_GATE_ENABLED = ACCESS_GATE_MODE !== "off" && ACCESS_GATE_MODE !== "public";
+const ACCESS_GATE_ALLOWED_VALUES = (import.meta.env.VITE_MASTERY_ACCESS_ALLOWED_VALUES || "mastery,true,active,member,access")
+  .split(",")
+  .map((value) => value.trim().toLowerCase())
+  .filter(Boolean);
+const ACCESS_GATE_CLAIM_PATHS = (
+  import.meta.env.VITE_MASTERY_ACCESS_CLAIM_PATHS ||
+  "metadata.mastery_area,metadata.masteryAccess,public_metadata.mastery_area,public_metadata.masteryAccess,publicMetadata.mastery_area,publicMetadata.masteryAccess,mastery_area,masteryAccess,entitlements,roles"
+)
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
 
 const PAST_SYSTEMS = [
   {
@@ -937,34 +950,153 @@ export default function App() {
 
       <main>
         {isAuthPath && <AuthPage mode={path === "/sign-up" ? "signUp" : "signIn"} navigate={navigate} />}
-        {!isAuthPath && isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
-        {!isAuthPath && path === "/" && <HomePage navigate={navigate} />}
-        {!isAuthPath && path === "/admin" && <AdminBackend navigate={navigate} />}
-        {!isAuthPath && path === "/fundamentalsjuly" && <FundamentalsJulyPage />}
-        {!isAuthPath && (resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
-          <MonthlyResourcesPage
-            currentMonth={currentMonth}
-            path={resolveCurrentWorkshopPath(resolvedPath)}
-            navigate={navigate}
-            cmsMonths={cmsMonths}
-          />
+        {!isAuthPath && (
+          <AccessGate navigate={navigate}>
+            {isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
+            {path === "/" && <HomePage navigate={navigate} />}
+            {path === "/admin" && <AdminBackend navigate={navigate} />}
+            {path === "/fundamentalsjuly" && <FundamentalsJulyPage />}
+            {(resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
+              <MonthlyResourcesPage
+                currentMonth={currentMonth}
+                path={resolveCurrentWorkshopPath(resolvedPath)}
+                navigate={navigate}
+                cmsMonths={cmsMonths}
+              />
+            )}
+            {path.startsWith("/challenges") && (
+              <ChallengesPage
+                handleSubmit={handleSubmit}
+                path={path}
+                navigate={navigate}
+                submissionStatus={submissionStatus}
+                submissions={submissions}
+                cmsMonths={cmsMonths}
+              />
+            )}
+            {resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
+            {path === "/faq" && <TutorialPage navigate={navigate} />}
+            {!isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
+          </AccessGate>
         )}
-        {!isAuthPath && path.startsWith("/challenges") && (
-          <ChallengesPage
-            handleSubmit={handleSubmit}
-            path={path}
-            navigate={navigate}
-            submissionStatus={submissionStatus}
-            submissions={submissions}
-            cmsMonths={cmsMonths}
-          />
-        )}
-        {!isAuthPath && resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
-        {!isAuthPath && path === "/faq" && <TutorialPage navigate={navigate} />}
-        {!isAuthPath && !isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
       </main>
     </div>
   );
+}
+
+function AccessGate({ children, navigate }) {
+  if (!ACCESS_GATE_ENABLED) return children;
+
+  if (!HAS_CLERK) {
+    return (
+      <AccessGateShell
+        title="Member access is not connected here yet."
+        message="Clerk is required before the Mastery Hub can be locked. The production gate can be turned off instantly by setting VITE_MASTERY_ACCESS_GATE to off."
+        actionLabel="Back to sign in"
+        onAction={() => navigate("/sign-in")}
+      />
+    );
+  }
+
+  return <ClerkAccessGate navigate={navigate}>{children}</ClerkAccessGate>;
+}
+
+function ClerkAccessGate({ children, navigate }) {
+  const { isLoaded, isSignedIn, sessionClaims } = useAuth();
+  const { user } = useUser();
+
+  if (!isLoaded) {
+    return (
+      <AccessGateShell
+        title="Checking your member access."
+        message="One moment while Mastery Resources verifies your signed-in account."
+      />
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <AccessGateShell
+        title="Sign in to Mastery Resources."
+        message="Use the email or Google account connected to your AI Advantage community access."
+        actionLabel="Sign in"
+        onAction={() => navigate("/sign-in")}
+      />
+    );
+  }
+
+  if (hasMasteryAccess({ sessionClaims, user })) {
+    return children;
+  }
+
+  return (
+    <AccessGateShell
+      title="Mastery access was not found."
+      message="You are signed in, but this account does not show the Mastery access marker yet. If you should have access, use the community account connected to your Mastery membership."
+      actionLabel="Try another account"
+      onAction={() => navigate("/sign-in")}
+    />
+  );
+}
+
+function AccessGateShell({ title, message, actionLabel, onAction }) {
+  return (
+    <section className="access-gate-shell" aria-label="Mastery access gate">
+      <div className="access-gate-panel">
+        <p className="section-kicker">Private member platform</p>
+        <h1>{title}</h1>
+        <p>{message}</p>
+        {actionLabel && (
+          <button type="button" onClick={onAction}>
+            {actionLabel}
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function hasMasteryAccess({ sessionClaims, user }) {
+  if (ACCESS_GATE_MODE === "signed-in" || ACCESS_GATE_MODE === "community") {
+    return true;
+  }
+
+  const sources = [
+    sessionClaims,
+    sessionClaims?.metadata,
+    sessionClaims?.public_metadata,
+    user,
+    user?.publicMetadata,
+    user?.unsafeMetadata,
+  ];
+
+  return ACCESS_GATE_CLAIM_PATHS.some((path) =>
+    sources.some((source) => valueGrantsAccess(readPath(source, path)))
+  );
+}
+
+function readPath(source, path) {
+  if (!source || !path) return undefined;
+
+  return path.split(".").reduce((value, key) => {
+    if (value == null) return undefined;
+    if (Object.prototype.hasOwnProperty.call(value, key)) return value[key];
+    return undefined;
+  }, source);
+}
+
+function valueGrantsAccess(value) {
+  if (value === true) return true;
+  if (typeof value === "string") {
+    return ACCESS_GATE_ALLOWED_VALUES.includes(value.trim().toLowerCase());
+  }
+  if (Array.isArray(value)) {
+    return value.some(valueGrantsAccess);
+  }
+  if (value && typeof value === "object") {
+    return Object.values(value).some(valueGrantsAccess);
+  }
+  return false;
 }
 
 function QuickNavRail({ navigate }) {
