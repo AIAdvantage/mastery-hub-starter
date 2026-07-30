@@ -21,6 +21,22 @@ const CANONICAL_WORKSHOP_PREFIX = `/workshops/${WORKSHOP_YEAR}`;
 const JULY_PREREQUISITES_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1204164726?title=0&byline=0&portrait=0";
 const JULY_GUIDE_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1206968779?title=0&byline=0&portrait=0";
 const JULY_EXTRAS_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1207545766?title=0&byline=0&portrait=0";
+const AUGUST_GUIDE_VIDEO_EMBED_URL = "https://player.vimeo.com/video/1214336649?title=0&byline=0&portrait=0";
+
+const GUIDE_VIDEO_BY_MONTH = {
+  july: {
+    title: "July AI Hub Video Guide",
+    embedUrl: JULY_GUIDE_VIDEO_EMBED_URL,
+    ariaLabel: "July AI Hub video guide",
+    description: "Watch the walkthrough first, then use the written guide below when you want the exact steps, screenshots, and copy buttons.",
+  },
+  august: {
+    title: "August Personal CRM Video Guide",
+    embedUrl: AUGUST_GUIDE_VIDEO_EMBED_URL,
+    ariaLabel: "August Personal CRM video guide",
+    description: "Watch the walkthrough first, then use the written guide below when you want the exact steps, screenshots, and copy buttons.",
+  },
+};
 
 const MONTHS = [
   {
@@ -2412,6 +2428,7 @@ function GuidePage({
 }) {
   const guide = useMemo(() => getGuideModel(content.guide), [content]);
   const helpContext = customHelpContext || GUIDE_HELP_CONTEXTS[monthSlug] || GUIDE_HELP_CONTEXTS.june;
+  const guideVideo = GUIDE_VIDEO_BY_MONTH[monthSlug];
 
   return (
     <section className="section page-section month-section has-hover-toc" aria-labelledby="guide-title">
@@ -2439,19 +2456,19 @@ function GuidePage({
       </div>
       <div className="workbench-layout">
         <div className="workbench-stack">
-          {monthSlug === "july" && (
+          {guideVideo && (
             <article className="workbench-step guide-video-card" id="video-guide">
               <div className="workbench-step-top">
                 <span>Video Guide</span>
               </div>
               <h3>Video Guide</h3>
               <p className="workbench-step-subtitle">
-                Watch the walkthrough first, then use the written guide below when you want the exact steps, screenshots, and copy buttons.
+                {guideVideo.description}
               </p>
-              <div className="video-embed" aria-label="July AI Hub video guide">
+              <div className="video-embed" aria-label={guideVideo.ariaLabel}>
                 <iframe
-                  title="July AI Hub Video Guide"
-                  src={JULY_GUIDE_VIDEO_EMBED_URL}
+                  title={guideVideo.title}
+                  src={guideVideo.embedUrl}
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
