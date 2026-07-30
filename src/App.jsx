@@ -1985,7 +1985,6 @@ function CmsResourcesMenu({ month, navigate }) {
           {categoryOrder.filter((category) => groupedResources[category]?.length).map((category) => (
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
-                <p className="section-kicker">{category}</p>
                 <h3>{category}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
