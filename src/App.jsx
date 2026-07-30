@@ -1998,7 +1998,7 @@ function CmsResourcesMenu({ month, navigate }) {
                   >
                     <div className="resource-card-top">
                       <span>{item.type || "Resource"}</span>
-                      <small>{item.status || "Open"}</small>
+                      {shouldShowResourceStatus(item) && <small>{item.status || "Open"}</small>}
                     </div>
                     <h4>{item.title}</h4>
                     <p>{item.description || "Open this month's resource."}</p>
@@ -2043,6 +2043,12 @@ function CmsResourcesMenu({ month, navigate }) {
       )}
     </section>
   );
+}
+
+function shouldShowResourceStatus(item) {
+  const type = String(item?.type || "").trim().toLowerCase();
+  const status = String(item?.status || "").trim().toLowerCase();
+  return !(type === "walkthrough" && status === "published");
 }
 
 function MonthResourcesMenu({ month, segment, navigate }) {
