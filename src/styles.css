@@ -851,12 +851,16 @@ main {
 
 .eyebrow,
 .section-kicker {
+  display: inline-block;
   margin: 0;
   color: var(--gold-2);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
+  overflow-wrap: normal;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: normal;
 }
 
 h1,
