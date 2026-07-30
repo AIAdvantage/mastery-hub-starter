@@ -1289,6 +1289,20 @@ function HomePage({ navigate }) {
           </div>
         </div>
       </section>
+      <section className="home-resource-strip" aria-label="Mastery resource path">
+        <button type="button" onClick={() => navigate(CURRENT_WORKSHOP_PATH)}>
+          <span>Start here</span>
+          <strong>Open the current guide, prompts, challenge, and follow-up resources.</strong>
+        </button>
+        <button type="button" onClick={() => navigate("/past-workshops")}>
+          <span>Catch up</span>
+          <strong>Browse older workshops without losing the current month.</strong>
+        </button>
+        <button type="button" onClick={() => navigate("/faq")}>
+          <span>Get unstuck</span>
+          <strong>Find quick answers for replays, access, submissions, and resources.</strong>
+        </button>
+      </section>
     </>
   );
 }
