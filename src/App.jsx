@@ -2097,7 +2097,8 @@ function JulyResourcesMenu({ month, navigate }) {
     <section className="section page-section month-section" aria-label="July resources">
       <Breadcrumbs
         items={[
-          { label: "Current Workshop" },
+          { label: "Past Workshops", path: "/past-workshops" },
+          { label: "July" },
         ]}
         navigate={navigate}
       />
@@ -2105,9 +2106,9 @@ function JulyResourcesMenu({ month, navigate }) {
         month={JULY_RESOURCE_BANNER}
         actionLinks={[
           { label: "Replays", href: PAST_SYSTEMS.find((item) => item.id === "m7")?.replayUrl },
-          { label: "Guide", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/guide`) },
-          { label: "Prompts", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/prompts`) },
-          { label: "FAQ", onClick: () => navigate(`${CURRENT_WORKSHOP_PATH}/faq-catchup`) },
+          { label: "Guide", onClick: () => navigate("/monthly-resources/july/guide") },
+          { label: "Prompts", onClick: () => navigate("/monthly-resources/july/prompts") },
+          { label: "FAQ", onClick: () => navigate("/monthly-resources/july/faq-catchup") },
           { label: "Challenge", onClick: () => navigate("/challenges/july/guide") },
         ]}
         variant="banner"
@@ -3913,6 +3914,10 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
     return <RedirectRoute to="/past-workshops" navigate={navigate} />;
   }
 
+  if (selectedSlug === "july") {
+    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
+  }
+
   if (selectedSystem) {
     return <PastWorkshopDetailPage item={selectedSystem} navigate={navigate} />;
   }
@@ -3928,21 +3933,25 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
             .slice()
             .reverse()
             .map((item, index) => {
-              const isCompleteEntry = monthSlugFromLabel(item.month) === "june";
+              const slug = monthSlugFromLabel(item.month);
+              const isCompleteEntry = slug === "june" || slug === "july";
+              const image = slug === "july"
+                ? "/july/july-ai-hub-card-relatable-3.png"
+                : index % 3 === 0
+                  ? "/month6/alternates/month6-paperwork-alt-1.png"
+                  : index % 3 === 1
+                    ? "/month6/alternates/month6-paperwork-alt-2.png"
+                    : "/month6/alternates/month6-paperwork-alt-3.png";
               return (
                 <button
                   className={`month-choice has-image past-month-card ${isCompleteEntry ? "past-month-card-complete" : "past-month-card-coming"}`}
                   type="button"
                   key={item.id}
-                  onClick={() => navigate(`/past-workshops/${monthSlugFromLabel(item.month)}`)}
+                  onClick={() => navigate(slug === "july" ? "/monthly-resources/july" : `/past-workshops/${slug}`)}
                 >
                   <img
                     className="month-choice-image"
-                    src={index % 3 === 0
-                      ? "/month6/alternates/month6-paperwork-alt-1.png"
-                      : index % 3 === 1
-                        ? "/month6/alternates/month6-paperwork-alt-2.png"
-                        : "/month6/alternates/month6-paperwork-alt-3.png"}
+                    src={image}
                     alt=""
                     loading="lazy"
                   />
