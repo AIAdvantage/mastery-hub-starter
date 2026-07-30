@@ -668,6 +668,11 @@ main {
   justify-self: stretch;
 }
 
+.hero-route-grid-single .hero-route-card {
+  min-height: 354px;
+  background-position: center center;
+}
+
 .hero-route-card {
   position: relative;
   display: grid;
@@ -714,6 +719,12 @@ main {
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.48);
 }
 
+.hero-route-grid-single .hero-route-copy {
+  gap: 11px;
+  max-width: 372px;
+  padding: clamp(26px, 3.4vw, 36px);
+}
+
 .hero-route-copy span {
   color: rgba(238, 194, 112, 0.9);
   font-size: 12px;
@@ -729,11 +740,22 @@ main {
   line-height: 0.98;
 }
 
+.hero-route-grid-single .hero-route-copy strong {
+  font-size: clamp(31px, 2.75vw, 40px);
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
 .hero-route-copy small {
   max-width: 300px;
   color: rgba(255, 249, 237, 0.86);
   font-size: 15px;
   line-height: 1.45;
+}
+
+.hero-route-grid-single .hero-route-copy small {
+  max-width: 324px;
+  line-height: 1.5;
 }
 
 .hero-route-copy button,
@@ -4274,10 +4296,19 @@ h1 {
     min-height: 188px;
   }
 
+  .hero-route-grid-single .hero-route-card {
+    min-height: 246px;
+  }
+
   .hero-route-copy {
     gap: 4px;
     max-width: 100%;
     padding: 14px;
+  }
+
+  .hero-route-grid-single .hero-route-copy {
+    gap: 6px;
+    padding: 18px;
   }
 
   .hero-route-copy span {
@@ -4289,6 +4320,12 @@ h1 {
     max-width: 140px;
     font-size: 27px;
     line-height: 0.98;
+  }
+
+  .hero-route-grid-single .hero-route-copy strong {
+    max-width: 240px;
+    font-size: 30px;
+    line-height: 1.04;
   }
 
   .hero-route-copy small {
