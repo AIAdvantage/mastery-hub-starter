@@ -260,6 +260,8 @@ const MARKDOWN_BLOCKS = [
   { label: "Prep Card", template: "## Before You Start\n\n- [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)\n- [ ] **Starter files ready:** Download or prepare the files you will use during the workshop.\n- [ ] **Workspace ready:** Open the tool or folder where you will build today.\n\n> 💡 No previous experience required. You only need the accounts, files, and workspace listed above.\n\n" },
   { label: "Outcome Card", template: "## What You'll Have When Done\n\n- [ ] Clear outcome one\n- [ ] Clear outcome two\n\n" },
   { label: "Step Card", template: "## Step 1: New Step\n\nWrite one clear sentence explaining the outcome.\n\n1. First instruction.\n2. Second instruction.\n\n" },
+  { label: "Learning Moment", template: "💡 Learning moment: Explain the concept in simple, beginner-friendly terms.\n\n" },
+  { label: "Your Win", template: "🏆 **Your Win:** Name the milestone they just reached.\n\n" },
   { label: "Bonus Card", template: "## 🏆 Bonus: New Bonus\n\n1. First bonus instruction.\n\n" },
   { label: "Finish Card", template: "## Next Steps\n\n- What to do next.\n\n" },
   { label: "Subheading", template: "### New Subheading\n\n" },
@@ -2417,14 +2419,14 @@ function winText(text = "") {
   return text
     .trim()
     .replace(/^🏆\s*/, "")
-    .replace(/^(\*\*)?(big win|your win)(\*\*)?:\s*/i, "")
+    .replace(/^(\*\*)?\s*(big win|your win)\s*:?\s*(\*\*)?\s*:?\s*/i, "")
     .trim();
 }
 
 function MarkdownLearning({ text }) {
   return (
     <aside className="md-learning-callout">
-      <strong>Learning Moment</strong>
+      <strong>🤔 Learning Moment</strong>
       <p>{renderInlineMarkdown(learningText(text))}</p>
     </aside>
   );

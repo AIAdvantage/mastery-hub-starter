@@ -3683,14 +3683,14 @@ function winText(text = "") {
   return text
     .trim()
     .replace(/^🏆\s*/, "")
-    .replace(/^(\*\*)?(big win|your win)(\*\*)?:\s*/i, "")
+    .replace(/^(\*\*)?\s*(big win|your win)\s*:?\s*(\*\*)?\s*:?\s*/i, "")
     .trim();
 }
 
 function MarkdownLearning({ text }) {
   return (
     <aside className="md-learning-callout">
-      <strong>Learning Moment</strong>
+      <strong>🤔 Learning Moment</strong>
       <p>{renderInlineMarkdown(learningText(text))}</p>
     </aside>
   );
