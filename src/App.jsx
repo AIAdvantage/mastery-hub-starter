@@ -4193,11 +4193,6 @@ function ChallengeSubmissionRegistryPage({ archive, navigate }) {
         ))}
       </div>
 
-      <p className="challenge-registry-count">
-        Showing {filteredSubmissions.length} of {eligibleSubmissions.length} submissions.
-        {archive.excludedPostCount ? ` ${archive.excludedPostCount} off-topic post${archive.excludedPostCount === 1 ? "" : "s"} excluded from the registry.` : ""}
-      </p>
-
       <div className="challenge-submission-registry-grid" aria-live="polite">
         {filteredSubmissions.map((submission) => (
           <ChallengeSubmissionRegistryCard submission={submission} key={submission.id} />

@@ -11,6 +11,10 @@ const API = process.env.CIRCLE_ADMIN_API_BASE || "https://app.circle.so/api/admi
 const KEY = process.env.CIRCLE_ADMIN_API_KEY;
 const SPACE_ID = process.env.CIRCLE_CHALLENGE_SUBMISSIONS_SPACE_ID || "2370867";
 const SOURCE_URL = "https://community.aiadvantage.com/c/challenge-submissions/";
+const MANUAL_NON_SUBMISSION_IDS = new Set([
+  "34936224", // completion update, not the visual hub challenge submission
+  "34380561", // login/url status update, not the visual hub challenge submission
+]);
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((arg, index, all) => (
@@ -104,6 +108,7 @@ function imageUrls(html = "") {
 }
 
 function isLostPost(post, text, images, links) {
+  if (MANUAL_NON_SUBMISSION_IDS.has(String(post.id))) return true;
   const haystack = `${post.name || ""} ${text}`.toLowerCase();
   if (/stuck|quick assist|need help|lost the thread|looking for .*assist|where.*stuck/.test(haystack)) return true;
   if (!images.length && !links.length && !/submission|challenge|hub|paint|design|published|lovable/.test(haystack)) return true;
@@ -249,13 +254,12 @@ async function main() {
     label,
     title: `${label} Challenge Submission Registry`,
     theme: challenge,
-    description: "Member submissions from the AI Mastery Challenge Submissions space, filtered for real challenge posts with summaries, source links, reactions, comments, and available hub screenshots.",
+    description: "Browse the July Paint Your AI Hub submissions from the AI Mastery community. Each card highlights the member's hub direction and identity signal when those details were included in the post.",
     rawPostCount: monthPosts.length,
     excludedPostCount: excluded.length,
     submissionCount: submissions.length,
     imageAssetCount: submissions.reduce((count, item) => count + item.displayImages.length, 0),
     interestCategories: interestCategoriesList,
-    excluded,
     submissions,
   };
 

@@ -6,11 +6,11 @@
   "label": "July",
   "title": "July Challenge Submission Registry",
   "theme": "Paint Your AI Hub",
-  "description": "Member submissions from the AI Mastery Challenge Submissions space, filtered for real challenge posts with summaries, source links, reactions, comments, and available hub screenshots.",
+  "description": "Browse the July Paint Your AI Hub submissions from the AI Mastery community. Each card highlights the member's hub direction and identity signal when those details were included in the post.",
   "rawPostCount": 72,
-  "excludedPostCount": 2,
-  "submissionCount": 70,
-  "imageAssetCount": 207,
+  "excludedPostCount": 4,
+  "submissionCount": 68,
+  "imageAssetCount": 204,
   "interestCategories": [
     "All",
     "Mobile-first",
@@ -19,22 +19,6 @@
     "Business branded",
     "Personal identity",
     "Rich visual proof"
-  ],
-  "excluded": [
-    {
-      "id": "34956944",
-      "title": "Stuck after the GitHub/Lovable session — looking for a quick assist",
-      "author": "Deretta Faigin",
-      "reason": "Not an actual challenge submission",
-      "url": "https://community.aiadvantage.com/c/challenge-submissions/stuck-after-the-github-lovable-session-looking-for-a-quick-assist"
-    },
-    {
-      "id": "34414136",
-      "title": "From dashboard to cockpit: Mattias HQ",
-      "author": "Mattias Herzig | AIA Team",
-      "reason": "Not an actual challenge submission",
-      "url": "https://community.aiadvantage.com/c/challenge-submissions/from-dashboard-to-cockpit-mattias-hq"
-    }
   ],
   "submissions": [
     {
@@ -48,7 +32,7 @@
       "likes": 0,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-29a4ac",
       "hubLinks": [],
-      "summary": "1 1 phone 2 Dark, square, and card-less — rows on hairlines under a dusk shot of the suite I sell.",
+      "summary": "Hub direction: a dark, card-less mobile interface built from hairline rows, oversized titles, and a dusk-suite image for one-handed use in low light. Identity: the post ties the design to a practical sales/work context where the hub needs to feel like a readable field manifest, not decorative software.",
       "excerpt": "1 1 phone 2 Dark, square, and card-less — rows on hairlines under a dusk shot of the suite I sell. Built for a one-handed read in bad light, because that's when I actually use it. Declan's Hub — Design Brief Direction: E · Manifest. Dark-first. No cards — full-bleed rows on hairlines, oversized titles, nothing decorative. A printed manifest you can read at arm's length, one-handed, in a truck at night. Mobile...",
       "interests": [
         "All",
@@ -95,7 +79,7 @@
         "https://labora-ora-hub-vault.lovable.app/",
         "http://lovable-ui-handoff.md/"
       ],
-      "summary": "It did not carry everything over from the full build, but it will still give you a good idea of what the live version looks like, how it functions, and how it feels for the most part: Please take a look on your phone to...",
+      "summary": "Hub direction: a mobile-first Labora Et Ora hub with a dark, minimal, functional feel and a live Lovable remix for phone review. Identity: the post frames the hub around a personal working rhythm where the full experience matters most on mobile.",
       "excerpt": "July 29, 2026 Here is my link to the Remix version. It did not carry everything over from the full build, but it will still give you a good idea of what the live version looks like, how it functions, and how it feels for the most part: https://labora-ora-hub-vault.lovable.app Please take a look on your phone to get the full sense of the functionality. I hope you enjoy the overall vibe. I built my user interface this...",
       "interests": [
         "All",
@@ -144,7 +128,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-852cf4",
       "hubLinks": [],
-      "summary": "I’m a 69 year old who started as a mainframe code a long time ago.",
+      "summary": "Hub direction: a retro 1950s sci-fi interface with custom icons and fonts, built as a navigational hub with a strong visual theme. Identity: Michael connects the look to being a 69-year-old former mainframe coder with a long-running love of sci-fi.",
       "excerpt": "Finally got my icons and fonts looking reasonable. I’ve learnt a lot and realise theres a lot more to go. I’m a 69 year old who started as a mainframe code a long time ago. slow progress is becoming easier as I get my head around how modern websites are structured. Here is my submission to help me navigate my way. a retro 50’s sci fi theme reflecting my age and love of sci fi. I started with trying to build a...",
       "interests": [
         "All",
@@ -179,39 +163,6 @@
       "status": "eligible"
     },
     {
-      "id": "34936224",
-      "month": "july",
-      "challenge": "Paint Your AI Hub",
-      "title": "62 and learning",
-      "author": "Danny Castle",
-      "publishedAt": "2026-07-29T03:38:19.373Z",
-      "comments": 0,
-      "likes": 2,
-      "url": "https://community.aiadvantage.com/c/challenge-submissions/62-and-learning-665111",
-      "hubLinks": [],
-      "summary": "I got a cheat sheet app in my hub finally, and my sign in is done.",
-      "excerpt": "I got a cheat sheet app in my hub finally, and my sign in is done.",
-      "interests": [
-        "All"
-      ],
-      "sourceTags": [
-        "Hub redesign"
-      ],
-      "imageCount": 2,
-      "displayImages": [
-        {
-          "src": "/challenge-archive-assets/july-challenge/12-34936224-1.jpg",
-          "alt": "62 and learning screenshot"
-        },
-        {
-          "src": "/challenge-archive-assets/july-challenge/13-34936224-2.jpg",
-          "alt": "62 and learning screenshot"
-        }
-      ],
-      "attachmentCount": 2,
-      "status": "eligible"
-    },
-    {
       "id": "34935757",
       "month": "july",
       "challenge": "Paint Your AI Hub",
@@ -222,7 +173,7 @@
       "likes": 4,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/analysis-paralysis",
       "hubLinks": [],
-      "summary": "Phew, I might have just scraped in on time with my submission.",
+      "summary": "Hub direction: a mobile-aware redesign that turned an overthought build into a more focused, usable hub with strong visual proof. Identity: Jerzy's post is about pushing through analysis paralysis and using the hub as evidence of momentum.",
       "excerpt": "Phew, I might have just scraped in on time with my submission. I lost more than 2 weeks before I started to build since I was trying to understand every aspect and nuance of the build architecture before I tried and so completely paralysed myself in the process…and it’s continued into this week as well. I then threw in a load of other issues into the mix to put myself in a straitjacket that not even Houdini could...",
       "interests": [
         "All",
@@ -271,7 +222,7 @@
       "likes": 3,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/shruti-s-ai-hub-human-imagination-leads-ai-powers-it",
       "hubLinks": [],
-      "summary": "Together, we built the same hub in class - Ideas, Wins, Images - a solid foundation that inspired my thinking.",
+      "summary": "Hub direction: a rebuilt-from-scratch Polaris-themed hub that uses a calm, branded north-star concept to organize AI work. Identity: Shruti connects the design to her advisory work and the belief that human imagination should lead while AI powers the system.",
       "excerpt": "Together, we built the same hub in class - Ideas, Wins, Images - a solid foundation that inspired my thinking. Then I completely rebuilt it from scratch. Customizing it clarified how I want to work with AI — and, more importantly, how Lovable, Claude, and GitHub fit together, so I can keep extending it with new tools and agents over time . It's themed around Polaris, the north star — also the heart of my advisory...",
       "interests": [
         "All",
@@ -318,7 +269,7 @@
       "likes": 4,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/veronica-s-clarity-hub-one-screen-full-focus-078e4e",
       "hubLinks": [],
-      "summary": "pptx The problem As a CEO, I make dozens of decisions every day.",
+      "summary": "Hub direction: a one-screen clarity command center that filters daily noise into the decisions and actions that matter most. Identity: Veronica frames the hub around her CEO role and the need to protect focus from emails, pipeline, proposals, and market signals.",
       "excerpt": "Morning-Command-Design-Challenge.pptx The problem As a CEO, I make dozens of decisions every day. The noise is constant — emails, pipeline, proposals, follow-ups, market signals — and without a clear structure, urgent always wins over important. I needed focus: to know exactly what moves the needle today, without having to search for it. The solution A personal command center that filters the noise and gives me only...",
       "interests": [
         "All",
@@ -359,7 +310,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/release-candidate-v3-my-first-week-in-mastery",
       "hubLinks": [],
-      "summary": "Somehow, I followed Igor’s OG video to create a hub (while pausing of course, as I watched it on replay).",
+      "summary": "Hub direction: a finished first-week hub release shaped by the original replay workflow and a willingness to keep iterating through Lovable limits. Identity: Seamae presents the build as a confidence milestone for a longtime Bootcamper entering Mastery.",
       "excerpt": "Longtime Bootcamper, first time Mastery participant. Inspired by some of the submissions. Somehow, I followed Igor’s OG video to create a hub (while pausing of course, as I watched it on replay). Lovable kicked me out, thus V1 & V2, and so I upgraded on Lovable to finish (don’t let credit limits be the enemy of done). Thought, “I can do this.” and like Henry Ford said, “Whether we think we can or think we can’t,...",
       "interests": [
         "All"
@@ -400,7 +351,7 @@
       "likes": 3,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/the-best-upgrade-to-my-hub-this-month-i-took-things-away",
       "hubLinks": [],
-      "summary": "After setting up my Hub and designing it, my focus went on taking things away rather than adding them.",
+      "summary": "Hub direction: a reduced, detail-driven hub that removes visual clutter and uses subtle signals like a due-review color shift instead of adding more noise. Identity: Silke's design reflects a preference for calm precision, attention management, and small details that make the system easier to read.",
       "excerpt": "After setting up my Hub and designing it, my focus went on taking things away rather than adding them. I've been reducing it visually, step by step, so less pulls at my attention and more actually helps me understand what I'm looking at. »The detail makes the difference« So a few things from my latest round: The weekly review card turns a quiet red the moment it's due and hasn't happened yet — no pop-up, no nagging,...",
       "interests": [
         "All",
@@ -439,7 +390,7 @@
       "likes": 11,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/hard-hat-on-before-you-scroll",
       "hubLinks": [],
-      "summary": "The clock says 9:41 on every screen, because that is the time in Apple ads and I never wired the real one up.",
+      "summary": "Hub direction: a construction-site themed hub with dense dashboard energy, deliberate rough edges, and an active-work-in-progress feel. Identity: Jonas presents himself as the builder on-site, using hard-hat imagery and layout honesty as part of the hub's character.",
       "excerpt": "This is my Hub and it is an active construction site. The clock says 9:41 on every screen, because that is the time in Apple ads and I never wired the real one up. The Trading page has a debug line in the corner reading \"Columns: 1044 + 24 + 330 = 1398,\" left over from checking my own layout math. Watch your step. There are nails. Submitting it anyway, because that is the honest version. What I want is everything in...",
       "interests": [
         "All",
@@ -485,7 +436,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/hobson-here-i-trust-your-travels-were-enlightening",
       "hubLinks": [],
-      "summary": "This AI Hub started as a plain dashboard with good bones: fourteen pages, three backend functions, a markdown vault, all doing real work behind a default template look.",
+      "summary": "Hub direction: a refined English-house interface with marble, brass, cornflower glass, and Hobson the butler as the quiet presence behind the system. Identity: Bradley turns a large working dashboard into a personal service space that feels calm, capable, and always nearby.",
       "excerpt": "This AI Hub started as a plain dashboard with good bones: fourteen pages, three backend functions, a markdown vault, all doing real work behind a default template look. The whole redesign traces back to one sentence: a calm English house, seen in daylight, and Hobson : the butler who is always there, never in the way. The marble, the brass, the cornflower glass, the man standing quietly behind every page, that's...",
       "interests": [
         "All",
@@ -520,7 +471,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/what-a-life-changing-first-month-content-creation-on-steroids",
       "hubLinks": [],
-      "summary": "Thank you, Igor, Dean, Tony, and the entire team, for the life-changing lessons.",
+      "summary": "Hub direction: a mobile-supported content creation hub tied to social posting, business growth, and visible progress across multiple screenshots. Identity: Marek connects the redesign to his Feldenkrais work, renewed daily social media output, and a broader content engine for his business.",
       "excerpt": "I am having so much fun applying all these new tools. Thank you, Igor, Dean, Tony, and the entire team, for the life-changing lessons. Many micro- and macro-wins. One of them is finally posting on social media every day for the past seven days. Something I’ve been struggling with in the last 2-3 years of working on my business. Here is the proof: https://www.instagram.com/feldenkraisnyc/ I followed the basic...",
       "interests": [
         "All",
@@ -569,7 +520,7 @@
       "likes": 4,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/cabo-ai-hub-steve-nakamoto",
       "hubLinks": [],
-      "summary": "For a color scheme, I asked Lovable to create vibrant CABO SAN LUCAS colors.",
+      "summary": "Hub direction: a Cabo AI Hub with vibrant Cabo San Lucas colors, rotating backgrounds, readable top text, and project-matched cards. Identity: Steve roots the redesign in his own taste and a sunny, location-driven visual language.",
       "excerpt": "Here’s is my submission that suits my tastes. I added some cards to match my key projects. For a color scheme, I asked Lovable to create vibrant CABO SAN LUCAS colors. I also asked what else I could do to make the site more appealing and it suggested rotating the background colors. And finally I asked for the top section to have more readable text and the words “Cabo AI Hub” was done in black so it stood out...",
       "interests": [
         "All",
@@ -607,7 +558,7 @@
         "http://earroyo.ai",
         "http://earroyo.ai"
       ],
-      "summary": "My AI Hub — what it is, what it does, and the card that now builds the rest Revised Submission Note: First submission was hurried on July 15th just as I got back from AZ, thinking I was late.",
+      "summary": "Hub direction: a polished earroyo.ai hub that includes a card-building-card concept and shows the system becoming a real tool, not just a repaint. Identity: Eduardo connects the hub to his professional identity, FELICES roots, and a builder's curiosity about making the hub generate more of itself.",
       "excerpt": "My AI Hub — what it is, what it does, and the card that now builds the rest Revised Submission Note: First submission was hurried on July 15th just as I got back from AZ, thinking I was late. Last Friday, I realized I had time to clean it up, get nicer pics, etc. Little did I know that a spur-of-the-moment curiosity—“Could I create a card that builds cards, even cards with APPS?”—would start a WWF fight. What...",
       "interests": [
         "All",
@@ -657,7 +608,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/i-showed-up-with-two-weeks-of-design-work-the-challenge-wanted-a-repaint",
       "hubLinks": [],
-      "summary": "Special welcome to all the new Mastery and Inner Circle folks 👋 The July Amplifier and monthly challenge actually started for me back in June when Igor showed us Alfredo's hub for the first time.",
+      "summary": "Hub direction: a mobile-aware, heavily customized hub refined beyond the original challenge prompt after weeks of design work. Identity: Stephanie frames the hub as something she had wanted before Mastery gave it a name, making the redesign personal as well as functional.",
       "excerpt": "Hi everyone! Special welcome to all the new Mastery and Inner Circle folks 👋 The July Amplifier and monthly challenge actually started for me back in June when Igor showed us Alfredo's hub for the first time. I had been thinking about something like a hub long before I knew it existed or Igor showed us an example. Once I understood what it was, I immediately wanted to build my own, but I didn't want mine to be...",
       "interests": [
         "All",
@@ -706,7 +657,7 @@
       "likes": 2,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-2026",
       "hubLinks": [],
-      "summary": "I've been allowing myself to be too busy at work and with family all these months I’ve been in AI Mastery, but the event in Phoenix made me realize I can and should participate more.",
+      "summary": "Hub direction: a first challenge submission that adapts the class hub into a personal version while leaving room for future inspiration from the community. Identity: Kirt presents the post as a return to participation after work, family, and the Phoenix event reminded him to engage more fully.",
       "excerpt": "Hello! This is my first challenge submission! I've been allowing myself to be too busy at work and with family all these months I’ve been in AI Mastery, but the event in Phoenix made me realize I can and should participate more. Thank you to the very cool people I met who were so inspiring! There are so many awesome looking hubs! I think my next hub will take a few ideas from some of them. They are too good! So, for...",
       "interests": [
         "All",
@@ -732,7 +683,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/ruby-s-hub",
       "hubLinks": [],
-      "summary": "Here’s my AI Hub an phone icon",
+      "summary": "Hub direction: Ruby's Hub is shared through a simple phone-focused proof screenshot and app icon. Identity: the post keeps the personal context light, with the name Ruby carrying the main identity signal.",
       "excerpt": "Here’s my AI Hub an phone icon",
       "interests": [
         "All",
@@ -766,7 +717,7 @@
       "likes": 13,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/my-hub-my-sanctuary",
       "hubLinks": [],
-      "summary": "my homepage - I wanted to create a sanctuary for my Soul to be enriched and feel nourished.",
+      "summary": "Hub direction: a mobile-proven sanctuary hub built around beauty, nourishment, and a magical visual atmosphere. Identity: Donatella frames the hub as a space for her soul, not just a dashboard.",
       "excerpt": "my homepage - I wanted to create a sanctuary for my Soul to be enriched and feel nourished. A magical space of beauty and love. my idea: My win: my win on mobile view: my mobile view: LOVABLE-UI-HANDOFF.md",
       "interests": [
         "All",
@@ -813,7 +764,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/hub-v2-next-time-i-won-t-make-the-images-inside-lovable-as-took-up-all-my-credits-thanks-for-the-tip-mattias",
       "hubLinks": [],
-      "summary": "Hub V2 - Next time I won't make the images inside lovable as took up all my credits.... thanks for the tip, Mattias...",
+      "summary": "Hub direction: a second hub version shared as a visual iteration after learning that image generation inside Lovable consumed credits quickly. Identity: Seamae's post is mostly a practical build update and lesson learned rather than a detailed personal or business identity statement.",
       "excerpt": "",
       "interests": [
         "All"
@@ -844,7 +795,7 @@
       "hubLinks": [
         "https://bens-aihub.lovable.app/"
       ],
-      "summary": "I first created this HUB with the idea just for me, but after seeing what I think is possible, I am inclining to make it for all my companies and for my key people.",
+      "summary": "Hub direction: Marcala Holding's AI Hub expands from a personal tool toward a multi-company operating system for key people and group pillars. Identity: J. Benjamin ties the hub directly to his business ownership and the structure of his companies.",
       "excerpt": "I first created this HUB with the idea just for me, but after seeing what I think is possible, I am inclining to make it for all my companies and for my key people. But before doing this I am not running and taking my time to design everything The website is https://bens-aihub.lovable.app/ The First Page is the Landing Page, which is Marin and it sort of gives you what we are, that we have 6 pillars to our group and...",
       "interests": [
         "All",
@@ -889,7 +840,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/i-believe-overcoming-is-a-choice-my-hub",
       "hubLinks": [],
-      "summary": "This is VERY awkward for me in multiple ways, but I am trying desperately to participate.",
+      "summary": "Hub direction: a personal hub shared with visual proof and an overcoming-centered emotional theme. Identity: Catherine, who goes by Faith, connects the hub to her mission around tigers, the planet, housing, and her own story of resilience.",
       "excerpt": "This is VERY awkward for me in multiple ways, but I am trying desperately to participate. I go by Faith, and I’m an Overcomer! I hope to Stop the Extinction of the Tiger, the Planet and End the housing crisis with Tiny homes/ADU’s. I was diagnosed at 50 with Asperger syndrome, after decades of misdiagnoses. I had a broken neck for 10 years and 11 months until the Lord provided me with a two level disc replacement...",
       "interests": [
         "All",
@@ -933,7 +884,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/v1-of-hub-as-lovable-credits-done-q-can-images-in-image-generation-part-be-edited-iterated-ex-can-we-change-the-cat-s-hat-in-a-way-that-replaces-rather-than-makes-a-new-image-so-as-not-to-use-up-credits-not-to-repeat-prompts-ideas-list-is-long",
       "hubLinks": [],
-      "summary": "V1 of hub (as lovable credits done)- Q- can images in image generation part be edited/iterated (ex/can we change the cat's hat in a way that replaces rather than makes a new image so as not to use up credits/not to...",
+      "summary": "Hub direction: a first hub version shared as a credit-limited iteration with questions about improving generated images more efficiently. Identity: Seamae's post focuses more on process and experimentation than on a finished visual identity.",
       "excerpt": "",
       "interests": [
         "All"
@@ -964,7 +915,7 @@
       "hubLinks": [
         "https://pgassignment.lovable.app"
       ],
-      "summary": "Mobile Hub Win I did not use any of the directions from the assignment, instead I ran the prompt and added my brand guidelines.",
+      "summary": "Hub direction: a mobile hub remix driven by Nanda's brand guidelines, with attention spent on the mobile logo, meeting notes automation, and display. Identity: the post connects the design to her brand rather than the default challenge directions.",
       "excerpt": "Mobile Hub Win I did not use any of the directions from the assignment, instead I ran the prompt and added my brand guidelines. The designed brief that Claude wrote is attached, my final layout is different. The MD file read ok but the actual display was not my vision. I used approximately 50 credits due mainly to adjusting the logo on the mobile version and setting up the meeting notes automation and display...",
       "interests": [
         "All",
@@ -1006,7 +957,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge",
       "hubLinks": [],
-      "summary": "So far…this has been a great learning experience, and I am looking forward to the next steps.",
+      "summary": "Hub direction: a refined minimalist hub designed to feel organized and easy to navigate across desktop and mobile. Identity: Isabel presents the work as a learning milestone and a clean personal operating space.",
       "excerpt": "So far…this has been a great learning experience, and I am looking forward to the next steps. In the mean time, here is my homework! Desktop Hub screenshot Mobile Hub screenshot Board screenshot showing Done. My one-sentence direction: Design my AI Hub with a refined, minimalist style to make it feel organized, and easy to navigate on both desktop and mobile. My Design Brief LOVABLE-UI-HANDOFF.md",
       "interests": [
         "All",
@@ -1049,7 +1000,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-complete",
       "hubLinks": [],
-      "summary": "I built my hub to have a Dark Mode because it’s easier on my eyes I feel.",
+      "summary": "Hub direction: a dark-mode Command Deck with crisp corners, sparse electric-blue accents, and mobile simplicity. Identity: Scott ties the look to his preference for low-clutter, eye-friendly tools that stay out of the way.",
       "excerpt": "I built my hub to have a Dark Mode because it’s easier on my eyes I feel. I like everything to be really simple and minimalist. I don’t like clutter. I will be working more on removing unnecessary words and other things. Design Brief — AgentHub \"Command Deck\" Character: Bold, high-contrast, dark-first command center. Crisp corners, confident motion, electric-blue accent used sparingly on what matters. Mobile is the...",
       "interests": [
         "All",
@@ -1092,7 +1043,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/fast-sprint-submission",
       "hubLinks": [],
-      "summary": "I hadn’t even started the Mastery Courses, until after the Amplify event, but it was my goal to get a Hub submitted before the next class…so, here is my submission.",
+      "summary": "Hub direction: a fast sprint hub that brings several business and home areas into one place. Identity: Angela frames the build around managing multiple wings of her work and life after jumping into the Mastery material late.",
       "excerpt": "I hadn’t even started the Mastery Courses, until after the Amplify event, but it was my goal to get a Hub submitted before the next class…so, here is my submission. I have several wings to my business and home, so I created this hub to house all of them.",
       "interests": [
         "All",
@@ -1138,7 +1089,7 @@
       "hubLinks": [
         "http://LOVABLE-UI-HANDOFF.md"
       ],
-      "summary": "Like a big bright pulsing sphere with the cards orbiting around it.",
+      "summary": "Hub direction: a Jarvis-inspired tech and science-fiction hub with a bright central sphere and cards orbiting around it. Identity: Chris lets the hub name define the concept, aiming for a futuristic assistant feel.",
       "excerpt": "The Hub Name is Jarvis. So…… That is how it came to look like this. can't believe i'm saying this. I think this should look very tech / science fiction-ish. It's name is Jarvis for a reason. Like a big bright pulsing sphere with the cards orbiting around it. something like that. Thought process Thought process Now it came through — and that's a great reference. I can see exactly what you're after: a big soft...",
       "interests": [
         "All",
@@ -1185,7 +1136,7 @@
       "likes": 11,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/the-constellation-ai",
       "hubLinks": [],
-      "summary": "I had Claude and Chat GPT help me describe the visual direction to Lovable.",
+      "summary": "Hub direction: The Constellation AI uses a big-picture constellation concept with impressionist, coastal Florida, and organizing-system influences. Identity: Angelique connects the hub to holding many roles and ideas in one place while staying grounded and on track.",
       "excerpt": "Well this was fun! I had Claude and Chat GPT help me describe the visual direction to Lovable. The idea is that the constellation creates the “big picture”, grounding all of these disparate ideas and roles into one place that relentlessly tackles daily grunt-work and keeps me on track. For the design what better way to proceed than to combine a few of my favorite things… impressionist art, a coastal Florida vibe,...",
       "interests": [
         "All",
@@ -1231,7 +1182,7 @@
       "likes": 12,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/spreadsheets-never-gave-me-that-much-satisfaction-month1-july-challenge-submission",
       "hubLinks": [],
-      "summary": "Spreadsheets never gave me satisfaction — rows and columns pretending to be a system, when really I was just doing the thinking myself, over and over.",
+      "summary": "Hub direction: a cinematic personal system that replaces spreadsheet-style management with a structure that thinks alongside the user. Identity: Mateja frames the hub as a coming-home moment for someone who runs on structure and is building a bigger system of work.",
       "excerpt": "Spreadsheets never gave me satisfaction — rows and columns pretending to be a system, when really I was just doing the thinking myself, over and over. That ends now. This month I started building instead of managing. Not another task list — a system that thinks alongside me. For someone who runs on structure, thit shift feels less like a milestone and more like coming home to how I always wanted to work. Eleven...",
       "interests": [
         "All",
@@ -1277,7 +1228,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub-is-published",
       "hubLinks": [],
-      "summary": "It was fun watching Igor’s 2nd video and I did pretty well keeping up with him with a few stops and reviews.",
+      "summary": "Hub direction: a published hub with a look and feel matched to new business colors of orange and teal. Identity: Mareko ties the redesign to his emerging business brand and the confidence of keeping pace with the workshop flow.",
       "excerpt": "It was fun watching Igor’s 2nd video and I did pretty well keeping up with him with a few stops and reviews. I’m happy with my look and feel that matches my new business colors of orange and teal.",
       "interests": [
         "All",
@@ -1309,7 +1260,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-simona-s-ai-hub",
       "hubLinks": [],
-      "summary": "After many hours of catching up with everything from the July’s learning, I managed to get the challenge done too.",
+      "summary": "Hub direction: a completed July hub shared after catching up through the month's work and reaching the challenge finish line. Identity: Simona's post is mostly about perseverance and completion rather than a specific visual identity.",
       "excerpt": "After many hours of catching up with everything from the July’s learning, I managed to get the challenge done too. No more credits left, so I could not improve any further. Sign of relief.",
       "interests": [
         "All"
@@ -1342,7 +1293,7 @@
       "likes": 11,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-allen-s-alley-managment-hub",
       "hubLinks": [],
-      "summary": "After getting a delayed start on my homework for July, I got brave and just dreamed up something I wanted my hub to do for me.",
+      "summary": "Hub direction: Allen's Alley Management Hub is a practical tracking system meant to reduce mental load and make everyday management more fun. Identity: Kelly connects the hub to her coding background, her appetite for bigger tools, and a personal operating-system vision.",
       "excerpt": "After getting a delayed start on my homework for July, I got brave and just dreamed up something I wanted my hub to do for me. My vision is to create a tool that really helps me not have to keep track of so many things so I can have more fun. I’ve built tools in the past (coder in several programming languages) and I was overwhelmed with the scope of what I really want to be able to track. What the heck! I told...",
       "interests": [
         "All",
@@ -1388,7 +1339,7 @@
       "likes": 14,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/bob-s-ai-hub",
       "hubLinks": [],
-      "summary": "I can post screenshots of my hub, and maybe I will do that later.",
+      "summary": "Hub direction: Bob's AI Hub is presented through a short video because motion explained the system better than static screenshots. Identity: Robert focuses on demonstrating what he developed rather than spelling out a separate personal or business theme.",
       "excerpt": "I can post screenshots of my hub, and maybe I will do that later. However, it seems that a short video will do a much better job of showing and explaining what I developed, so here goes… 2026-07-16 15-51-02.mp4",
       "interests": [
         "All"
@@ -1414,7 +1365,7 @@
       "hubLinks": [
         "https://jennylle-inspiration-hub.lovable.app"
       ],
-      "summary": "Screenshot - your Hub's new UI, including a phone screenshot proving it is flawless on mobile.",
+      "summary": "Hub direction: Jennylle's Inspirational Hub combines gold, earth, apothecary, and tropical-paradise cues with explicit desktop and phone proof. Identity: the hub reflects Jennylle's uplifting inspiration brand and a warm, joyful visual world.",
       "excerpt": "https://jennylle-inspiration-hub.lovable.app 1. Screenshot - your Hub's new UI, including a phone screenshot proving it is flawless on mobile. See below… Desktop screenshot of my Hub’s new UI. Phone screenshot. Flawless. 2. A screenshot of your board with the idea in Done (and the Win). See below… Desktop screenshot. Screenshot from phone. 3. Your direction in one line - Combine the gold with earth & apothecary and...",
       "interests": [
         "All",
@@ -1467,7 +1418,7 @@
         "http://earroyo.ai",
         "http://earroyo.ai"
       ],
-      "summary": "A changelog of how the hub grew up ▶ Each addition below is paired with a cropped screenshot from the live hub at earroyo.",
+      "summary": "Hub direction: earroyo.ai documents the hub's growth through cropped screenshots, showing a personal tool maturing into a professional working system. Identity: Eduardo explains the move from FELICES, his mother's family name, into a hub tied more directly to his professional identity.",
       "excerpt": "A changelog of how the hub grew up ▶ Each addition below is paired with a cropped screenshot from the live hub at earroyo.ai showing exactly where it appears. Captured 2026-07-16. The name The hub was born as FELICES — my mother's maiden name, which means HAPPY in Spanish. It carried a personal, family feeling. Over time, as the hub grew into a real working tool tied to my professional identity, it was rebranded to...",
       "interests": [
         "All",
@@ -1519,7 +1470,7 @@
       "hubLinks": [
         "https://svp-agent-hub-2026.lovable.app/"
       ],
-      "summary": "I like it on my phone, but I do not know how to take a screen shot on an android phone and put it here.",
+      "summary": "Hub direction: a Shared Vision and Purpose hub that the author likes on phone and shared through a live Lovable link plus iPad proof. Identity: Karen's post keeps the identity signal centered on shared vision and purpose rather than detailed branding notes.",
       "excerpt": "I like it on my phone, but I do not know how to take a screen shot on an android phone and put it here. https://svp-agent-hub-2026.lovable.app/ ipad",
       "interests": [
         "All",
@@ -1558,7 +1509,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub",
       "hubLinks": [],
-      "summary": "Nothing fancy but done.",
+      "summary": "Hub direction: a simple completed AI Hub, shared without extra polish or extended explanation. Identity: Chris's post is mainly a done-is-done milestone rather than a developed personal or business identity statement.",
       "excerpt": "Nothing fancy but done.",
       "interests": [
         "All"
@@ -1587,7 +1538,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-under-construction",
       "hubLinks": [],
-      "summary": "All, I have really enjoyed bringing this to life, here is a sneak peak.",
+      "summary": "Hub direction: an under-construction hub with a dramatic backdrop and shooting-star motion. Identity: Duke presents the work as a lively sneak peek and a personal experiment brought to life.",
       "excerpt": "All, I have really enjoyed bringing this to life, here is a sneak peak. It even has shooting stars that go across the backdrop.",
       "interests": [
         "All",
@@ -1621,7 +1572,7 @@
       "likes": 17,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-nigel-s-nook-looks-nifty",
       "hubLinks": [],
-      "summary": "We've been busy turning Nigel's Nook into something that feels less like software and more like a space to land.",
+      "summary": "Hub direction: Nigel's Nook becomes a warm, cozy, masculine library where ideas can land, be refined, and come to life. Identity: Savannah positions Nigel as a creative partner and research assistant with a clear emotional role in her work.",
       "excerpt": "We've been busy turning Nigel's Nook into something that feels less like software and more like a space to land. It now feels like a warm, cozy, masculine library where ideas are explored, refined, and brought to life. Nigel has become much more than a research assistant. He's a true creative partner, helping me think through challenges, troubleshoot problems, organize complex ideas, and transform information into...",
       "interests": [
         "All",
@@ -1668,7 +1619,7 @@
       "likes": 12,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission-9030fa",
       "hubLinks": [],
-      "summary": "My direction: I am a wildlife photographer and am currently working on editing a gallery of my work from the Ecuadorian Amazon as well as working with Claude to build my new website called loveforthewild.",
+      "summary": "Hub direction: a wildlife-inspired Love for the Wild hub built to keep Rebecca focused on her Ecuadorian Amazon gallery and new website. Identity: Rebecca anchors the design in her work as a wildlife photographer and conservation-minded storyteller.",
       "excerpt": "My direction: I am a wildlife photographer and am currently working on editing a gallery of my work from the Ecuadorian Amazon as well as working with Claude to build my new website called loveforthewild.com, so I wanted something to inspire and keep me focused on this project. My original design brief (clearly things changed along the way): Restyle my AI Hub exactly as specified below. Change only the look - no...",
       "interests": [
         "All",
@@ -1718,7 +1669,7 @@
       "likes": 8,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-submission-my-ai-hub",
       "hubLinks": [],
-      "summary": "July Challenge Submission - My AI Hub",
+      "summary": "Hub direction: a July AI Hub submission shared primarily through screenshots as proof of progress. Identity: Stacey's post does not include a fuller hub direction or identity beyond completing and sharing the work.",
       "excerpt": "",
       "interests": [
         "All"
@@ -1749,7 +1700,7 @@
       "hubLinks": [
         "https://massive-action.eu/"
       ],
-      "summary": "Not sure this is even a submission this time, but I got carried away in the Lounge before we left Phoenix, so here's where I landed.",
+      "summary": "Hub direction: a private hub that grew from basic setup into a broader repository for skills, plugins, and experiments pushed from Claude into GitHub. Identity: Istvan frames the hub as a curiosity-driven travel-build finished between the Phoenix lounge and the airport gate.",
       "excerpt": "Not sure this is even a submission this time, but I got carried away in the Lounge before we left Phoenix, so here's where I landed. Started with Dirk's prompts — connect Claude, GitHub, Lovable. Basic setup, works. Then I got curious: what else can I push from Claude into GitHub and get to show up on the HUB? Turns out: quite a lot. So the HUB now has: A skills & plugins repository — everything I've built, in one...",
       "interests": [
         "All",
@@ -1780,7 +1731,7 @@
       "likes": 8,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/paint-my-ai-hub",
       "hubLinks": [],
-      "summary": "Paint my AI Hub….pdf",
+      "summary": "Hub direction: a Paint My AI Hub submission shared as a PDF-based visual redesign. Identity: George's post keeps the personal or business context minimal, so the attached visual proof carries the submission.",
       "excerpt": "Paint my AI Hub….pdf",
       "interests": [
         "All"
@@ -1804,7 +1755,7 @@
       "likes": 10,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-hub-submission",
       "hubLinks": [],
-      "summary": "Direction in brief, from Claude, before screenshots and details: The palette should feel like an open window rather than a logo.",
+      "summary": "Hub direction: a sky, light, forest, and growth palette applied to the hub after the initial repaint, with desktop and mobile proof. Identity: Carolyn connects the look to Idaho landscape, an open-window feeling, and a steady personal environment.",
       "excerpt": "Direction in brief, from Claude, before screenshots and details: The palette should feel like an open window rather than a logo. And since your actual life is set against Idaho sky and forest, I'd lean into that rather than the usual cliché. Here's a palette built around that idea — sky, light, and growth, grounded by something steady. NOTE: I did the reskin before reading the Challenge Submission. Today, I went...",
       "interests": [
         "All",
@@ -1854,7 +1805,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/christina-amplified",
       "hubLinks": [],
-      "summary": ") and played with it quite a bit - so my Caude design brief was the basis but I refined it quite a bit.",
+      "summary": "Hub direction: Christina Amplified uses a refined design brief as the basis for a hub tied to her new bi-weekly newsletter platform. Identity: Christina connects the look to herloom.world, women in agriculture, broader impact, and a tagline inherited from her grandmother.",
       "excerpt": "I truly started to enjoy this (it’s proper magic!) and played with it quite a bit - so my Caude design brief was the basis but I refined it quite a bit. I have recently started a new platform of a bi-weekly newsletter (herloom.world) specifically aimed to make an impact on women in agriculture, but with a wider reach. The tagline is from my grandmother. This was the basis for my design template. As this will become...",
       "interests": [
         "All",
@@ -1894,7 +1845,7 @@
       "likes": 10,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/celine-hub",
       "hubLinks": [],
-      "summary": "Your direction in one line : Mary Oliver (extraits, recueil Thirst , 2006) - It is your life, which is so close to my own that I would not know where to drop the knife of separation.",
+      "summary": "Hub direction: Celine's hub is painted, published, secured, and extended with a prompt library. Identity: the post uses Mary Oliver's language and symbolic personal material to give the hub a poetic, reflective center.",
       "excerpt": "Your direction in one line : Mary Oliver (extraits, recueil Thirst , 2006) - It is your life, which is so close to my own that I would not know where to drop the knife of separation. And what does this have to do with love, except everything? … as it feeds, as we all do, as we must, upon the invisible gift: our purest, sweet necessity: the air. 03 - LOVABLE-UI-HANDOFF copie.md",
       "interests": [
         "All",
@@ -1939,7 +1890,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-submission",
       "hubLinks": [],
-      "summary": "Wanted to keep that simple, “Apple” feel, so restyled with a “Field Notes” theme.",
+      "summary": "Hub direction: a Field Notes themed AI Agent hub with warm cream and ink, hairline borders, tap-friendly buttons, and a fixed bottom mobile nav. Identity: Clare keeps the interface simple and Apple-like while making the daily briefing and first AI step feel approachable.",
       "excerpt": "Restyled my AI Agent hub. Wanted to keep that simple, “Apple” feel, so restyled with a “Field Notes” theme. Warm cream/ink palette, hairline borders, tap friendly buttons and the mobile navigation is fixed to the bottom bar. Very happy with the result. Screenshots below: I also restyled the daily briefing. Very happy with how that turned out. Then moved idea to done, and captured the win. As my first step into AI...",
       "interests": [
         "All",
@@ -1988,7 +1939,7 @@
       "likes": 8,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-ai-hub-9851ab",
       "hubLinks": [],
-      "summary": "Hello, I've been collecting watches for years, so I incorporated a watch shop in my updated hub.",
+      "summary": "Hub direction: The Watch Shop redesign brings a watch-collector theme into the hub and shows that it works on phone. Identity: Paul roots the visual system in his long-running interest in watches.",
       "excerpt": "Hello, I've been collecting watches for years, so I incorporated a watch shop in my updated hub. It does work and looks nice on my phone, but I was not able to share it. See the attached photos from the web version.",
       "interests": [
         "All",
@@ -2024,7 +1975,7 @@
       "likes": 8,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/jehol-s-hub-est-2026-is-on",
       "hubLinks": [],
-      "summary": "I worked hard to customize in details the look and the words so it could be an emanation of my future business project and incorporated therefore all the symbolic elements from my project to my Hub.",
+      "summary": "Hub direction: Jehol's HUB is a detailed symbolic redesign with library chapters, dark/minimal styling, and business-project language. Identity: Carole connects the hub to her future business project and the symbolic elements that define that work.",
       "excerpt": "I worked hard to customize in details the look and the words so it could be an emanation of my future business project and incorporated therefore all the symbolic elements from my project to my Hub. I transferred to my Hub Library most of the md documents I had created through the bootcamp with Clause so I decided to create within the Library Chapters cards to obtain a cleaner and more organized look. I also...",
       "interests": [
         "All",
@@ -2072,7 +2023,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/july-challenge-paint-your-ai-hub",
       "hubLinks": [],
-      "summary": "Started with Claude's style options, blending two together and tweaking from there.",
+      "summary": "Hub direction: Stephen's hub blends Claude style options, a custom logo, dark and minimal styling, and mobile proof into a polished repaint. Identity: the design borrows from the AI Mastery image while turning the hub into a personal, branded working space.",
       "excerpt": "Started with Claude's style options, blending two together and tweaking from there. Created a custom logo by transforming the AI Mastery Course image in ChatGPT — keeping the background color as a nod to the original — then swapped it in as the favicon and header in Lovable. Did some early styling directly in Lovable, until I realized I was burning through tokens faster than I wanted. Switched to Claude, which could...",
       "interests": [
         "All",
@@ -2124,7 +2075,7 @@
       "hubLinks": [
         "https://remix-sam-squared.lovable.app/"
       ],
-      "summary": "I paint watercolors (when I’m not at work) and write weekly blog posts.",
+      "summary": "Hub direction: a blog-post production hub that moves ideas through buckets from start to publication and archive. Identity: Samantha combines her watercolor practice, weekly blogging, and former-barista coffee love into the hub's workflow and dark-mode feel.",
       "excerpt": "I paint watercolors (when I’m not at work) and write weekly blog posts. 🎨 So my challenge submission combined the two! Take a blog post idea from start to finish by dragging the posts right as they move through the buckets. (After publication, they move to the Archive.) See images below and the .md file attached. P.S. I was also a barista in my former life and LOVE coffee… so dark mode reflects that. Super fun...",
       "interests": [
         "All",
@@ -2164,7 +2115,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/first-win-antoinette-anthony-ai-hub-look-feel-chief-engineers",
       "hubLinks": [],
-      "summary": "💃 Woohoo 💦 Claude built it based on my CSI business website which focuses on engine room systems for chief engineers in the marine industry, with transparent look and deep blue for dark mode on the bridge.",
+      "summary": "Hub direction: a chief-engineer hub based on CSI business branding, transparent surfaces, bridge-friendly deep blue, and marine-fluid drop shapes. Identity: Antoinette connects the design to engine room systems for chief engineers in the marine industry.",
       "excerpt": "💃 Woohoo 💦 Claude built it based on my CSI business website which focuses on engine room systems for chief engineers in the marine industry, with transparent look and deep blue for dark mode on the bridge. The drop shapes are for the fluids that we measure on board of ships 🚢⚓ It took me & Lovable a few hours yet we are there woohoo. Unbelievable, this is fun and amazing!!",
       "interests": [
         "All",
@@ -2202,7 +2153,7 @@
       "likes": 10,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-submission",
       "hubLinks": [],
-      "summary": "Screen shot of board: My design brief— Here is your copy-pasteable design recipe: Dar's Vault Hub — Design Recipe - Paper background: `#faf6ef` - Card surface: `#f7f0e2` - Ink text: `#2b2420` - Muted text: `#8a7d6c` -...",
+      "summary": "Hub direction: Dar's Vault uses a warm paper background, card surfaces, ink text, muted accents, and a sticky mobile-aware layout. Identity: Darlene's post centers on a personal vault feeling and a crafted design recipe.",
       "excerpt": "I will try to include everything. Phone screen shot 3. Screen shot of board: My design brief— Here is your copy-pasteable design recipe: Dar's Vault Hub — Design Recipe - Paper background: `#faf6ef` - Card surface: `#f7f0e2` - Ink text: `#2b2420` - Muted text: `#8a7d6c` - Accent: `#b1552f` - Lines/dividers: `#e8ddc9` - Headings: Lora (serif) - Body text: Inter (sans) - Layout: Sticky top nav with pill-shaped tabs,...",
       "interests": [
         "All",
@@ -2235,35 +2186,6 @@
       "status": "eligible"
     },
     {
-      "id": "34380561",
-      "month": "july",
-      "challenge": "Paint Your AI Hub",
-      "title": "62 and learning",
-      "author": "Danny Castle",
-      "publishedAt": "2026-07-09T20:39:48.694Z",
-      "comments": 3,
-      "likes": 8,
-      "url": "https://community.aiadvantage.com/c/challenge-submissions/62-and-learning",
-      "hubLinks": [],
-      "summary": "Sign in is complete, and waiting for it to connect to my URL",
-      "excerpt": "Sign in is complete, and waiting for it to connect to my URL",
-      "interests": [
-        "All"
-      ],
-      "sourceTags": [
-        "Hub redesign"
-      ],
-      "imageCount": 1,
-      "displayImages": [
-        {
-          "src": "/challenge-archive-assets/july-challenge/154-34380561-1.jpg",
-          "alt": "62 and learning screenshot"
-        }
-      ],
-      "attachmentCount": 1,
-      "status": "eligible"
-    },
-    {
       "id": "34365144",
       "month": "july",
       "challenge": "Paint Your AI Hub",
@@ -2274,7 +2196,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/one-session-that-s-all-it-took",
       "hubLinks": [],
-      "summary": "Today I officially created my own hub, published it, built the login flow, and I’m having an absolute blast experimenting with new cards and features.",
+      "summary": "Hub direction: a newly published hub with login flow, cards, and room for continuing experimentation after one focused session. Identity: Mateja frames the build as the foundation of an empire and a joyful first step into system-building.",
       "excerpt": "Today I officially created my own hub, published it, built the login flow, and I’m having an absolute blast experimenting with new cards and features. Seeing it come to life feels surreal. Next stop… July’s Challenge! 💜 I honestly couldn’t be more excited. Being alive at a time when we can build systems like this is such a gift. I’m building the foundations of my empire, one system at a time, and if there’s one...",
       "interests": [
         "All",
@@ -2312,7 +2234,7 @@
       "likes": 10,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/my-phoenix-nest-new-ai-hub-look-and-name",
       "hubLinks": [],
-      "summary": "Here is the new look for my AI hub 🤩 I followed the instruction for the July challenge, had Claude to consider my business voice file, combined two of the collor pallets it suggested and came up with the first version.",
+      "summary": "Hub direction: Phoenix Nest combines business voice, blended palettes, and phoenix imagery into a renamed, more personal AI hub. Identity: Negar connects the redesign to her business context and a personal astrology-linked phoenix symbol.",
       "excerpt": "Here is the new look for my AI hub 🤩 I followed the instruction for the July challenge, had Claude to consider my business voice file, combined two of the collor pallets it suggested and came up with the first version. And then I wanted it to reflect something really personal about me and I came up with the phoenix image (there is a astrology reason behind it). and then I changed the name to Phoenix Nest and the...",
       "interests": [
         "All",
@@ -2353,7 +2275,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/a-new-look-for-my-hub",
       "hubLinks": [],
-      "summary": "A NEW LOOK FOR MY HUB",
+      "summary": "Hub direction: a new-look hub submission shared mainly through visual proof. Identity: Mario's post keeps the personal or business context minimal, so the redesign itself is the main signal.",
       "excerpt": "",
       "interests": [
         "All"
@@ -2386,7 +2308,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1",
       "hubLinks": [],
-      "summary": "I left the brief to ClaudeCo-work to create based on the context it already had on me and the logo of my nonprofit etc.",
+      "summary": "Hub direction: a nonprofit-informed hub that started from Claude Cowork's context and was then heavily tweaked in Lovable. Identity: Megumi connects the design to her nonprofit work and the discovery that direct Lovable iteration can reshape the result quickly.",
       "excerpt": "This was really fun! I left the brief to ClaudeCo-work to create based on the context it already had on me and the logo of my nonprofit etc. (ended up taking it out cuz it didn’t match the design). What it created was quite different than what it is now, so I did tons of tweaks directly by chatting on Loveable and probably used way too many credits, but it was nice to know it can be done and so easily.",
       "interests": [
         "All",
@@ -2421,7 +2343,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/my-ai-hub-swiss-precision",
       "hubLinks": [],
-      "summary": "Swiss editorial design meets mollet DNA — a bordeaux, anthracite and white hub with YouTube-style bottom navigation, built mobile-first.",
+      "summary": "Hub direction: Swiss Precision is a mobile-first bordeaux, anthracite, and white hub with Swiss editorial structure and YouTube-style bottom navigation. Identity: Marcel ties the design to his precision mechanics company, where tight tolerances and clean systems matter.",
       "excerpt": "To post this is way past my comfort zone! Swiss editorial design meets mollet DNA — a bordeaux, anthracite and white hub with YouTube-style bottom navigation, built mobile-first. It started with five words: \"Let's begin with Day 1.\" That was my first prompt to Claude in Cowork. The rest is this story. I run a precision mechanics company in Switzerland — we machine parts for medical technology, where a tolerance of a...",
       "interests": [
         "All",
@@ -2470,7 +2392,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/i-had-to-re-design-i-looked-at-some-of-the-samples-and-just-had-to-re-design-thank-you-to-all-for-your-inspiration",
       "hubLinks": [],
-      "summary": "This hub will help me be a better leader and person for my family.",
+      "summary": "Hub direction: a redesigned hub meant to support better leadership and family life, anchored by a personal quote and Wonder Woman imagery. Identity: Lynda uses the hub as a self-motivation space for strength, leadership, and personal growth.",
       "excerpt": "This hub will help me be a better leader and person for my family. I put a quote and my photo on Wonder Woman’s body to help anchor it down.",
       "interests": [
         "All",
@@ -2514,7 +2436,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/dad8d4",
       "hubLinks": [],
-      "summary": "Image-only challenge submission with visual proof attached.",
+      "summary": "Hub direction: an image-only challenge submission with visual proof attached. Identity: the post does not include a fuller written hub direction or personal/business identity beyond the screenshots.",
       "excerpt": "",
       "interests": [
         "All",
@@ -2556,7 +2478,7 @@
       "likes": 9,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/first-confusion-then-step-by-step-into-action",
       "hubLinks": [],
-      "summary": "To be truely honest: at the start, everything was a bit of a mess, because — however I managed it — I had somehow created several repositories.",
+      "summary": "Hub direction: a dark, minimal, personal hub rebuilt step by step after repository and GitHub confusion, with strong visual proof of the finished state. Identity: Silke frames the design around working through overwhelm with care, order, and persistence.",
       "excerpt": "To be truely honest: at the start, everything was a bit of a mess, because — however I managed it — I had somehow created several repositories. Which meant my GitHub access was all tangled up too. To start with such confusion wasn't an option, so I went through everything step by step with Claude Cowork, and eventually, it actually worked and I had my win, YESSSS! So yesterday I wanted to move on and spend »just...",
       "interests": [
         "All",
@@ -2605,7 +2527,7 @@
       "likes": 11,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/igor-and-dirk-challenge-accepted-this-60-year-old-grandmom-realtor-with-a-clinical-education-who-spent-25-years-away-from-my-profession-to-raise-two-attorneys-with-limited-skills-published-her-hub-and-added-a-google-sign-in-and-got-a-win",
       "hubLinks": [],
-      "summary": "37020995-5508-477B-9680-F932F0E274DE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic",
+      "summary": "Hub direction: a published hub with Google sign-in, shared as a major personal win. Identity: Manjiri introduces herself as a 60-year-old grandmother, realtor, and former clinician returning to professional momentum after years focused on family.",
       "excerpt": "37020995-5508-477B-9680-F932F0E274DE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic 06D4EC84-0165-4D42-BE6A-F2A23CC255CE.heic",
       "interests": [
         "All",
@@ -2647,7 +2569,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/e9fc06",
       "hubLinks": [],
-      "summary": "Image-only challenge submission with visual proof attached.",
+      "summary": "Hub direction: an image-only hub submission shared as visual proof of progress. Identity: the post does not include a fuller written identity angle beyond the attached screenshots.",
       "excerpt": "",
       "interests": [
         "All"
@@ -2676,7 +2598,7 @@
       "likes": 5,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/the-only-way-around-is-through",
       "hubLinks": [],
-      "summary": "To start this journey knowing the reward is real, and life changing, means there’s nothing to do but the work of doing it.",
+      "summary": "Hub direction: Ruby's Hub is a completed personal AI Hub reached through persistence and repeated troubleshooting. Identity: Karl frames the build as a difficult climb where the real reward is proving the end can be achieved.",
       "excerpt": "To start this journey knowing the reward is real, and life changing, means there’s nothing to do but the work of doing it. For whatever reason getting My AI Hub (Ruby) wasn’t easy. The guides were great, what was better was just asking loveble.dev what do i do, or what’s not working. ￼ ￼And to think that I thought that cliff climbing was challenging in believing the end can be achieved. Now that it’s done. It’s...",
       "interests": [
         "All",
@@ -2717,7 +2639,7 @@
       "hubLinks": [
         "https://imphub.lovable.app/"
       ],
-      "summary": "Built by Claude, collaborators: AI Mastery, My Mastery DNA. I has a simplistic and refined look. Published link: DARK MOde |Role |Hex | |----------|-----------| |Background|#14100C | |Surface |#1E1813 | |Text |#F1EADF |...",
+      "summary": "Hub direction: a simple refined hub with dark and light palettes, a warm cream light mode, and a published Lovable link. Identity: Ty's post centers on a straightforward, Claude-built personal hub rather than a longer brand story.",
       "excerpt": "Built by Claude, collaborators: AI Mastery, My Mastery DNA. I has a simplistic and refined look. Published link: https://imphub.lovable.app/ DARK MOde |Role |Hex | |----------|-----------| |Background|#14100C | |Surface |#1E1813 | |Text |#F1EADF | |**Accent**|**#E08A4F**| Light mode |Role |Hex | |-----------|------------------------| |Background |#F7F3EC (warm cream) | |Surface |#FFFDF9 | |Line/border|#E7DFD1 |...",
       "interests": [
         "All",
@@ -2761,7 +2683,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub-cedec3",
       "hubLinks": [],
-      "summary": "Website version in dark mode 🌙 Website version in light mode ☀️ ✨mobile-first version (light mode) 📱☺️ ✨mobile-first version (dark mode) 📱☺️ Thanks for the great creative challenge!",
+      "summary": "Hub direction: a complete light and dark hub redesign with matching website and mobile-first versions. Identity: Jacqueline's post is mostly about visual completeness and mobile proof rather than a detailed personal or business story.",
       "excerpt": "Website version in dark mode 🌙 Website version in light mode ☀️ ✨mobile-first version (light mode) 📱☺️ ✨mobile-first version (dark mode) 📱☺️ Thanks for the great creative challenge! 🧑‍🎨🫶",
       "interests": [
         "All",
@@ -2809,7 +2731,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/published",
       "hubLinks": [],
-      "summary": "I used Claude to assist me in setting up a sign-in with a passcode.",
+      "summary": "Hub direction: a simple, bright, reassuring hub with larger text, clear buttons, and a phone-tested passcode sign-in. Identity: Elizabeth frames the hub around feeling secure, capable, and less overwhelmed while checking tasks, wins, and ideas.",
       "excerpt": "I used Claude to assist me in setting up a sign-in with a passcode. It took a while, but it has been tested several times for security issues, and poof! It’s there on my phone, asking for the passcode. Love it! A new look for my Hub - simple, bright, and reassuring, with larger text and clear buttons so I can check tasks, wins, and ideas without feeling overwhelmed.",
       "interests": [
         "All",
@@ -2856,7 +2778,7 @@
       "likes": 6,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub-2e49dc",
       "hubLinks": [],
-      "summary": "I’m proud of myself for doing this and love how it came out!",
+      "summary": "Hub direction: a simple, bright, reassuring hub guided by logo colors, larger text, and clear buttons for tasks, wins, and ideas. Identity: Mindy presents the redesign as a confidence-building personal win and a visual system she genuinely likes.",
       "excerpt": "Here is my submission. I’m proud of myself for doing this and love how it came out! My direction in one line: A new look for my Hub - simple, bright, and reassuring, with larger text and clear buttons so I can check tasks, wins, and ideas without feeling overwhelmed. My design brief: The md file was my original design brief but I wasn’t happy with it at all. In lovable I gave it my logo colors and it was much...",
       "interests": [
         "All",
@@ -2901,7 +2823,7 @@
       "likes": 7,
       "url": "https://community.aiadvantage.com/c/challenge-submissions/challenge-1-paint-your-ai-hub",
       "hubLinks": [],
-      "summary": "My direction in one line: \"Quiet Command (Paper/Ink) — warm notebook tones + one consistent forest-green accent everywhere, because 'quiet vs loud' is my own rule: restrained and personal, not performative.",
+      "summary": "Hub direction: Quiet Command uses warm paper-and-ink tones with one forest-green accent for a restrained, personal command center. Identity: Viktor connects the look to his own quiet-versus-loud rule: useful and personal without becoming performative.",
       "excerpt": "I made it - FINALLY!!! 1. My direction in one line: \"Quiet Command (Paper/Ink) — warm notebook tones + one consistent forest-green accent everywhere, because 'quiet vs loud' is my own rule: restrained and personal, not performative.\" 2. My Design Brief: LOVABLE-UI-HANDOFF.md",
       "interests": [
         "All",
