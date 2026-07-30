@@ -308,6 +308,9 @@ function sortMonthsForAdmin(items = []) {
 }
 
 function getDefaultMonthSlug(items = []) {
+  const liveMonth = liveMonthFromAdminMonths(items);
+  if (liveMonth?.slug) return liveMonth.slug;
+
   const now = new Date();
   const nextMonthIndex = (now.getMonth() + 1) % 12;
   const nextPreset = UPCOMING_MONTH_PRESETS.find((preset) => {
@@ -317,6 +320,16 @@ function getDefaultMonthSlug(items = []) {
 
   if (nextPreset && items.some((item) => item.slug === nextPreset.slug)) return nextPreset.slug;
   return items.find((item) => !item.is_published)?.slug || items[0]?.slug || "";
+}
+
+function isPersistedMonth(item = {}) {
+  return Boolean(item.is_published || item.published_at || item.updated_at);
+}
+
+function liveMonthFromAdminMonths(items = []) {
+  return [...items]
+    .filter((item) => item.is_published)
+    .sort((a, b) => new Date(b.published_at || 0) - new Date(a.published_at || 0))[0] || null;
 }
 
 function monthTemplateGuide(label) {
@@ -674,7 +687,8 @@ export default function AdminBackend({ navigate }) {
   const saveRequestIdRef = useRef(0);
 
   const canLoad = Boolean(token);
-  const selectedSummary = months.find((item) => item.slug === selectedSlug);
+  const liveMonthSummary = liveMonthFromAdminMonths(months);
+  const liveMonthSlug = liveMonthSummary?.slug || "";
   const userLabel = user?.fullName || user?.primaryEmailAddress?.emailAddress || "admin";
 
   useEffect(() => {
@@ -1059,34 +1073,42 @@ export default function AdminBackend({ navigate }) {
     }
   }
 
-  async function publishMonth(isPublished) {
-    if (!month?.slug) return;
+  async function setLiveMonth(slug = month?.slug) {
+    const liveSlug = slugify(slug || "");
+    if (!liveSlug) return;
+    const targetSummary = months.find((item) => item.slug === liveSlug);
+    const targetIsSelectedMonth = month?.slug === liveSlug;
     const currentSnapshot = JSON.stringify(monthRef.current);
-    if (currentSnapshot !== lastSavedSnapshotRef.current) {
+    if (targetIsSelectedMonth && currentSnapshot !== lastSavedSnapshotRef.current) {
       const savedMonth = await persistMonth(monthRef.current, { source: "manual" });
       if (!savedMonth) return;
     }
-    if (isPublished) {
-      const confirmed = window.confirm(`Publish ${month.label || month.slug} now? Members will be able to access this month's content.`);
-      if (!confirmed) return;
+    if (!targetIsSelectedMonth && targetSummary && !isPersistedMonth(targetSummary)) {
+      setError("Save this month before making it live.");
+      return;
     }
 
-    setStatus(isPublished ? "Publishing..." : "Unpublishing...");
+    const label = targetSummary?.label || (targetIsSelectedMonth ? month?.label : liveSlug) || liveSlug;
+    const confirmed = window.confirm(`Make ${label} the live month? The previous live month will move to Past Workshops.`);
+    if (!confirmed) return;
+
+    setStatus("Updating live month...");
     setError("");
     try {
       const data = await adminFetch(token, "/api/mastery-admin", {
         method: "POST",
         body: JSON.stringify({
-          action: "publish",
-          slug: month.slug,
-          is_published: isPublished,
+          action: "set-live-month",
+          slug: liveSlug,
           updated_by: userLabel,
         }),
       });
-      lastSavedSnapshotRef.current = JSON.stringify(data.month);
-      setMonth(data.month);
+      if (month?.slug === data.month?.slug) {
+        lastSavedSnapshotRef.current = JSON.stringify(data.month);
+        setMonth(data.month);
+      }
       await loadMonths();
-      setStatus(isPublished ? "Month published. Only cards marked Published inside the month are visible." : "Month unpublished.");
+      setStatus(`${data.month?.label || label} is now the live month.`);
     } catch (err) {
       setError(err.message);
       setStatus("");
@@ -1222,7 +1244,21 @@ export default function AdminBackend({ navigate }) {
                 >
                   {months.map((item) => (
                     <option value={item.slug} key={item.slug}>
-                      {item.label} ({item.is_published ? "Live" : item.status})
+                      {item.label} ({item.slug === liveMonthSlug ? "Live" : item.is_published ? "Past" : item.status})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Live month
+                <select
+                  value={liveMonthSlug}
+                  onChange={(event) => setLiveMonth(event.target.value)}
+                >
+                  <option value="" disabled>Select live month</option>
+                  {months.map((item) => (
+                    <option value={item.slug} key={`live-${item.slug}`} disabled={!isPersistedMonth(item)}>
+                      {item.label}{isPersistedMonth(item) ? "" : " (save first)"}
                     </option>
                   ))}
                 </select>
@@ -1258,7 +1294,8 @@ export default function AdminBackend({ navigate }) {
                     token={token}
                     updateMonth={updateMonth}
                     updateHero={updateHero}
-                    publishMonth={publishMonth}
+                    setLiveMonth={setLiveMonth}
+                    liveMonthSlug={liveMonthSlug}
                   />
                 ) : (
                   <>
@@ -1387,26 +1424,26 @@ function SaveStatusButton({ saveState, lastSavedAt, onClick, disabled }) {
   );
 }
 
-function PublicationToggle({ month, onChange }) {
-  const isPublished = Boolean(month?.is_published);
+function LiveMonthPanel({ month, liveMonthSlug, setLiveMonth }) {
+  const isLive = Boolean(month?.slug && month.slug === liveMonthSlug);
+  const isVisiblePast = Boolean(month?.is_published && !isLive);
 
   return (
     <div className="publish-toggle" aria-label="Publication status">
       <button
         type="button"
-        className={!isPublished ? "active" : ""}
-        onClick={() => isPublished && onChange(false)}
-        disabled={!month?.slug || !isPublished}
+        className={isVisiblePast ? "active" : ""}
+        disabled
       >
-        Month Draft
+        {isVisiblePast ? "Past Month" : "Draft Month"}
       </button>
       <button
         type="button"
-        className={isPublished ? "active live" : ""}
-        onClick={() => !isPublished && onChange(true)}
-        disabled={!month?.slug || isPublished}
+        className={isLive ? "active live" : ""}
+        onClick={() => !isLive && setLiveMonth(month?.slug)}
+        disabled={!month?.slug || isLive}
       >
-        Month Published
+        {isLive ? "Live Month" : "Make Live"}
       </button>
     </div>
   );
@@ -1537,7 +1574,8 @@ function BasicsEditor({
   moveResource,
   activeResourceIndex,
   onEditResource,
-  publishMonth,
+  setLiveMonth,
+  liveMonthSlug,
 }) {
   const [linkCopied, setLinkCopied] = useState(false);
   const [heroUploadState, setHeroUploadState] = useState("");
@@ -1594,7 +1632,7 @@ function BasicsEditor({
       <div className="admin-card">
         <div className="admin-section-actions">
           <h2>Month setup</h2>
-          <PublicationToggle month={month} onChange={publishMonth} />
+          <LiveMonthPanel month={month} liveMonthSlug={liveMonthSlug} setLiveMonth={setLiveMonth} />
         </div>
         <p className="admin-system-value"><span>Editing month</span><strong>{month.label || month.month_number || "Month"}</strong></p>
         <label>Topic<input value={month.topic || ""} onChange={(event) => updateMonth({ topic: event.target.value })} /></label>

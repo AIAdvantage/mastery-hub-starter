@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const PUBLIC_MONTH_COLUMNS = "slug, label, month_number, topic, focus, outcome, hero, resources, guide_markdown, challenge_markdown, challenge_prompt, prompts, extras, published_at, updated_at";
+const PUBLIC_MONTH_COLUMNS = "slug, label, month_number, topic, focus, outcome, hero, resources, guide_markdown, challenge_markdown, challenge_prompt, prompts, extras, status, published_at, updated_at";
 const CONTENT_KEYS = {
   guide: ["guide_markdown"],
   prompts: ["prompts"],
@@ -58,6 +58,10 @@ function sanitizePublishedMonth(month) {
   return sanitized;
 }
 
+function liveMonthFrom(months = []) {
+  return months[0] || null;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") return json(res, 405, { error: "Method not allowed" });
 
@@ -83,7 +87,9 @@ export default async function handler(req, res) {
       .eq("is_published", true)
       .order("published_at", { ascending: false });
     if (error) throw error;
-    return json(res, 200, { months: (data || []).map(sanitizePublishedMonth) });
+    const months = (data || []).map(sanitizePublishedMonth);
+    const liveMonth = liveMonthFrom(months);
+    return json(res, 200, { months, liveMonthSlug: liveMonth?.slug || null });
   } catch (error) {
     console.error(error);
     return json(res, 500, { error: "Content request failed" });

@@ -885,15 +885,34 @@ export default async function handler(req, res) {
       return json(res, 200, { month: data });
     }
 
-    if (action === "publish") {
+    if (action === "set-live-month") {
       const slug = String(body.slug || "").trim().toLowerCase();
-      const isPublished = Boolean(body.is_published);
+      if (!slug) return json(res, 400, { error: "Live month slug is required." });
+
+      const { data: monthExists, error: monthExistsError } = await supabase
+        .from("mastery_month_drafts")
+        .select("slug")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (monthExistsError) throw monthExistsError;
+      if (!monthExists) return json(res, 404, { error: "Save this month before making it live." });
+
+      const { error: demoteError } = await supabase
+        .from("mastery_month_drafts")
+        .update({
+          status: "published",
+          updated_by: body.updated_by || null,
+        })
+        .eq("is_published", true)
+        .neq("slug", slug);
+      if (demoteError) throw demoteError;
+
       const { data, error } = await supabase
         .from("mastery_month_drafts")
         .update({
-          is_published: isPublished,
-          status: isPublished ? "published" : "draft",
-          published_at: isPublished ? new Date().toISOString() : null,
+          is_published: true,
+          status: "published",
+          published_at: new Date().toISOString(),
           updated_by: body.updated_by || null,
         })
         .eq("slug", slug)

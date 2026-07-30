@@ -155,8 +155,6 @@ const MONTHS = [
 const VISIBLE_MONTHS = MONTHS.filter((month) => !month.hidden);
 const CURRENT_MONTH = MONTHS.find((month) => month.id === CURRENT_MONTH_ID) || VISIBLE_MONTHS[0] || MONTHS[0];
 const CURRENT_MONTH_INDEX = VISIBLE_MONTHS.findIndex((month) => month.id === CURRENT_MONTH_ID);
-const CURRENT_AND_UPCOMING_MONTHS = VISIBLE_MONTHS.filter((month, index) => index >= CURRENT_MONTH_INDEX);
-const PAST_MONTHS = VISIBLE_MONTHS.filter((month, index) => index < CURRENT_MONTH_INDEX && month.available);
 const JULY_CHALLENGE_CARD = {
   ...CURRENT_MONTH,
   focus: "Paint your AI Hub",
@@ -203,7 +201,7 @@ const SUBMISSION_STORAGE_KEY = "mastery-hub-submissions";
 
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
-  { path: CURRENT_WORKSHOP_PATH, label: "Current Workshop", activePrefixes: [CURRENT_WORKSHOP_PATH, `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`, `/challenges/${CURRENT_WORKSHOP_SLUG}`] },
+  { path: CURRENT_WORKSHOP_PATH, label: "Current Workshop", currentWorkshop: true },
   { path: "/past-workshops", label: "Past Workshops", activePrefixes: ["/past-workshops", "/monthly-resources/june", "/challenges/june"] },
   { path: "/faq", label: "FAQ", activePrefixes: ["/faq", "/tutorial"] },
 ];
@@ -494,6 +492,18 @@ const HOME_SEARCH_ITEMS = [
   },
 ];
 
+function liveWorkshopSearchItem(liveWorkshop) {
+  const month = liveWorkshop?.month || CURRENT_MONTH;
+  const slug = liveWorkshop?.slug || CURRENT_WORKSHOP_SLUG;
+  return {
+    title: "Current Workshop",
+    eyebrow: "Current",
+    description: `${month.label} guide, prompts, challenge, and follow-up resources.`,
+    path: `/monthly-resources/${slug}`,
+    keywords: `current workshop resources ${month.label || ""} ${month.topic || ""} ${month.focus || ""} guide prompts challenge materials`.toLowerCase(),
+  };
+}
+
 const JULY_PREREQUISITES = [
   {
     label: "GitHub account ready",
@@ -764,22 +774,23 @@ const BEFORE_START_ITEMS = [
 
 function getPath() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
-  if (path === "/monthly-hubs") return "/monthly-resources/july";
-  if (path === "/monthly-resources") return "/monthly-resources/july";
-  if (path === "/challenges") return "/monthly-resources/july";
+  if (path === "/monthly-hubs") return CURRENT_WORKSHOP_PATH;
+  if (path === "/monthly-resources") return CURRENT_WORKSHOP_PATH;
+  if (path === "/challenges") return CURRENT_WORKSHOP_PATH;
   if (path === "/challenges/july") return "/monthly-resources/july";
   if (path === "/monthly-resources/june") return "/past-workshops/june";
   if (path === "/challenges/june") return "/past-workshops/june";
   if (path === "/tutorial") return "/faq";
   if (path === "/challenge-archive") return "/past-workshops";
-  if (path === "/submit") return "/monthly-resources/july";
+  if (path === "/submit") return CURRENT_WORKSHOP_PATH;
   return path;
 }
 
-function resolveCurrentWorkshopPath(path) {
-  if (path === CURRENT_WORKSHOP_PATH) return `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`;
+function resolveCurrentWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
+  const targetSlug = liveSlug || CURRENT_WORKSHOP_SLUG;
+  if (path === CURRENT_WORKSHOP_PATH) return `/monthly-resources/${targetSlug}`;
   if (path.startsWith(`${CURRENT_WORKSHOP_PATH}/`)) {
-    return path.replace(CURRENT_WORKSHOP_PATH, `/monthly-resources/${CURRENT_WORKSHOP_SLUG}`);
+    return path.replace(CURRENT_WORKSHOP_PATH, `/monthly-resources/${targetSlug}`);
   }
   return path;
 }
@@ -824,6 +835,7 @@ export default function App() {
     () => MONTHS.find((month) => month.id === selectedMonth) || CURRENT_MONTH,
     [selectedMonth]
   );
+  const liveWorkshop = useMemo(() => liveWorkshopFrom(cmsMonths), [cmsMonths]);
   const resolvedPath = resolveCanonicalWorkshopPath(path);
   useEffect(() => {
     function handlePopState() {
@@ -936,7 +948,13 @@ export default function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.path}
-              className={item.path === "/" ? (path === "/" ? "active" : "") : ((item.activePrefixes || [item.path]).some((prefix) => path.startsWith(prefix)) ? "active" : "")}
+              className={item.path === "/"
+                ? (path === "/" ? "active" : "")
+                : item.currentWorkshop
+                  ? (isCurrentWorkshopPath(path, liveWorkshop.slug) ? "active" : "")
+                  : item.path === "/past-workshops"
+                    ? (isPastWorkshopPath(path, liveWorkshop.slug) ? "active" : "")
+                  : ((item.activePrefixes || [item.path]).some((prefix) => path.startsWith(prefix)) ? "active" : "")}
               onClick={() => navigate(item.path)}
             >
               {item.label}
@@ -953,13 +971,13 @@ export default function App() {
         {!isAuthPath && (
           <AccessGate navigate={navigate}>
             {isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
-            {path === "/" && <HomePage navigate={navigate} />}
+            {path === "/" && <HomePage navigate={navigate} cmsMonths={cmsMonths} />}
             {path === "/admin" && <AdminBackend navigate={navigate} />}
             {path === "/fundamentalsjuly" && <FundamentalsJulyPage />}
             {(resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
               <MonthlyResourcesPage
                 currentMonth={currentMonth}
-                path={resolveCurrentWorkshopPath(resolvedPath)}
+                path={resolveCurrentWorkshopPath(resolvedPath, liveWorkshop.slug)}
                 navigate={navigate}
                 cmsMonths={cmsMonths}
               />
@@ -976,7 +994,7 @@ export default function App() {
             )}
             {resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
             {path === "/faq" && <TutorialPage navigate={navigate} />}
-            {!isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} />}
+            {!isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} cmsMonths={cmsMonths} />}
           </AccessGate>
         )}
       </main>
@@ -1307,15 +1325,21 @@ const clerkAppearance = {
   },
 };
 
-function HomePage({ navigate }) {
+function HomePage({ navigate, cmsMonths = [] }) {
+  const liveWorkshop = useMemo(() => liveWorkshopFrom(cmsMonths), [cmsMonths]);
+  const liveMonth = liveWorkshop.month;
   const [mapGlow, setMapGlow] = useState({ x: 62, y: 34, active: false });
   const [searchQuery, setSearchQuery] = useState("");
   const searchResults = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return [];
     const terms = query.split(/\s+/).filter(Boolean);
+    const items = [
+      liveWorkshopSearchItem(liveWorkshop),
+      ...HOME_SEARCH_ITEMS,
+    ];
 
-    return HOME_SEARCH_ITEMS
+    return items
       .map((item) => {
         const haystack = `${item.title} ${item.eyebrow} ${item.description} ${item.keywords}`.toLowerCase();
         const score = terms.reduce((total, term) => total + (haystack.includes(term) ? 1 : 0), 0);
@@ -1324,7 +1348,7 @@ function HomePage({ navigate }) {
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
       .slice(0, 6);
-  }, [searchQuery]);
+  }, [searchQuery, liveWorkshop]);
 
   function handleMapMove(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -1408,13 +1432,13 @@ function HomePage({ navigate }) {
             <button
               type="button"
               className="hero-route-card"
-              style={{ "--month-image": `url("${MONTHS.find((month) => month.id === CURRENT_MONTH_ID)?.image?.src}")` }}
+              style={{ "--month-image": `url("${liveMonth.image?.src || MONTHS.find((month) => month.id === CURRENT_MONTH_ID)?.image?.src}")` }}
               onClick={() => navigate(CURRENT_WORKSHOP_PATH)}
             >
               <span className="hero-route-copy">
                 <span>Current Workshop</span>
-                <strong>Build Your AI Hub</strong>
-                <small>Open the July guide, prompts, challenge, and follow-up resources.</small>
+                <strong>{liveMonth.focus || liveMonth.image?.title || "Open the current workshop"}</strong>
+                <small>Open the {liveMonth.label} guide, prompts, challenge, and follow-up resources.</small>
                 <span className="hero-route-action">Open workshop</span>
               </span>
             </button>
@@ -1424,7 +1448,7 @@ function HomePage({ navigate }) {
       <section className="home-resource-strip" aria-label="Mastery resource path">
         <button type="button" onClick={() => navigate(CURRENT_WORKSHOP_PATH)}>
           <span>Start here</span>
-          <strong>Open the current guide, prompts, challenge, and follow-up resources.</strong>
+          <strong>Open the {liveMonth.label} guide, prompts, challenge, and follow-up resources.</strong>
         </button>
         <button type="button" onClick={() => navigate("/past-workshops")}>
           <span>Catch up</span>
@@ -1582,6 +1606,53 @@ function cmsMonthToMonth(month) {
   };
 }
 
+function monthSlug(month = {}) {
+  return month.slug || String(month.label || "").toLowerCase();
+}
+
+function liveCmsMonth(cmsMonths = []) {
+  return cmsMonths[0] || null;
+}
+
+function liveWorkshopFrom(cmsMonths = []) {
+  const cmsMonth = liveCmsMonth(cmsMonths);
+  if (cmsMonth) {
+    return {
+      slug: cmsMonth.slug,
+      source: "cms",
+      raw: cmsMonth,
+      month: cmsMonthToMonth(cmsMonth),
+    };
+  }
+
+  return {
+    slug: CURRENT_WORKSHOP_SLUG,
+    source: "static",
+    raw: null,
+    month: CURRENT_MONTH,
+  };
+}
+
+function currentWorkshopUrl(cmsMonths = []) {
+  return `/monthly-resources/${liveWorkshopFrom(cmsMonths).slug}`;
+}
+
+function isCurrentWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
+  return path === CURRENT_WORKSHOP_PATH
+    || path.startsWith(`${CURRENT_WORKSHOP_PATH}/`)
+    || path === `/monthly-resources/${liveSlug}`
+    || path.startsWith(`/monthly-resources/${liveSlug}/`)
+    || path === `/challenges/${liveSlug}`
+    || path.startsWith(`/challenges/${liveSlug}/`);
+}
+
+function isPastWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
+  if (path.startsWith("/past-workshops")) return true;
+  if (!path.startsWith("/monthly-resources/") && !path.startsWith("/challenges/")) return false;
+  const slug = path.split("/")[2] || "";
+  return Boolean(slug && slug !== liveSlug);
+}
+
 function cmsMonthToContent(month) {
   return {
     guide: month.guide_markdown || "",
@@ -1630,7 +1701,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
   const staticMonth = MONTHS.find((month) => month.label.toLowerCase() === segment);
 
   if (path === "/monthly-resources") {
-    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
+    return <RedirectRoute to={currentWorkshopUrl(cmsMonths)} navigate={navigate} />;
   }
 
   if (path === "/monthly-resources/june") {
@@ -2949,20 +3020,32 @@ function MonthChoiceSections({
   currentTitle = "Current and upcoming months",
   pastTitle = "Past months",
 }) {
+  const liveWorkshop = liveWorkshopFrom(cmsMonths);
+  const liveStaticIndex = VISIBLE_MONTHS.findIndex((month) => month.label.toLowerCase() === liveWorkshop.slug);
+  const fallbackCurrentIndex = CURRENT_MONTH_INDEX >= 0 ? CURRENT_MONTH_INDEX : 0;
+  const currentIndex = liveStaticIndex >= 0 ? liveStaticIndex : fallbackCurrentIndex;
+  const currentAndUpcomingMonths = [
+    liveWorkshop.month,
+    ...VISIBLE_MONTHS.filter((month, index) => index > currentIndex && month.label.toLowerCase() !== liveWorkshop.slug),
+  ];
+  const pastMonths = VISIBLE_MONTHS.filter((month, index) => (
+    index < currentIndex && month.available && month.label.toLowerCase() !== liveWorkshop.slug
+  ));
+
   return (
     <div className="month-choice-sections">
       <MonthChoiceGroup
         title={currentTitle}
-        months={CURRENT_AND_UPCOMING_MONTHS}
-        activeId={activeId}
+        months={currentAndUpcomingMonths}
+        activeId={liveWorkshop.slug || activeId}
         basePath={basePath}
         navigate={navigate}
         cmsMonths={cmsMonths}
       />
-      {PAST_MONTHS.length > 0 && (
+      {pastMonths.length > 0 && (
         <MonthChoiceGroup
           title={pastTitle}
-          months={PAST_MONTHS}
+          months={pastMonths}
           activeId={activeId}
           basePath={basePath}
           navigate={navigate}
@@ -2986,9 +3069,9 @@ function MonthChoiceGrid({ months = VISIBLE_MONTHS, activeId, basePath, navigate
   return (
     <div className="month-choice-grid" aria-label="Mastery months">
       {months.map((month) => {
-        const isActive = month.id === activeId;
-        const monthSlug = month.label.toLowerCase();
-        const cmsMonth = cmsMonths.find((item) => item.slug === monthSlug);
+        const slug = monthSlug(month);
+        const isActive = month.id === activeId || slug === activeId;
+        const cmsMonth = cmsMonths.find((item) => item.slug === slug);
         const isOpen = isActive || month.available || Boolean(cmsMonth) || month.calendarUrl;
         const statusLabel = isActive ? "Current" : cmsMonth ? "Live" : month.available ? "Open" : "Calendar";
         function openMonth() {
@@ -3000,7 +3083,7 @@ function MonthChoiceGrid({ months = VISIBLE_MONTHS, activeId, basePath, navigate
             window.location.assign(month.calendarUrl);
             return;
           }
-          navigate(`${basePath}/${monthSlug}`);
+          navigate(`${basePath}/${slug}`);
         }
         return (
           <button
@@ -3817,12 +3900,13 @@ function pastSystemToMonthCard(item) {
 
 function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
   const selectedSlug = path.split("/")[2] || "";
+  const liveSlug = liveWorkshopFrom(cmsMonths).slug;
   const selectedSystem = selectedSlug
     ? PAST_SYSTEMS.find((item) => monthSlugFromLabel(item.month) === selectedSlug)
     : null;
   const cmsPastMonths = cmsMonths.filter((month) => {
     const slug = month.slug || month.label?.toLowerCase();
-    return slug && !["july", "august"].includes(slug) && !MONTHS.some((item) => item.label.toLowerCase() === slug);
+    return slug && slug !== liveSlug && !PAST_SYSTEMS.some((item) => monthSlugFromLabel(item.month) === slug);
   });
 
   if (selectedSlug && !selectedSystem) {
@@ -3840,7 +3924,7 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
       <div className="resource-category-stack">
         <div className="month-choice-grid past-month-card-grid" aria-label="Previous months">
           {PAST_SYSTEMS
-            .filter((item) => monthSlugFromLabel(item.month) !== "july")
+            .filter((item) => monthSlugFromLabel(item.month) !== liveSlug)
             .slice()
             .reverse()
             .map((item, index) => {
@@ -4074,7 +4158,7 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
   const cmsMonth = cmsMonths.find((month) => month.slug === segment);
 
   if (path === "/challenges") {
-    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
+    return <RedirectRoute to={currentWorkshopUrl(cmsMonths)} navigate={navigate} />;
   }
 
   if (segment === "june") {
