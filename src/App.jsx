@@ -3515,13 +3515,18 @@ function getGuideModel(content) {
   const steps = [];
   let phase = "Prep";
   const firstStepIndex = sections.findIndex((section) => section.title.startsWith("Step "));
+  const lastStepIndex = sections.findLastIndex((section) => section.title.startsWith("Step "));
   const introSections = sections.filter((section, index) => {
     if (firstStepIndex === -1 || index >= firstStepIndex) return false;
     if (section.title.startsWith("PART ")) return false;
     return !closingTitles.has(section.title);
   });
   const closingSections = sections
-    .filter((section) => closingTitles.has(section.title))
+    .filter((section, index) => {
+      if (closingTitles.has(section.title)) return true;
+      if (lastStepIndex === -1 || index <= lastStepIndex) return false;
+      return !section.title.startsWith("PART ");
+    })
     .map((section) => ({
       ...section,
       title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
