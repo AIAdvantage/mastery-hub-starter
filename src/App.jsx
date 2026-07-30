@@ -1970,7 +1970,7 @@ function CmsResourcesMenu({ month, navigate }) {
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
                 <p className="section-kicker">{category}</p>
-                <h3>{category === "Workshop" ? month.focus || "Workshop resources" : category}</h3>
+                <h3>{category}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
                 {groupedResources[category].map((item, index) => (
