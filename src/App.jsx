@@ -1932,7 +1932,7 @@ function JulyResourcesMenu({ month, navigate }) {
           <div className="resource-category-head">
             <h3 id="july-challenge-category-title">Challenge</h3>
           </div>
-          <div className="resource-grid resource-grid-three">
+          <div className="resource-grid resource-grid-two">
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/july/guide")}>
               <div className="resource-card-top">
                 <span>Challenge</span>
@@ -1940,14 +1940,6 @@ function JulyResourcesMenu({ month, navigate }) {
               <h4>July Challenge</h4>
               <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
             </button>
-            <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
-              <div className="resource-card-top">
-                <span>Submit</span>
-                <small>Community</small>
-              </div>
-              <h4>Post to Challenge Submissions</h4>
-              <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
-            </a>
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/challenge-submissions")}>
               <div className="resource-card-top">
                 <span>Submissions</span>
@@ -3511,6 +3503,8 @@ function MarkdownBlock({ block }) {
   if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "copy-challenge-prompt") return <ChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (["paragraph", "quote"].includes(block.type) && isWinBlock(block.text)) return <MarkdownWin text={block.text} />;
+  if (["paragraph", "quote"].includes(block.type) && isLearningBlock(block.text)) return <MarkdownLearning text={block.text} />;
   if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
@@ -3518,6 +3512,53 @@ function MarkdownBlock({ block }) {
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function isLearningBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("💡") || /^lightbulb:/i.test(trimmed) || /^learning moment:/i.test(trimmed);
+}
+
+function learningText(text = "") {
+  return text
+    .trim()
+    .replace(/^💡\s*/, "")
+    .replace(/^(lightbulb|learning moment):\s*/i, "")
+    .trim();
+}
+
+function isWinBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("🏆") && /\b(big win|your win)\b/i.test(trimmed);
+}
+
+function winText(text = "") {
+  return text
+    .trim()
+    .replace(/^🏆\s*/, "")
+    .replace(/^(\*\*)?(big win|your win)(\*\*)?:\s*/i, "")
+    .trim();
+}
+
+function MarkdownLearning({ text }) {
+  return (
+    <aside className="md-learning-callout">
+      <strong>Learning Moment</strong>
+      <p>{renderInlineMarkdown(learningText(text))}</p>
+    </aside>
+  );
+}
+
+function MarkdownWin({ text }) {
+  return (
+    <aside className="md-win-callout">
+      <div className="md-win-medallion" aria-hidden="true">🏆</div>
+      <div className="md-win-copy">
+        <strong>Your Win</strong>
+        <p>{renderInlineMarkdown(winText(text))}</p>
+      </div>
+    </aside>
+  );
 }
 
 function isNoteBlock(text = "") {
@@ -4069,22 +4110,14 @@ function JulyChallengeLanding({ navigate }) {
           <h4>July Challenge</h4>
           <p>Read the full mission, rules, deliverables, deadline, and the Design Director prompt.</p>
         </button>
-        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
-          <div className="resource-card-top">
-            <span>Submit</span>
-            <small>Community</small>
-          </div>
-          <h4>Post to Challenge Submissions</h4>
-          <p>Post your before and after, your direction, and your design brief in the Challenge Submissions space.</p>
-        </a>
-        <a className="resource-card resource-card-link" href={CHALLENGE_SUBMISSIONS_URL} target="_blank" rel="noreferrer">
+        <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/challenge-submissions")}>
           <div className="resource-card-top">
             <span>Submissions</span>
-            <small>Community</small>
+            <small>Registry</small>
           </div>
-          <h4>Recent Submissions</h4>
-          <p>Browse recent member challenge posts directly in the AI Advantage Community.</p>
-        </a>
+          <h4>Challenge Submission Registry</h4>
+          <p>Browse the July challenge submissions with summaries, visual previews, and filters.</p>
+        </button>
       </div>
     </section>
   );

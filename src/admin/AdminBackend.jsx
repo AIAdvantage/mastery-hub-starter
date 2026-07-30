@@ -2378,6 +2378,8 @@ function MarkdownBlock({ block }) {
   if (block.type === "copy-prompt") return <AdminCopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "copy-challenge-prompt") return <AdminChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (["paragraph", "quote"].includes(block.type) && isWinBlock(block.text)) return <MarkdownWin text={block.text} />;
+  if (["paragraph", "quote"].includes(block.type) && isLearningBlock(block.text)) return <MarkdownLearning text={block.text} />;
   if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
@@ -2385,6 +2387,53 @@ function MarkdownBlock({ block }) {
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function isLearningBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("💡") || /^lightbulb:/i.test(trimmed) || /^learning moment:/i.test(trimmed);
+}
+
+function learningText(text = "") {
+  return text
+    .trim()
+    .replace(/^💡\s*/, "")
+    .replace(/^(lightbulb|learning moment):\s*/i, "")
+    .trim();
+}
+
+function isWinBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("🏆") && /\b(big win|your win)\b/i.test(trimmed);
+}
+
+function winText(text = "") {
+  return text
+    .trim()
+    .replace(/^🏆\s*/, "")
+    .replace(/^(\*\*)?(big win|your win)(\*\*)?:\s*/i, "")
+    .trim();
+}
+
+function MarkdownLearning({ text }) {
+  return (
+    <aside className="md-learning-callout">
+      <strong>Learning Moment</strong>
+      <p>{renderInlineMarkdown(learningText(text))}</p>
+    </aside>
+  );
+}
+
+function MarkdownWin({ text }) {
+  return (
+    <aside className="md-win-callout">
+      <div className="md-win-medallion" aria-hidden="true">🏆</div>
+      <div className="md-win-copy">
+        <strong>Your Win</strong>
+        <p>{renderInlineMarkdown(winText(text))}</p>
+      </div>
+    </aside>
+  );
 }
 
 function isNoteBlock(text = "") {
