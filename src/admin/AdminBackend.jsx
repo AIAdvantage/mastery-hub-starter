@@ -1294,8 +1294,6 @@ export default function AdminBackend({ navigate }) {
                     token={token}
                     updateMonth={updateMonth}
                     updateHero={updateHero}
-                    setLiveMonth={setLiveMonth}
-                    liveMonthSlug={liveMonthSlug}
                   />
                 ) : (
                   <>
@@ -1424,31 +1422,6 @@ function SaveStatusButton({ saveState, lastSavedAt, onClick, disabled }) {
   );
 }
 
-function LiveMonthPanel({ month, liveMonthSlug, setLiveMonth }) {
-  const isLive = Boolean(month?.slug && month.slug === liveMonthSlug);
-  const isVisiblePast = Boolean(month?.is_published && !isLive);
-
-  return (
-    <div className="publish-toggle" aria-label="Publication status">
-      <button
-        type="button"
-        className={isVisiblePast ? "active" : ""}
-        disabled
-      >
-        {isVisiblePast ? "Past Month" : "Draft Month"}
-      </button>
-      <button
-        type="button"
-        className={isLive ? "active live" : ""}
-        onClick={() => !isLive && setLiveMonth(month?.slug)}
-        disabled={!month?.slug || isLive}
-      >
-        {isLive ? "Live Month" : "Make Live"}
-      </button>
-    </div>
-  );
-}
-
 const VERSION_FIELDS = [
   ["focus", "Workshop title"],
   ["outcome", "Outcome"],
@@ -1574,8 +1547,6 @@ function BasicsEditor({
   moveResource,
   activeResourceIndex,
   onEditResource,
-  setLiveMonth,
-  liveMonthSlug,
 }) {
   const [linkCopied, setLinkCopied] = useState(false);
   const [heroUploadState, setHeroUploadState] = useState("");
@@ -1632,7 +1603,6 @@ function BasicsEditor({
       <div className="admin-card">
         <div className="admin-section-actions">
           <h2>Month setup</h2>
-          <LiveMonthPanel month={month} liveMonthSlug={liveMonthSlug} setLiveMonth={setLiveMonth} />
         </div>
         <p className="admin-system-value"><span>Editing month</span><strong>{month.label || month.month_number || "Month"}</strong></p>
         <label>Topic<input value={month.topic || ""} onChange={(event) => updateMonth({ topic: event.target.value })} /></label>

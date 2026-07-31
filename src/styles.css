@@ -5057,38 +5057,6 @@ h1 {
   color: #9f321f !important;
 }
 
-.publish-toggle {
-  display: inline-grid;
-  grid-template-columns: 1fr 1fr;
-  min-width: 230px;
-  padding: 4px;
-  border: 1px solid rgba(49, 40, 32, 0.16);
-  border-radius: 8px;
-  background: rgba(255, 253, 248, 0.84);
-}
-
-.publish-toggle button {
-  min-height: 38px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: #6b5d53;
-}
-
-.publish-toggle button.active {
-  background: #312820;
-  color: #fffdf8;
-}
-
-.publish-toggle button.active.live {
-  background: #5c7f4e;
-}
-
-.publish-toggle button:disabled {
-  cursor: default;
-  opacity: 1;
-}
-
 .admin-head button.danger,
 .admin-section-actions button.danger {
   border-color: rgba(176, 63, 45, 0.35);
