@@ -2512,7 +2512,7 @@ function GuidePage({
   const guideVideo = GUIDE_VIDEO_BY_MONTH[monthSlug];
 
   return (
-    <section className="section page-section month-section" aria-labelledby="guide-title">
+    <section className="section page-section month-section guide-page-section" aria-labelledby="guide-title">
       <Breadcrumbs
         items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: "Guide" })}
         navigate={navigate}
@@ -2594,6 +2594,7 @@ function GuidePage({
 function GuideTableOfContents({ guide, config = {} }) {
   const navigation = useMemo(() => guideTocModel(guide, config), [guide, config]);
   const [activeId, setActiveId] = useState(navigation.groups[0]?.items[0]?.id || "");
+  const desktopNavRef = useRef(null);
 
   useEffect(() => {
     const items = navigation.groups.flatMap((group) => group.items);
@@ -2611,6 +2612,22 @@ function GuideTableOfContents({ guide, config = {} }) {
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, [navigation]);
+
+  useEffect(() => {
+    const container = desktopNavRef.current;
+    const activeLink = container?.querySelector(`a[href="#${activeId}"]`);
+    if (!container || !activeLink) return;
+    const linkTop = activeLink.offsetTop;
+    const linkBottom = linkTop + activeLink.offsetHeight;
+    const viewTop = container.scrollTop;
+    const viewBottom = viewTop + container.clientHeight;
+    if (linkTop < viewTop || linkBottom > viewBottom) {
+      container.scrollTo({
+        top: Math.max(0, linkTop - (container.clientHeight / 2)),
+        behavior: "smooth",
+      });
+    }
+  }, [activeId]);
 
   if (!navigation.groups.length) return null;
 
@@ -2645,7 +2662,7 @@ function GuideTableOfContents({ guide, config = {} }) {
 
   return (
     <aside className="guide-toc" aria-label={navigation.title}>
-      <div className="guide-toc-desktop">{contents}</div>
+      <div className="guide-toc-desktop" ref={desktopNavRef}>{contents}</div>
       <details className="guide-toc-mobile">
         <summary>{navigation.title}<span>View sections</span></summary>
         {contents}

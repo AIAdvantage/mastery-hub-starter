@@ -2564,11 +2564,23 @@ h1 {
   background: rgba(238, 228, 215, 0.36);
 }
 
+.guide-page-section {
+  width: min(1760px, 100%);
+  max-width: 1760px;
+  padding-inline: clamp(20px, 2vw, 32px);
+}
+
+.guide-page-section > .breadcrumbs {
+  width: min(1096px, calc(100% - 292px));
+  margin-left: 292px;
+}
+
 .guide-page-layout {
   display: grid;
-  grid-template-columns: minmax(220px, 270px) minmax(0, 1fr);
+  grid-template-columns: 260px minmax(0, 1096px);
   align-items: start;
-  gap: clamp(24px, 3vw, 44px);
+  justify-content: start;
+  gap: 32px;
   margin-top: 28px;
 }
 
@@ -4882,7 +4894,18 @@ h1 {
   }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1439px) {
+  .guide-page-section {
+    width: min(1180px, 100%);
+    max-width: 1180px;
+    padding-inline: clamp(20px, 5vw, 42px);
+  }
+
+  .guide-page-section > .breadcrumbs {
+    width: auto;
+    margin-left: 0;
+  }
+
   .guide-page-layout {
     display: block;
     margin-top: 22px;
@@ -4940,6 +4963,9 @@ h1 {
     display: none;
   }
 
+}
+
+@media (max-width: 980px) {
   .hover-toc {
     display: none;
   }
