@@ -1982,12 +1982,50 @@ function resourceCategoryLabel(category) {
   return category;
 }
 
+const MONTH_QUICK_ACCESS = [
+  {
+    label: "Replays",
+    matches: (item, text) => /\breplay|\brecording/.test(text) || /mastery-replays/.test(item.url || ""),
+  },
+  {
+    label: "Guide",
+    matches: (item, text) => /\bguide|\bwalkthrough|\bresources?\b/.test(text) || /\/guide(?:\/|$|\?)/.test(item.url || ""),
+  },
+  {
+    label: "Prompts",
+    matches: (item, text) => /\bprompts?\b|\bcopy-paste\b/.test(text) || /\/prompts(?:\/|$|\?)/.test(item.url || ""),
+  },
+  {
+    label: "FAQ",
+    matches: (item, text) => /\bfaq\b|\bcatchup\b/.test(text) || /\/faq(?:[-/]|$|\?)/.test(item.url || ""),
+  },
+  {
+    label: "Challenge",
+    matches: (item, text) => /\bchallenge\b/.test(text) || /\/challenges(?:\/|$|\?)/.test(item.url || ""),
+  },
+];
+
+function monthQuickAccessLinks(resources = [], navigate) {
+  return MONTH_QUICK_ACCESS.flatMap(({ label, matches }) => {
+    const item = resources.find((resource) => {
+      if (!resource?.url) return false;
+      const text = `${resource.category || ""} ${resource.type || ""} ${resource.title || ""}`.toLowerCase();
+      return matches(resource, text);
+    });
+    if (!item) return [];
+    return /^https?:\/\//.test(item.url)
+      ? [{ label, href: item.url }]
+      : [{ label, onClick: () => navigate(item.url) }];
+  });
+}
+
 function CmsResourcesMenu({ month, navigate, isPast = false }) {
   const displayMonth = cmsMonthToMonth(month);
   const hasGuide = cmsHasContent(month, "guide");
   const hasPrompts = cmsHasContent(month, "prompts");
   const hasExtras = cmsHasContent(month, "extras");
   const resourceCards = Array.isArray(month.resources) ? month.resources.filter((item) => item?.title) : [];
+  const quickAccessLinks = monthQuickAccessLinks(resourceCards, navigate);
   const groupedResources = resourceCards.reduce((groups, item) => {
     const category = normalizedResourceCategory(item.category);
     groups[category] = [...(groups[category] || []), item];
@@ -2017,8 +2055,7 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
       />
       <MonthVisualCard
         month={displayMonth}
-        actionLabel={hasGuide ? "Open the Guide" : undefined}
-        onAction={() => navigate(`/monthly-resources/${month.slug}/guide`)}
+        actionLinks={quickAccessLinks}
         variant="banner"
       />
       {resourceCards.length > 0 ? (
