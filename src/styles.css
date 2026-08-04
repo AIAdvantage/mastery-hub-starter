@@ -2948,62 +2948,59 @@ h1 {
 .md-win-callout {
   position: relative;
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
+  justify-items: center;
   gap: 18px;
-  align-items: stretch;
-  margin: 24px 0;
+  margin: 34px 0;
   overflow: hidden;
-  border: 1px solid rgba(182, 138, 59, 0.58);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 253, 248, 0.96), rgba(246, 240, 231, 0.92)),
-    radial-gradient(circle at 0 0, rgba(197, 160, 92, 0.24), transparent 240px);
-  box-shadow: 0 18px 34px rgba(65, 48, 31, 0.13);
+  border: 1px solid rgba(182, 138, 59, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f5efe3, #eee5d7);
+  padding: clamp(42px, 7vw, 72px) clamp(24px, 7vw, 76px);
+  box-shadow: 0 16px 36px rgba(65, 48, 31, 0.08);
+  text-align: center;
 }
 
 .md-win-callout::after {
-  content: "";
-  position: absolute;
-  right: 20px;
-  bottom: 58px;
-  left: 112px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(182, 138, 59, 0.22), rgba(182, 138, 59, 0));
-  pointer-events: none;
+  display: none;
 }
 
 .md-win-medallion {
   display: grid;
-  min-height: 100%;
-  place-items: start center;
-  padding-top: 18px;
-  border-right: 1px solid rgba(182, 138, 59, 0.26);
-  background: rgba(182, 138, 59, 0.12);
-  font-size: 38px;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid rgba(182, 138, 59, 0.24);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.62);
+  font-size: 27px;
   line-height: 1;
+  box-shadow: 0 8px 20px rgba(112, 83, 40, 0.08);
 }
 
 .md-win-copy {
   display: grid;
-  gap: 12px;
+  justify-items: center;
+  gap: 16px;
   min-width: 0;
-  padding: 20px 22px 22px 0;
 }
 
 .md-win-copy strong {
-  color: var(--gold-2);
-  font-size: clamp(24px, 3vw, 34px);
-  font-weight: 950;
-  letter-spacing: 0;
-  line-height: 1;
+  color: #30271f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(23px, 3vw, 32px);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  line-height: 1.15;
   text-transform: uppercase;
 }
 
 .md-win-copy p {
+  max-width: 760px;
   margin: 0;
-  color: var(--txt);
-  font-size: 18px;
-  line-height: 1.62;
+  color: #463c32;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(19px, 2.2vw, 25px);
+  line-height: 1.7;
 }
 
 .prerequisites-video {
@@ -4734,7 +4731,9 @@ h1 {
   }
 
   .md-win-callout {
-    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 28px 0;
+    padding: 36px 20px 40px;
   }
 
   .md-win-callout::after {
@@ -4742,19 +4741,23 @@ h1 {
   }
 
   .md-win-medallion {
-    min-height: 72px;
-    place-items: center start;
-    padding: 0 18px;
-    border-right: 0;
-    border-bottom: 1px solid rgba(182, 138, 59, 0.26);
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
   }
 
   .md-win-copy {
-    padding: 0 18px 20px;
+    gap: 13px;
+  }
+
+  .md-win-copy strong {
+    font-size: 22px;
+    letter-spacing: 0.15em;
   }
 
   .md-win-copy p {
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.65;
   }
 
   .md-code {
