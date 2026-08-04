@@ -260,7 +260,8 @@ button {
 .quick-nav-rail {
   position: fixed;
   top: 88px;
-  left: max(64px, calc(env(safe-area-inset-left) + 64px));
+  right: max(24px, calc(env(safe-area-inset-right) + 24px));
+  left: auto;
   z-index: 28;
   display: grid;
   gap: 8px;
@@ -2591,6 +2592,7 @@ h1 {
 
 .guide-toc {
   min-width: 0;
+  align-self: stretch;
 }
 
 .guide-toc-desktop {
