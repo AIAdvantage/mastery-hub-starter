@@ -1705,7 +1705,7 @@ function normalizedResourcePath(url = "") {
 
 function standaloneResourcePage(month, path) {
   return (month?.resources || []).find((resource) => (
-    resource?.content_kind === "page"
+    (resource?.content_kind === "page" || resource?.content_ref === "page")
     && normalizedResourcePath(resource.url) === path
   ));
 }

@@ -541,6 +541,7 @@ function createMonthTemplate(preset = {}) {
     resources: [
       {
         category: "Workshop",
+        content_ref: "guide",
         type: "Walkthrough",
         title: `${label} Guide`,
         description: "Follow the full walkthrough for this month's build.",
@@ -550,6 +551,7 @@ function createMonthTemplate(preset = {}) {
       },
       {
         category: "Workshop",
+        content_ref: "prompts",
         type: "Copy-paste",
         title: "Live Prompts",
         description: "Use these alongside the live workshop when you just need the prompts to follow each step.",
@@ -559,6 +561,7 @@ function createMonthTemplate(preset = {}) {
       },
       {
         category: "Other",
+        content_ref: "link",
         type: "Recordings",
         title: `${label} Recordings`,
         description: `Add the ${label} workshop replay link here once the recordings are ready.`,
@@ -568,6 +571,7 @@ function createMonthTemplate(preset = {}) {
       },
       {
         category: "Challenge",
+        content_ref: "challenge",
         type: "Challenge",
         title: `${label} Challenge`,
         description: "Use what you built this month, submit your version, and see what other members made.",
@@ -577,6 +581,7 @@ function createMonthTemplate(preset = {}) {
       },
       {
         category: "Other",
+        content_ref: "extras",
         type: "Video + Prompts",
         title: "Go Deeper",
         description: "Use optional follow-up prompts when members are ready to extend the system after the live workshop.",
@@ -586,6 +591,7 @@ function createMonthTemplate(preset = {}) {
       },
       {
         category: "Next month",
+        content_ref: "link",
         type: "Event",
         title: "Next Mastery Workshop",
         description: "Add the next workshop calendar or announcement link here when it is ready.",
@@ -651,7 +657,9 @@ function adminDeepLink(slug, tab = "content") {
 }
 
 function resourceEditorTab(item = {}) {
-  if (item.content_kind === "page") return "guide";
+  if (item.content_kind === "page" || item.content_ref === "page") return "guide";
+  if (["guide", "challenge", "prompts", "extras"].includes(item.content_ref)) return item.content_ref;
+  if (["link", "system"].includes(item.content_ref)) return null;
   const haystack = `${item.category || ""} ${item.type || ""} ${item.title || ""} ${item.url || ""}`.toLowerCase();
   if (haystack.includes("challenge")) return "challenge";
   if (haystack.includes("extra") || haystack.includes("publishing")) return "extras";
@@ -659,8 +667,27 @@ function resourceEditorTab(item = {}) {
   return "guide";
 }
 
+function resourceContentLabel(item = {}) {
+  if (item.content_kind === "page" || item.content_ref === "page") return "Independent page";
+  return {
+    guide: "Shared page: Guide",
+    challenge: "Shared page: Challenge",
+    prompts: "Shared page: Prompts",
+    extras: "Shared page: Extras",
+    link: item.url ? "Link card" : "Link needed",
+    system: "System page",
+  }[item.content_ref] || "Legacy content mapping";
+}
+
+function resourceEditActionLabel(item = {}) {
+  const tab = resourceEditorTab(item);
+  if (!tab) return item.url ? "Open destination" : "Add link to activate";
+  if (item.content_kind === "page" || item.content_ref === "page") return "Edit page";
+  return `Edit ${tab}`;
+}
+
 function isStandaloneResourcePage(item = {}, monthSlug = "") {
-  if (!item || item.content_kind !== "page") return false;
+  if (!item || (item.content_kind !== "page" && item.content_ref !== "page")) return false;
   if (!monthSlug) return true;
   return String(item.url || "").startsWith(`/monthly-resources/${monthSlug}/`);
 }
@@ -904,7 +931,7 @@ export default function AdminBackend({ navigate }) {
   function addResource(category = "Workshop") {
     const cleanCategory = normalizedResourceCategory(category);
     const nextIndex = (monthRef.current?.resources || []).length;
-    if (cleanCategory === "Workshop") {
+    if (cleanCategory === "Workshop" || cleanCategory === "Challenge") {
       setActiveResourceIndex(nextIndex);
       setActiveResourceTab("guide");
     }
@@ -924,6 +951,7 @@ export default function AdminBackend({ navigate }) {
       if (cleanCategory === "Workshop") {
         const baseUrl = `/monthly-resources/${monthSlug}/guide/${slugify(`${label} workshop guide`) || "workshop-guide"}`;
         nextResource.id = newResourceId();
+        nextResource.content_ref = "page";
         nextResource.content_kind = "page";
         nextResource.type = "Walkthrough";
         nextResource.title = `${label} Workshop Guide`;
@@ -932,14 +960,23 @@ export default function AdminBackend({ navigate }) {
         nextResource.content_markdown = monthTemplateGuide(label);
         nextResource.content_toc = {};
       } else if (cleanCategory === "Challenge") {
+        const pageSlug = slugify(`${label} challenge`) || "challenge";
+        nextResource.id = newResourceId();
+        nextResource.content_ref = "page";
+        nextResource.content_kind = "page";
         nextResource.type = "Challenge";
         nextResource.title = `${label} Challenge`;
         nextResource.description = "Placeholder challenge description. Replace this with what members should submit.";
-        nextResource.url = uniqueResourceUrl(resources, `/challenges/${monthSlug}`);
+        nextResource.url = uniqueResourceUrl(resources, `/monthly-resources/${monthSlug}/pages/${pageSlug}`);
+        nextResource.content_markdown = monthTemplateChallenge(label);
+        nextResource.content_toc = {};
       } else if (cleanCategory === "Next month") {
+        nextResource.content_ref = "link";
         nextResource.type = "Event";
         nextResource.title = "Next Mastery Workshop";
         nextResource.description = "Placeholder next-month description. Replace this with the next workshop announcement or calendar context.";
+      } else {
+        nextResource.content_ref = "link";
       }
 
       return {
@@ -1805,6 +1842,7 @@ function BasicsEditor({
                         </div>
                         <label className="admin-resource-field"><span>Description</span><textarea value={item.description || ""} onChange={(event) => updateResource(index, "description", event.target.value)} placeholder="Description" rows={3} aria-label="Description" /></label>
                         <label className="admin-resource-field"><span>Link</span><input value={item.url || ""} onChange={(event) => updateResource(index, "url", event.target.value)} placeholder="Link" aria-label="Link" /></label>
+                        <p className="admin-resource-content-kind">{resourceContentLabel(item)}</p>
                       </div>
 
                       <div className="admin-resource-actions">
@@ -1812,13 +1850,23 @@ function BasicsEditor({
                           <button type="button" onClick={() => moveResource(index, -1)} disabled={categoryIndex === 0} aria-label="Move up">↑</button>
                           <button type="button" onClick={() => moveResource(index, 1)} disabled={categoryIndex === categoryItems.length - 1} aria-label="Move down">↓</button>
                         </div>
-                        <button
-                          type="button"
-                          className={activeResourceIndex === index ? "active" : ""}
-                          onClick={() => onEditResource(item, index)}
-                        >
-                          Edit content
-                        </button>
+                        {resourceEditorTab(item) ? (
+                          <button
+                            type="button"
+                            className={activeResourceIndex === index ? "active" : ""}
+                            onClick={() => onEditResource(item, index)}
+                          >
+                            {resourceEditActionLabel(item)}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={!item.url}
+                            onClick={() => item.url && window.open(item.url, "_blank", "noopener,noreferrer")}
+                          >
+                            {resourceEditActionLabel(item)}
+                          </button>
+                        )}
                         <button type="button" className="danger" onClick={() => removeResource(index)}>Remove</button>
                       </div>
                     </article>

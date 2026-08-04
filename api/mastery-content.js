@@ -25,7 +25,9 @@ function service() {
 }
 
 function resourceContentKey(resource = {}) {
-  if (resource.content_kind === "page") return "resource";
+  if (resource.content_kind === "page" || resource.content_ref === "page") return "resource";
+  if (["guide", "challenge", "prompts", "extras"].includes(resource.content_ref)) return resource.content_ref;
+  if (["link", "system"].includes(resource.content_ref)) return "resource";
   const haystack = `${resource.category || ""} ${resource.type || ""} ${resource.title || ""} ${resource.url || ""}`.toLowerCase();
   if (haystack.includes("challenge") || haystack.includes("/challenges/")) return "challenge";
   if (haystack.includes("extra") || haystack.includes("/extras")) return "extras";

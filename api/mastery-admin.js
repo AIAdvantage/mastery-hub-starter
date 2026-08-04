@@ -33,6 +33,12 @@ const CONTENT_STATUSES = new Set([
   "published",
 ]);
 const RESOURCE_CATEGORIES = new Set(["Workshop", "Challenge", "Other", "Next month"]);
+const RESOURCE_CONTENT_REFS = new Set(["guide", "challenge", "prompts", "extras", "page", "link", "system"]);
+const SYSTEM_RESOURCE_PATHS = new Set([
+  "/monthly-resources/july/prerequisites",
+  "/monthly-resources/july/faq-catchup",
+  "/monthly-resources/july/challenge-submissions",
+]);
 
 function json(res, status, payload) {
   res.status(status).setHeader("Content-Type", "application/json");
@@ -133,14 +139,32 @@ function cleanResource(input = {}) {
     status: isPublished ? "published" : (CONTENT_STATUSES.has(legacyStatus) ? legacyStatus : "idea"),
     is_published: isPublished,
     url: input.url || "",
+    content_ref: RESOURCE_CONTENT_REFS.has(input.content_ref) ? input.content_ref : inferResourceContentRef(input),
   };
-  if (input.content_kind === "page") {
+  if (input.content_kind === "page" || resource.content_ref === "page") {
     resource.id = String(input.id || "").trim().slice(0, 120);
+    resource.content_ref = "page";
     resource.content_kind = "page";
     resource.content_markdown = String(input.content_markdown || "");
     resource.content_toc = cleanGuideToc(input.content_toc);
   }
+  if (resource.content_ref === "system") {
+    resource.system_page = String(input.system_page || "").trim().slice(0, 120);
+  }
   return resource;
+}
+
+function inferResourceContentRef(input = {}) {
+  if (input.content_kind === "page") return "page";
+  const url = String(input.url || "");
+  if (!url || /^https?:\/\//i.test(url)) return "link";
+  if (SYSTEM_RESOURCE_PATHS.has(url)) return "system";
+  if (/^\/monthly-resources\/[^/]+\/(?:guide|pages)\/.+/.test(url)) return "page";
+  const haystack = `${input.category || ""} ${input.type || ""} ${input.title || ""} ${url}`.toLowerCase();
+  if (haystack.includes("challenge")) return "challenge";
+  if (haystack.includes("extra") || haystack.includes("publishing")) return "extras";
+  if (haystack.includes("live") || haystack.includes("prompt") || haystack.includes("/prompts")) return "prompts";
+  return "guide";
 }
 
 function cleanResourceCategory(category) {
