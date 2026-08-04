@@ -838,6 +838,7 @@ function isRedirectTrackingSource(path) {
 export default function App() {
   const [path, setPath] = useState(getPath);
   const [cmsMonths, setCmsMonths] = useState([]);
+  const [liveMonthSlug, setLiveMonthSlug] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH_ID);
   const [submissionStatus, setSubmissionStatus] = useState("");
   const [submissions, setSubmissions] = useState(() => {
@@ -851,7 +852,7 @@ export default function App() {
     () => MONTHS.find((month) => month.id === selectedMonth) || CURRENT_MONTH,
     [selectedMonth]
   );
-  const liveWorkshop = useMemo(() => liveWorkshopFrom(cmsMonths), [cmsMonths]);
+  const liveWorkshop = useMemo(() => liveWorkshopFrom(cmsMonths, liveMonthSlug), [cmsMonths, liveMonthSlug]);
   const resolvedPath = resolveCanonicalWorkshopPath(path);
   useEffect(() => {
     function handlePopState() {
@@ -880,9 +881,15 @@ export default function App() {
         const response = await fetch("/api/mastery-content");
         if (!response.ok) return;
         const data = await response.json();
-        if (!cancelled) setCmsMonths(data.months || []);
+        if (!cancelled) {
+          setCmsMonths(data.months || []);
+          setLiveMonthSlug(data.liveMonthSlug || "");
+        }
       } catch {
-        if (!cancelled) setCmsMonths([]);
+        if (!cancelled) {
+          setCmsMonths([]);
+          setLiveMonthSlug("");
+        }
       }
     }
 
@@ -996,6 +1003,7 @@ export default function App() {
                 path={resolveCurrentWorkshopPath(resolvedPath, liveWorkshop.slug)}
                 navigate={navigate}
                 cmsMonths={cmsMonths}
+                liveMonthSlug={liveWorkshop.slug}
               />
             )}
             {path.startsWith("/challenges") && (
@@ -1312,7 +1320,7 @@ function AuthPage({ mode, navigate }) {
               path="/sign-in"
               signUpUrl="/sign-up"
               fallbackRedirectUrl="/"
-              appearance={clerkAppearance}
+              appearance={clerkSignInAppearance}
             />
           )
         )}
@@ -1338,6 +1346,14 @@ const clerkAppearance = {
     headerTitle: "clerk-title",
     headerSubtitle: "clerk-subtitle",
     formButtonPrimary: "clerk-primary-button",
+  },
+};
+
+const clerkSignInAppearance = {
+  ...clerkAppearance,
+  elements: {
+    ...clerkAppearance.elements,
+    footerAction: { display: "none" },
   },
 };
 
@@ -1626,12 +1642,12 @@ function monthSlug(month = {}) {
   return month.slug || String(month.label || "").toLowerCase();
 }
 
-function liveCmsMonth(cmsMonths = []) {
-  return cmsMonths[0] || null;
+function liveCmsMonth(cmsMonths = [], liveMonthSlug = "") {
+  return cmsMonths.find((month) => month.is_current || month.slug === liveMonthSlug) || cmsMonths[0] || null;
 }
 
-function liveWorkshopFrom(cmsMonths = []) {
-  const cmsMonth = liveCmsMonth(cmsMonths);
+function liveWorkshopFrom(cmsMonths = [], liveMonthSlug = "") {
+  const cmsMonth = liveCmsMonth(cmsMonths, liveMonthSlug);
   if (cmsMonth) {
     return {
       slug: cmsMonth.slug,
@@ -1649,8 +1665,8 @@ function liveWorkshopFrom(cmsMonths = []) {
   };
 }
 
-function currentWorkshopUrl(cmsMonths = []) {
-  return `/monthly-resources/${liveWorkshopFrom(cmsMonths).slug}`;
+function currentWorkshopUrl(cmsMonths = [], liveMonthSlug = "") {
+  return `/monthly-resources/${liveWorkshopFrom(cmsMonths, liveMonthSlug).slug}`;
 }
 
 function isCurrentWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
@@ -1711,20 +1727,30 @@ function cmsHasContent(month, key) {
   return false;
 }
 
-function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) {
+function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [], liveMonthSlug = "" }) {
   const segment = path.split("/")[2] || "";
   const cmsMonth = cmsMonths.find((month) => month.slug === segment);
   const staticMonth = MONTHS.find((month) => month.label.toLowerCase() === segment);
+  const currentSlug = liveMonthSlug || liveCmsMonth(cmsMonths)?.slug || CURRENT_WORKSHOP_SLUG;
+  const isCurrentWorkshop = segment === currentSlug;
 
   if (path === "/monthly-resources") {
-    return <RedirectRoute to={currentWorkshopUrl(cmsMonths)} navigate={navigate} />;
+    return <RedirectRoute to={currentWorkshopUrl(cmsMonths, currentSlug)} navigate={navigate} />;
   }
 
-  if (path === "/monthly-resources/june") {
-    return <RedirectRoute to="/past-workshops" navigate={navigate} />;
+  if (segment === "july" && path === "/monthly-resources/july/prerequisites") {
+    return <JulyPrerequisitesPage navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
   }
 
-  if (cmsMonth && segment !== "june" && segment !== "july") {
+  if (segment === "july" && path === "/monthly-resources/july/challenge-submissions") {
+    return <ChallengeSubmissionRegistryPage archive={JULY_CHALLENGE_ARCHIVE} navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
+  }
+
+  if (segment === "july" && path === "/monthly-resources/july/faq-catchup") {
+    return <JulyFaqCatchupPage navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
+  }
+
+  if (cmsMonth) {
     if (path === `/monthly-resources/${segment}/guide` || path.startsWith(`/monthly-resources/${segment}/guide/`)) {
       if (!cmsHasContent(cmsMonth, "guide")) {
         return (
@@ -1747,6 +1773,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           pageIntro={cmsMonth.outcome || "Follow the written guide for this month."}
           showMaterials={false}
           customHelpContext={cmsGuideHelpContext(cmsMonth)}
+          isCurrentWorkshop={isCurrentWorkshop}
         />
       );
     }
@@ -1774,6 +1801,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           showMaterials={false}
           breadcrumbLabel="Prompts"
           sectionLabel="Copy-paste"
+          isCurrentWorkshop={isCurrentWorkshop}
         />
       );
     }
@@ -1801,11 +1829,12 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
           breadcrumbLabel="Go Deeper"
           sectionLabel={cmsMonth.extras?.video?.eyebrow || "Follow up resources"}
           showMaterials={false}
+          isCurrentWorkshop={isCurrentWorkshop}
         />
       );
     }
 
-    return <CmsResourcesMenu month={cmsMonth} navigate={navigate} />;
+    return <CmsResourcesMenu month={cmsMonth} navigate={navigate} isPast={!isCurrentWorkshop} />;
   }
 
   if (path === "/monthly-resources/july/guide") {
@@ -1818,6 +1847,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         pageTitle="July Guide: Build Your AI Hub"
         pageIntro="Build your own private AI Hub website where everything your AI creates shows up, with Lovable, GitHub, and Claude Cowork wired together."
         showMaterials={false}
+        isCurrentWorkshop={isCurrentWorkshop}
       />
     );
   }
@@ -1846,6 +1876,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         breadcrumbLabel="Prompts"
         sectionLabel="Copy-paste"
         showMaterials={false}
+        isCurrentWorkshop={isCurrentWorkshop}
       />
     );
   }
@@ -1862,6 +1893,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
         breadcrumbLabel="Go Deeper"
         sectionLabel="Follow up resources"
         showMaterials={false}
+        isCurrentWorkshop={isCurrentWorkshop}
       />
     );
   }
@@ -1871,7 +1903,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
   }
 
   if (path === "/monthly-resources/june/guide") {
-    return <GuidePage navigate={navigate} />;
+    return <GuidePage navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
   }
 
   if (path.startsWith("/monthly-resources/june/guide/")) {
@@ -1879,7 +1911,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [] }) 
   }
 
   if (path === "/monthly-resources/june/prompts") {
-    return <SessionPromptsPage navigate={navigate} />;
+    return <SessionPromptsPage navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
   }
 
   if (!staticMonth) {
@@ -1943,7 +1975,13 @@ function normalizedResourceCategory(category) {
   return ["Workshop", "Challenge", "Other", "Next month"].includes(category) ? category : "Other";
 }
 
-function CmsResourcesMenu({ month, navigate }) {
+function resourceCategoryLabel(category) {
+  if (category === "Other") return "Follow up resources";
+  if (category === "Next month") return "Coming next";
+  return category;
+}
+
+function CmsResourcesMenu({ month, navigate, isPast = false }) {
   const displayMonth = cmsMonthToMonth(month);
   const hasGuide = cmsHasContent(month, "guide");
   const hasPrompts = cmsHasContent(month, "prompts");
@@ -1968,15 +2006,17 @@ function CmsResourcesMenu({ month, navigate }) {
   return (
     <section className="section page-section month-section" aria-label={`${month.label} resources`}>
       <Breadcrumbs
-        items={[
-          { label: "Monthly Resources", path: "/monthly-resources" },
-          { label: month.label },
-        ]}
+        items={isPast
+          ? [
+              { label: "Past Workshops", path: "/past-workshops" },
+              { label: month.label },
+            ]
+          : [{ label: "Current Workshop" }]}
         navigate={navigate}
       />
       <MonthVisualCard
         month={displayMonth}
-        actionLabel="Open the Guide"
+        actionLabel={hasGuide ? "Open the Guide" : undefined}
         onAction={() => navigate(`/monthly-resources/${month.slug}/guide`)}
         variant="banner"
       />
@@ -1985,7 +2025,7 @@ function CmsResourcesMenu({ month, navigate }) {
           {categoryOrder.filter((category) => groupedResources[category]?.length).map((category) => (
             <section className="resource-category" key={category}>
               <div className="resource-category-head">
-                <h3>{category}</h3>
+                <h3>{resourceCategoryLabel(category)}</h3>
               </div>
               <div className={`resource-grid ${groupedResources[category].length === 2 ? "resource-grid-two" : groupedResources[category].length >= 3 ? "resource-grid-three" : ""}`}>
                 {groupedResources[category].map((item, index) => (
@@ -2137,7 +2177,7 @@ function JulyResourcesMenu({ month, navigate }) {
       <div className="resource-category-stack">
         <section className="resource-category" aria-labelledby="july-workshop-title">
           <div className="resource-category-head">
-            <h3 id="july-workshop-title">Build the Hub</h3>
+            <h3 id="july-workshop-title">Workshop</h3>
           </div>
           <div className="resource-grid resource-grid-three">
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/monthly-resources/july/prerequisites")}>
@@ -2234,14 +2274,11 @@ function JulyResourcesMenu({ month, navigate }) {
   );
 }
 
-function JulyFaqCatchupPage({ navigate }) {
+function JulyFaqCatchupPage({ navigate, isCurrentWorkshop = false }) {
   return (
     <section className="section page-section month-section faq-catchup-page" aria-labelledby="july-catchup-title">
       <Breadcrumbs
-        items={[
-          { label: "Current Workshop", path: "/monthly-resources/july" },
-          { label: "FAQ & Catchup" },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: "July", monthSlug: "july", leafLabel: "FAQ & Catchup" })}
         navigate={navigate}
       />
       <section className="resource-section">
@@ -2430,6 +2467,7 @@ function GuidePage({
   pageIntro = "Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.",
   showMaterials = true,
   customHelpContext,
+  isCurrentWorkshop = false,
 }) {
   const guide = useMemo(() => getGuideModel(content.guide), [content]);
   const helpContext = customHelpContext || GUIDE_HELP_CONTEXTS[monthSlug] || GUIDE_HELP_CONTEXTS.june;
@@ -2439,13 +2477,7 @@ function GuidePage({
     <section className="section page-section month-section has-hover-toc" aria-labelledby="guide-title">
       <HoverTableOfContents title="Guide contents" items={guide.tocItems} />
       <Breadcrumbs
-        items={[
-          monthSlug === "july"
-            ? { label: "Current Workshop", path: CURRENT_WORKSHOP_PATH }
-            : { label: "Monthly Resources", path: "/monthly-resources" },
-          ...(monthSlug === "july" ? [] : [{ label: monthLabel, path: `/monthly-resources/${monthSlug}` }]),
-          { label: "Guide" },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: "Guide" })}
         navigate={navigate}
       />
       <section className="resource-section guide-workbench-section">
@@ -2862,14 +2894,11 @@ function ExternalRedirectRoute({ to }) {
   );
 }
 
-function JulyPrerequisitesPage({ navigate }) {
+function JulyPrerequisitesPage({ navigate, isCurrentWorkshop = false }) {
   return (
     <section className="section page-section month-section" aria-labelledby="july-prerequisites-title">
       <Breadcrumbs
-        items={[
-          { label: "Current Workshop", path: "/monthly-resources/july" },
-          { label: "Prerequisites" },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: "July", monthSlug: "july", leafLabel: "Prerequisites" })}
         navigate={navigate}
       />
       <section className="resource-section">
@@ -2930,6 +2959,7 @@ function SessionPromptsPage({
   breadcrumbLabel = "Live Materials",
   sectionLabel = "Prompts",
   showMaterials = true,
+  isCurrentWorkshop = false,
 }) {
   const prompts = content.prompts || [];
   const helpPrompt = prompts.find((prompt) => /^Prompt 5\b/.test(prompt.title || ""));
@@ -2938,13 +2968,7 @@ function SessionPromptsPage({
   return (
     <section className="section page-section month-section" aria-labelledby="prompts-title">
       <Breadcrumbs
-        items={[
-          monthSlug === "july"
-            ? { label: "Current Workshop", path: "/monthly-resources/july" }
-            : { label: "Monthly Resources", path: "/monthly-resources" },
-          ...(monthSlug === "july" ? [] : [{ label: monthLabel, path: `/monthly-resources/${monthSlug}` }]),
-          { label: breadcrumbLabel },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: breadcrumbLabel })}
         navigate={navigate}
       />
       <section className="resource-section">
@@ -3015,6 +3039,21 @@ function UpcomingMonth({ month, navigate }) {
       </div>
     </section>
   );
+}
+
+function workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel }) {
+  if (isCurrentWorkshop) {
+    return [
+      { label: "Current Workshop", path: CURRENT_WORKSHOP_PATH },
+      { label: leafLabel },
+    ];
+  }
+
+  return [
+    { label: "Past Workshops", path: "/past-workshops" },
+    { label: monthLabel, path: `/past-workshops/${monthSlug}` },
+    { label: leafLabel },
+  ];
 }
 
 function Breadcrumbs({ items, navigate }) {
@@ -3929,20 +3968,24 @@ function pastSystemToMonthCard(item) {
 function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
   const selectedSlug = path.split("/")[2] || "";
   const liveSlug = liveWorkshopFrom(cmsMonths).slug;
+  const selectedCmsMonth = selectedSlug && selectedSlug !== liveSlug
+    ? cmsMonths.find((month) => month.slug === selectedSlug)
+    : null;
   const selectedSystem = selectedSlug
     ? PAST_SYSTEMS.find((item) => monthSlugFromLabel(item.month) === selectedSlug)
     : null;
-  const cmsPastMonths = cmsMonths.filter((month) => {
-    const slug = month.slug || month.label?.toLowerCase();
-    return slug && slug !== liveSlug && !PAST_SYSTEMS.some((item) => monthSlugFromLabel(item.month) === slug);
+  const cmsPastMonths = cmsMonths.filter((month) => month.slug && month.slug !== liveSlug);
+  const fallbackSystems = PAST_SYSTEMS.filter((item) => {
+    const slug = monthSlugFromLabel(item.month);
+    return slug !== liveSlug && !cmsPastMonths.some((month) => month.slug === slug);
   });
+
+  if (selectedCmsMonth) {
+    return <CmsResourcesMenu month={selectedCmsMonth} navigate={navigate} isPast />;
+  }
 
   if (selectedSlug && !selectedSystem) {
     return <RedirectRoute to="/past-workshops" navigate={navigate} />;
-  }
-
-  if (selectedSlug === "july") {
-    return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
   }
 
   if (selectedSystem) {
@@ -3955,13 +3998,27 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
 
       <div className="resource-category-stack">
         <div className="month-choice-grid past-month-card-grid" aria-label="Previous months">
-          {PAST_SYSTEMS
-            .filter((item) => monthSlugFromLabel(item.month) !== liveSlug)
+          {cmsPastMonths.map((month) => {
+            const displayMonth = cmsMonthToMonth(month);
+            return (
+              <button
+                className={`month-choice ${displayMonth.image ? "has-image" : ""} past-month-card past-month-card-complete`}
+                type="button"
+                key={month.slug}
+                onClick={() => navigate(`/past-workshops/${month.slug}`)}
+              >
+                {displayMonth.image && <img className="month-choice-image" src={displayMonth.image.src} alt="" loading="lazy" />}
+                <span>{displayMonth.label}</span>
+                <small>{displayMonth.focus}</small>
+                <strong>Open</strong>
+              </button>
+            );
+          })}
+          {fallbackSystems
             .slice()
             .reverse()
             .map((item, index) => {
               const slug = monthSlugFromLabel(item.month);
-              const isCompleteEntry = slug === "june" || slug === "july";
               const image = slug === "july"
                 ? "/july/july-ai-hub-card-relatable-3.png"
                 : index % 3 === 0
@@ -3971,10 +4028,10 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
                     : "/month6/alternates/month6-paperwork-alt-3.png";
               return (
                 <button
-                  className={`month-choice has-image past-month-card ${isCompleteEntry ? "past-month-card-complete" : "past-month-card-coming"}`}
+                  className="month-choice has-image past-month-card past-month-card-complete"
                   type="button"
                   key={item.id}
-                  onClick={() => navigate(slug === "july" ? "/monthly-resources/july" : `/past-workshops/${slug}`)}
+                  onClick={() => navigate(`/past-workshops/${slug}`)}
                 >
                   <img
                     className="month-choice-image"
@@ -3984,27 +4041,6 @@ function PastWorkshopsPage({ path, navigate, cmsMonths = [] }) {
                   />
                   <span>{item.month}</span>
                   <small>{item.system}</small>
-                  {!isCompleteEntry && (
-                    <small className="past-month-card-note">
-                      Our team is still moving the full resources and challenge results into the Hub.
-                    </small>
-                  )}
-                  <strong>{isCompleteEntry ? "Open" : "Full entry coming"}</strong>
-                </button>
-              );
-            })}
-          {cmsPastMonths.map((month) => {
-              const displayMonth = cmsMonthToMonth(month);
-              return (
-                <button
-                  className={`month-choice ${displayMonth.image ? "has-image" : ""} past-month-card`}
-                  type="button"
-                  key={month.slug}
-                  onClick={() => navigate(`/monthly-resources/${month.slug}`)}
-                >
-                  {displayMonth.image && <img className="month-choice-image" src={displayMonth.image.src} alt="" loading="lazy" />}
-                  <span>{displayMonth.label}</span>
-                  <small>{displayMonth.focus}</small>
                   <strong>Open</strong>
                 </button>
               );
@@ -4062,44 +4098,47 @@ function PastWorkshopDetailPage({ item, navigate }) {
         </div>
       )}
 
-      <div className="resource-grid resource-grid-three">
-        <a className="resource-card resource-card-link" href={item.replayUrl} target="_blank" rel="noreferrer">
-          <div className="resource-card-top">
-            <span>Replay</span>
-            <small>Club</small>
+      <div className={isJune ? "resource-category" : undefined}>
+        {isJune && (
+          <div className="resource-category-head">
+            <h3>Workshop</h3>
           </div>
-          <h4>{item.month} Replay</h4>
-          <p>Watch the workshop recording in the AI Advantage Club.</p>
-        </a>
-        {resourceIsInternal ? (
-          <button className="resource-card resource-card-button" type="button" onClick={() => navigate(isJune ? "/monthly-resources/june/guide" : item.resourceUrl)}>
-            <div className="resource-card-top">
-              <span>Resources</span>
-              <small>Hub</small>
-            </div>
-            <h4>{item.month} Resources</h4>
-            <p>Open the Hub materials for this month.</p>
-          </button>
-        ) : (
-          <a className="resource-card resource-card-link" href={item.resourceUrl} target="_blank" rel="noreferrer">
-            <div className="resource-card-top">
-              <span>Resources</span>
-              <small>Guide</small>
-            </div>
-            <h4>{item.month} Resources</h4>
-            <p>Open the original resources for this month.</p>
-          </a>
         )}
+        <div className="resource-grid resource-grid-three">
+          <a className="resource-card resource-card-link" href={item.replayUrl} target="_blank" rel="noreferrer">
+            <div className="resource-card-top">
+              <span>Replay</span>
+              <small>Club</small>
+            </div>
+            <h4>{item.month} Replay</h4>
+            <p>Watch the workshop recording in the AI Advantage Club.</p>
+          </a>
+          {resourceIsInternal ? (
+            <button className="resource-card resource-card-button" type="button" onClick={() => navigate(isJune ? "/monthly-resources/june/guide" : item.resourceUrl)}>
+              <div className="resource-card-top">
+                <span>Resources</span>
+                <small>Hub</small>
+              </div>
+              <h4>{item.month} Resources</h4>
+              <p>Open the Hub materials for this month.</p>
+            </button>
+          ) : (
+            <a className="resource-card resource-card-link" href={item.resourceUrl} target="_blank" rel="noreferrer">
+              <div className="resource-card-top">
+                <span>Resources</span>
+                <small>Guide</small>
+              </div>
+              <h4>{item.month} Resources</h4>
+              <p>Open the original resources for this month.</p>
+            </a>
+          )}
+        </div>
       </div>
 
       {isJune && (
         <section className="resource-category" id="challenge-archive" aria-labelledby="june-challenge-archive-title">
           <div className="resource-category-head">
-            <div>
-              <p className="section-kicker">Challenge archive</p>
-              <h2 id="june-challenge-archive-title">June Challenge: Build a Self-Improving Skill</h2>
-              <p className="muted">Revisit the complete challenge instructions and browse the work members submitted.</p>
-            </div>
+            <h3 id="june-challenge-archive-title">Challenge</h3>
           </div>
           <div className="resource-grid resource-grid-two">
             <button className="resource-card resource-card-button" type="button" onClick={() => navigate("/challenges/june/guide")}>
@@ -4192,9 +4231,32 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
   const segment = path.split("/")[2] || "";
   const child = path.split("/")[3] || "";
   const cmsMonth = cmsMonths.find((month) => month.slug === segment);
+  const liveSlug = liveWorkshopFrom(cmsMonths).slug;
+  const isCurrentWorkshop = segment === liveSlug;
 
   if (path === "/challenges") {
     return <RedirectRoute to={currentWorkshopUrl(cmsMonths)} navigate={navigate} />;
+  }
+
+  if (segment === "july" && child === "submissions") {
+    return <RedirectRoute to="/monthly-resources/july/challenge-submissions" navigate={navigate} />;
+  }
+
+  if (cmsMonth) {
+    if (!cmsHasContent(cmsMonth, "challenge")) {
+      return (
+        <MonthUnavailable
+          basePath="/challenges"
+          label={segment}
+          navigate={navigate}
+          title="This challenge is not live yet."
+          message="The month is open, but the challenge has not been published inside the month."
+        />
+      );
+    }
+    if (child === "guide") return <CmsChallengeGuidePage month={cmsMonth} navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
+    if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
+    return <CmsChallengeLanding month={cmsMonth} navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
   }
 
   if (segment === "june") {
@@ -4204,23 +4266,6 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
   }
 
   if (segment !== "july") {
-    if (cmsMonth) {
-      if (!cmsHasContent(cmsMonth, "challenge")) {
-        return (
-          <MonthUnavailable
-            basePath="/challenges"
-            label={segment}
-            navigate={navigate}
-            title="This challenge is not live yet."
-            message="The month is open, but the challenge has not been published inside the month."
-          />
-        );
-      }
-      if (child === "guide") return <CmsChallengeGuidePage month={cmsMonth} navigate={navigate} />;
-      if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
-      return <CmsChallengeLanding month={cmsMonth} navigate={navigate} />;
-    }
-
     const month = MONTHS.find((item) => item.label.toLowerCase() === segment && !item.hidden);
     if (!month) {
       return (
@@ -4258,7 +4303,7 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
   return <RedirectRoute to="/monthly-resources/july" navigate={navigate} />;
 }
 
-function CmsChallengeLanding({ month, navigate }) {
+function CmsChallengeLanding({ month, navigate, isCurrentWorkshop = false }) {
   const displayMonth = cmsMonthToMonth({
     ...month,
     hero: {
@@ -4270,7 +4315,10 @@ function CmsChallengeLanding({ month, navigate }) {
 
   return (
     <section className="section page-section challenge-section" aria-labelledby={`${month.slug}-challenge-title`}>
-      <Breadcrumbs items={[{ label: "Challenges", path: "/challenges" }, { label: month.label }]} navigate={navigate} />
+      <Breadcrumbs
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: month.label, monthSlug: month.slug, leafLabel: "Challenge" })}
+        navigate={navigate}
+      />
       <div className="section-heading section-heading-compact">
         <h1 id={`${month.slug}-challenge-title`} className="page-title">{month.label} Challenge</h1>
       </div>
@@ -4301,7 +4349,7 @@ function CmsChallengeLanding({ month, navigate }) {
   );
 }
 
-function CmsChallengeGuidePage({ month, navigate }) {
+function CmsChallengeGuidePage({ month, navigate, isCurrentWorkshop = false }) {
   const challenge = month.challenge_markdown || "";
   const tocItems = useMemo(() => markdownTocItems(challenge), [challenge]);
   const challengeStatus = useMemo(() => challengeStatusFromMarkdown(challenge), [challenge]);
@@ -4310,11 +4358,7 @@ function CmsChallengeGuidePage({ month, navigate }) {
     <section className="section page-section month-section has-hover-toc" aria-labelledby={`${month.slug}-challenge-guide-title`}>
       <HoverTableOfContents title="Challenge contents" items={tocItems} />
       <Breadcrumbs
-        items={[
-          { label: "Challenges", path: "/challenges" },
-          { label: month.label, path: `/challenges/${month.slug}` },
-          { label: "Challenge" },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: month.label, monthSlug: month.slug, leafLabel: "Challenge" })}
         navigate={navigate}
       />
       <div className="resource-section guide-workbench-section">
@@ -4425,7 +4469,7 @@ function JuneChallengeLanding({ month, navigate }) {
   );
 }
 
-function ChallengeSubmissionRegistryPage({ archive, navigate }) {
+function ChallengeSubmissionRegistryPage({ archive, navigate, isCurrentWorkshop = false }) {
   const [query, setQuery] = useState("");
   const [interest, setInterest] = useState("All");
   const [visualFilter, setVisualFilter] = useState("all");
@@ -4450,10 +4494,7 @@ function ChallengeSubmissionRegistryPage({ archive, navigate }) {
   return (
     <section className="section page-section challenge-registry-page" aria-labelledby="challenge-registry-title">
       <Breadcrumbs
-        items={[
-          { label: "Current Workshop", path: "/monthly-resources/july" },
-          { label: "Challenge submissions" },
-        ]}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: "July", monthSlug: "july", leafLabel: "Challenge submissions" })}
         navigate={navigate}
       />
       <div className="challenge-registry-hero">

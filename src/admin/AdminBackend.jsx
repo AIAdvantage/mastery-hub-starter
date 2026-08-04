@@ -9,6 +9,55 @@ const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";
 
 const UPCOMING_MONTH_PRESETS = [
   {
+    slug: "january",
+    label: "January",
+    topic: "Personal",
+    focus: "Build Your Personal AI Advisory Board",
+    outcome: "Turn your DNA and decision history into a council of advisor personas inside a custom GPT.",
+  },
+  {
+    slug: "february",
+    label: "February",
+    topic: "Strategy",
+    focus: "Build Custom Business Tools",
+    outcome: "Use your clone DNA and strategy prompts to build a hosted dashboard with charts and a chatbot.",
+  },
+  {
+    slug: "march",
+    label: "March",
+    topic: "Time",
+    focus: "Turn Your Expertise Into AI Workflows",
+    outcome: "Teach AI your personal decision-making process.",
+  },
+  {
+    slug: "april",
+    label: "April",
+    topic: "Marketing",
+    focus: "Create Content, Visuals, and Marketing Assets With AI",
+    outcome: "Build a Claude marketing employee that can research, draft, and review content.",
+  },
+  {
+    slug: "may",
+    label: "May",
+    topic: "Sales",
+    focus: "Automate Your Sales Follow-Ups",
+    outcome: "Turn meeting transcripts into proposals, follow-up drafts, and a reusable workflow.",
+  },
+  {
+    slug: "june",
+    label: "June",
+    topic: "Operations",
+    focus: "Build an AI Paperwork Assistant",
+    outcome: "Build a paperwork system that fills forms from a reusable profile and then improves itself.",
+  },
+  {
+    slug: "july",
+    label: "July",
+    topic: "AI Hub",
+    focus: "Build Your AI Hub",
+    outcome: "Build your own private AI Hub website where everything your AI creates shows up.",
+  },
+  {
     slug: "august",
     label: "August",
     topic: "To be announced",

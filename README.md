@@ -30,9 +30,9 @@ Proxy: DNS only / grey cloud if using Cloudflare
 
 - Premium AI Mastery visual direction using a dark, gold, serif-led interface.
 - Routed top navigation for Home, Current Workshop, Past Workshops, and FAQ.
-- July through December monthly hub shells, with July set as the current member month.
+- January through December month records, with the current member month selected from the backend.
 - July prerequisite page for the first member release: GitHub, Lovable, Mastery Hub, Claude Desktop, and active Claude Pro/Max/Team access.
-- June content is kept in source as the old Month 6 template and surfaced through Past Workshops with workshop and challenge links merged into one card.
+- Every published month is editable through the admin backend. Past-month cards use the same Workshop, Challenge, follow-up, and coming-next category model as the live month.
 - Plan 2 V1 direction: Launch Base plus the working Challenge OS foundation.
 - Challenge submission form with local preview storage and Supabase handoff.
 - FAQ page structure for member onboarding and routing help.
@@ -135,6 +135,8 @@ npm install
 npm run dev
 npm run build
 ```
+
+The one-time archive migration is retained as `scripts/seed-past-months.mjs`. It creates only missing January through July records by default. Pass `--force` only when intentionally replacing those records from source.
 
 ## Routes
 

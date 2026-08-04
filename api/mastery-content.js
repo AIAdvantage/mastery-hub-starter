@@ -50,6 +50,9 @@ function sanitizePublishedMonth(month) {
 
   Object.entries(CONTENT_KEYS).forEach(([key, fields]) => {
     if (publishedKeys.has(key)) return;
+    // Workshop guides can embed copy-prompt controls, so their prompt payload
+    // must remain available even when the archive uses one combined Resources card.
+    if (key === "prompts" && publishedKeys.has("guide")) return;
     fields.forEach((field) => {
       sanitized[field] = field === "prompts" ? [] : field === "extras" ? {} : "";
     });
@@ -89,7 +92,12 @@ export default async function handler(req, res) {
     if (error) throw error;
     const months = (data || []).map(sanitizePublishedMonth);
     const liveMonth = liveMonthFrom(months);
-    return json(res, 200, { months, liveMonthSlug: liveMonth?.slug || null });
+    const liveMonthSlug = liveMonth?.slug || null;
+    const routedMonths = months.map((month) => ({
+      ...month,
+      is_current: month.slug === liveMonthSlug,
+    }));
+    return json(res, 200, { months: routedMonths, liveMonthSlug });
   } catch (error) {
     console.error(error);
     return json(res, 500, { error: "Content request failed" });
