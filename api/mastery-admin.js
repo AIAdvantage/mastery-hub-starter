@@ -108,6 +108,7 @@ function cleanMonth(input = {}) {
 
 function cleanGuideToc(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+  if (!Object.keys(input).length) return {};
   const groups = Array.isArray(input.groups)
     ? input.groups.slice(0, 20).map((group, index) => ({
       key: String(group?.key || `group-${index + 1}`).trim().slice(0, 80),
@@ -137,10 +138,12 @@ function cleanResource(input = {}) {
     title: input.title || "",
     description: input.description || "",
     status: isPublished ? "published" : (CONTENT_STATUSES.has(legacyStatus) ? legacyStatus : "idea"),
-    is_published: isPublished,
     url: input.url || "",
     content_ref: RESOURCE_CONTENT_REFS.has(input.content_ref) ? input.content_ref : inferResourceContentRef(input),
   };
+  if (Object.prototype.hasOwnProperty.call(input, "is_published")) {
+    resource.is_published = isPublished;
+  }
   if (input.content_kind === "page" || resource.content_ref === "page") {
     resource.id = String(input.id || "").trim().slice(0, 120);
     resource.content_ref = "page";
@@ -168,7 +171,8 @@ function inferResourceContentRef(input = {}) {
 }
 
 function cleanResourceCategory(category) {
-  if (category === "Extras" || category === "Follow up resources") return "Other";
+  if (category === "Extras") return "Extras";
+  if (category === "Follow up resources") return "Other";
   if (category === "Coming next" || category === "Coming Next") return "Next month";
   return RESOURCE_CATEGORIES.has(category) ? category : "Other";
 }
