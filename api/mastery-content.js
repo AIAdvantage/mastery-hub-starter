@@ -2,9 +2,9 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const PUBLIC_MONTH_COLUMNS = "slug, label, month_number, topic, focus, outcome, hero, resources, guide_markdown, challenge_markdown, challenge_prompt, prompts, extras, status, published_at, updated_at";
+const PUBLIC_MONTH_COLUMNS = "slug, label, month_number, topic, focus, outcome, hero, resources, guide_markdown, guide_toc, challenge_markdown, challenge_prompt, prompts, extras, status, published_at, updated_at";
 const CONTENT_KEYS = {
-  guide: ["guide_markdown"],
+  guide: ["guide_markdown", "guide_toc"],
   prompts: ["prompts"],
   extras: ["extras"],
   challenge: ["challenge_markdown", "challenge_prompt"],
@@ -54,7 +54,7 @@ function sanitizePublishedMonth(month) {
     // must remain available even when the archive uses one combined Resources card.
     if (key === "prompts" && publishedKeys.has("guide")) return;
     fields.forEach((field) => {
-      sanitized[field] = field === "prompts" ? [] : field === "extras" ? {} : "";
+      sanitized[field] = field === "prompts" ? [] : (field === "extras" || field === "guide_toc") ? {} : "";
     });
   });
 

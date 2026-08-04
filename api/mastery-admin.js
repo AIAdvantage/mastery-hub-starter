@@ -90,12 +90,35 @@ function cleanMonth(input = {}) {
     hero: input.hero || {},
     resources: Array.isArray(input.resources) ? input.resources.map(cleanResource) : [],
     guide_markdown: input.guide_markdown || "",
+    guide_toc: cleanGuideToc(input.guide_toc),
     challenge_markdown: input.challenge_markdown || "",
     challenge_prompt: input.challenge_prompt || "",
     prompts: Array.isArray(input.prompts) ? input.prompts : [],
     extras: input.extras || {},
     admin_notes: input.admin_notes || "",
     updated_by: input.updated_by || null,
+  };
+}
+
+function cleanGuideToc(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
+  const groups = Array.isArray(input.groups)
+    ? input.groups.slice(0, 20).map((group, index) => ({
+      key: String(group?.key || `group-${index + 1}`).trim().slice(0, 80),
+      title: String(group?.title || "Section").trim().slice(0, 120),
+    })).filter((group) => group.key && group.title)
+    : [];
+  const items = Array.isArray(input.items)
+    ? input.items.slice(0, 100).map((item) => ({
+      key: String(item?.key || "").trim().slice(0, 80),
+      label: String(item?.label || "").trim().slice(0, 160),
+      group: String(item?.group || "").trim().slice(0, 80),
+    })).filter((item) => item.key && item.label)
+    : [];
+  return {
+    title: String(input.title || "Guide contents").trim().slice(0, 120) || "Guide contents",
+    groups,
+    items,
   };
 }
 
@@ -130,6 +153,7 @@ function monthSnapshot(input = {}) {
     hero: input.hero || {},
     resources: Array.isArray(input.resources) ? input.resources : [],
     guide_markdown: input.guide_markdown || "",
+    guide_toc: cleanGuideToc(input.guide_toc),
     challenge_markdown: input.challenge_markdown || "",
     challenge_prompt: input.challenge_prompt || "",
     prompts: Array.isArray(input.prompts) ? input.prompts : [],

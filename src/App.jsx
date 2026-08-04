@@ -1688,6 +1688,7 @@ function isPastWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
 function cmsMonthToContent(month) {
   return {
     guide: month.guide_markdown || "",
+    guideToc: month.guide_toc || {},
     challenge: month.challenge_markdown || "",
     challengePrompt: month.challenge_prompt || "",
     prompts: Array.isArray(month.prompts) ? month.prompts : [],
@@ -2474,12 +2475,13 @@ function GuidePage({
   const guideVideo = GUIDE_VIDEO_BY_MONTH[monthSlug];
 
   return (
-    <section className="section page-section month-section has-hover-toc" aria-labelledby="guide-title">
-      <HoverTableOfContents title="Guide contents" items={guide.tocItems} />
+    <section className="section page-section month-section" aria-labelledby="guide-title">
       <Breadcrumbs
         items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: "Guide" })}
         navigate={navigate}
       />
+      <div className="guide-page-layout">
+      <GuideTableOfContents guide={guide} config={content.guideToc} />
       <section className="resource-section guide-workbench-section">
         <div className="resource-section-head">
           <div>
@@ -2547,7 +2549,71 @@ function GuidePage({
         </div>
       </div>
       </section>
+      </div>
     </section>
+  );
+}
+
+function GuideTableOfContents({ guide, config = {} }) {
+  const navigation = useMemo(() => guideTocModel(guide, config), [guide, config]);
+  const [activeId, setActiveId] = useState(navigation.groups[0]?.items[0]?.id || "");
+
+  useEffect(() => {
+    const items = navigation.groups.flatMap((group) => group.items);
+    if (!items.length) return undefined;
+    const hashId = window.location.hash.replace("#", "");
+    if (hashId && items.some((item) => item.id === hashId)) setActiveId(hashId);
+    const sections = items.map((item) => document.getElementById(item.id)).filter(Boolean);
+    if (!sections.length || !("IntersectionObserver" in window)) return undefined;
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target?.id) setActiveId(visible.target.id);
+    }, { rootMargin: "-16% 0px -72% 0px", threshold: [0.01, 0.2, 0.45] });
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [navigation]);
+
+  if (!navigation.groups.length) return null;
+
+  const contents = (
+    <div className="guide-toc-inner">
+      <div className="guide-toc-head">
+        <span>{navigation.title}</span>
+        <i aria-hidden="true" />
+      </div>
+      <div className="guide-toc-groups">
+        {navigation.groups.map((group) => (
+          <section className="guide-toc-group" key={group.key}>
+            <h2>{group.title}</h2>
+            <div className="guide-toc-items">
+              {group.items.map((item) => (
+                <a
+                  className={activeId === item.id ? "active" : ""}
+                  href={`#${item.id}`}
+                  key={item.key}
+                  onClick={() => setActiveId(item.id)}
+                >
+                  <span>{item.marker}</span>
+                  <strong>{item.label}</strong>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <aside className="guide-toc" aria-label={navigation.title}>
+      <div className="guide-toc-desktop">{contents}</div>
+      <details className="guide-toc-mobile">
+        <summary>{navigation.title}<span>View sections</span></summary>
+        {contents}
+      </details>
+    </aside>
   );
 }
 
@@ -2642,24 +2708,62 @@ function guideTocLabel(label) {
 function guideTocItems(guide) {
   return [
     ...guide.introSections.map((section, index) => ({
+      key: `intro-${index}`,
       id: section.id,
       marker: index === 0 ? "Start" : "Prep",
       label: guideTocLabel(section.title),
+      groupKey: "start-here",
+      groupTitle: "Start Here",
       level: 1,
     })),
     ...guide.steps.map((step) => ({
+      key: `step-${step.stepNumber}`,
       id: step.id,
       marker: String(step.stepNumber).padStart(2, "0"),
       label: guideTocLabel(step.shortTitle),
+      groupKey: step.tocGroupKey,
+      groupTitle: step.tocGroupTitle,
       level: 1,
     })),
-    ...guide.closingSections.map((section) => ({
+    ...guide.closingSections.map((section, index) => ({
+      key: `closing-${index}`,
       id: section.id,
       marker: "End",
       label: guideTocLabel(section.title),
+      groupKey: "finish",
+      groupTitle: "Finish",
       level: 1,
     })),
   ];
+}
+
+function guideTocModel(guide, config = {}) {
+  const baseItems = guide.tocItems || [];
+  const configuredItems = new Map((Array.isArray(config?.items) ? config.items : []).map((item) => [item.key, item]));
+  const configuredGroups = Array.isArray(config?.groups) ? config.groups : [];
+  const groupMap = new Map();
+  const groupOrder = [];
+
+  configuredGroups.forEach((group) => {
+    if (!group?.key || groupMap.has(group.key)) return;
+    groupMap.set(group.key, { key: group.key, title: group.title || "Section", items: [] });
+    groupOrder.push(group.key);
+  });
+
+  baseItems.forEach((item) => {
+    const override = configuredItems.get(item.key) || {};
+    const groupKey = override.group || item.groupKey || "guide";
+    if (!groupMap.has(groupKey)) {
+      groupMap.set(groupKey, { key: groupKey, title: item.groupTitle || "Guide", items: [] });
+      groupOrder.push(groupKey);
+    }
+    groupMap.get(groupKey).items.push({ ...item, label: override.label || item.label });
+  });
+
+  return {
+    title: config?.title || "Guide contents",
+    groups: groupOrder.map((key) => groupMap.get(key)).filter((group) => group.items.length),
+  };
 }
 
 function markdownTocItems(content) {
@@ -3552,7 +3656,8 @@ function getGuideModel(content) {
     "Next Steps",
   ]);
   const steps = [];
-  let phase = "Prep";
+  let tocGroupKey = "workshop";
+  let tocGroupTitle = "Workshop";
   const firstStepIndex = sections.findIndex((section) => section.title.startsWith("Step "));
   const lastStepIndex = sections.findLastIndex((section) => section.title.startsWith("Step "));
   const introSections = sections.filter((section, index) => {
@@ -3572,13 +3677,17 @@ function getGuideModel(content) {
     }));
 
   sections.forEach((section) => {
-    if (section.title.startsWith("PART 1")) phase = "Demo";
-    if (section.title.startsWith("PART 2")) phase = "Your files";
+    const partMatch = section.title.match(/^PART\s+(\d+)\s*[:.-]\s*(.+)$/i);
+    if (partMatch) {
+      tocGroupKey = `part-${partMatch[1]}`;
+      tocGroupTitle = `${partMatch[1]} · ${toTitleCase(partMatch[2])}`;
+    }
     if (section.title.startsWith("Step ")) {
       const summary = deriveStepSummary(section);
       steps.push({
         ...section,
-        phase,
+        tocGroupKey,
+        tocGroupTitle,
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
         summary,
@@ -3598,6 +3707,13 @@ function getGuideModel(content) {
     }),
     fullContext: content,
   };
+}
+
+function toTitleCase(value = "") {
+  const smallWords = new Set(["a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "into", "nor", "of", "on", "or", "the", "to", "with"]);
+  return value.trim().toLowerCase().split(/\s+/).map((word, index) => (
+    index > 0 && smallWords.has(word) ? word : `${word.charAt(0).toUpperCase()}${word.slice(1)}`
+  )).join(" ");
 }
 
 async function copyText(text) {

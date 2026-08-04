@@ -595,6 +595,7 @@ function createMonthTemplate(preset = {}) {
       },
     ],
     guide_markdown: monthTemplateGuide(label),
+    guide_toc: {},
     challenge_markdown: monthTemplateChallenge(label),
     challenge_prompt: `Use this space for the main ${label} challenge prompt.`,
     prompts: [
@@ -1376,19 +1377,27 @@ export default function AdminBackend({ navigate }) {
                         )}
                       </div>
                       {activeResourceTab === "guide" && (
-                        <MarkdownBoxEditor
-                          title="Guide markdown"
-                          value={month.guide_markdown || ""}
-                          onChange={(value) => updateMonth({ guide_markdown: value })}
-                          previewKind="guide"
-                          token={token}
-                          monthSlug={month.slug}
-                          documentKey="guide"
-                          actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
-                          hideHeader
-                          mode={guideEditorMode}
-                          onModeChange={setGuideEditorMode}
-                        />
+                        <div className="admin-stack">
+                          <GuideTocEditor
+                            content={month.guide_markdown || ""}
+                            value={month.guide_toc || {}}
+                            onChange={(value) => updateMonth({ guide_toc: value })}
+                          />
+                          <MarkdownBoxEditor
+                            title="Guide markdown"
+                            value={month.guide_markdown || ""}
+                            onChange={(value) => updateMonth({ guide_markdown: value })}
+                            previewKind="guide"
+                            previewConfig={month.guide_toc || {}}
+                            token={token}
+                            monthSlug={month.slug}
+                            documentKey="guide"
+                            actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                            hideHeader
+                            mode={guideEditorMode}
+                            onModeChange={setGuideEditorMode}
+                          />
+                        </div>
                       )}
                       {activeResourceTab === "challenge" && (
                         <div className="admin-stack">
@@ -1477,6 +1486,7 @@ const VERSION_FIELDS = [
   ["hero", "Hero"],
   ["resources", "Resources"],
   ["guide_markdown", "Guide"],
+  ["guide_toc", "Guide navigation"],
   ["challenge_markdown", "Challenge"],
   ["challenge_prompt", "Challenge prompt"],
   ["prompts", "Prompts"],
@@ -1791,7 +1801,109 @@ function EditorModeToggle({ mode, onChange }) {
   );
 }
 
-function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", token, monthSlug, documentKey = "document", actor, hideHeader = false, mode: controlledMode, onModeChange }) {
+function GuideTocEditor({ content = "", value = {}, onChange }) {
+  const guide = useMemo(() => getGuideModel(content), [content]);
+  const draft = useMemo(() => guideTocDraft(guide, value), [guide, value]);
+
+  function commit(next) {
+    onChange({
+      title: next.title || "Guide contents",
+      groups: next.groups.map(({ key, title }) => ({ key, title })),
+      items: next.items.map(({ key, label, group }) => ({ key, label, group })),
+    });
+  }
+
+  function updateGroup(key, title) {
+    commit({ ...draft, groups: draft.groups.map((group) => (group.key === key ? { ...group, title } : group)) });
+  }
+
+  function addGroup() {
+    const title = window.prompt("Section heading", "New section");
+    if (!title?.trim()) return;
+    const base = sectionId(title) || "section";
+    let key = base;
+    let count = 2;
+    while (draft.groups.some((group) => group.key === key)) {
+      key = `${base}-${count}`;
+      count += 1;
+    }
+    commit({ ...draft, groups: [...draft.groups, { key, title: title.trim() }] });
+  }
+
+  function removeGroup(key) {
+    if (draft.groups.length < 2) return;
+    const fallback = draft.groups.find((group) => group.key !== key)?.key || "start-here";
+    commit({
+      ...draft,
+      groups: draft.groups.filter((group) => group.key !== key),
+      items: draft.items.map((item) => (item.group === key ? { ...item, group: fallback } : item)),
+    });
+  }
+
+  if (!draft.items.length) return null;
+
+  return (
+    <section className="guide-toc-editor">
+      <div className="guide-toc-editor-head">
+        <div>
+          <p className="section-kicker">Side navigation</p>
+          <h3>Guide contents</h3>
+          <p>Group related steps and edit the shorter labels members see in the permanent navigation.</p>
+        </div>
+        <button type="button" onClick={addGroup}>Add section</button>
+      </div>
+      <label className="guide-toc-title-field">
+        Navigation title
+        <input value={draft.title} onChange={(event) => commit({ ...draft, title: event.target.value })} />
+      </label>
+      <div className="guide-toc-editor-groups">
+        {draft.groups.map((group) => {
+          const groupItems = draft.items.filter((item) => item.group === group.key);
+          return (
+            <section className="guide-toc-editor-group" key={group.key}>
+              <div className="guide-toc-editor-group-head">
+                <input
+                  aria-label="Section heading"
+                  value={group.title}
+                  onChange={(event) => updateGroup(group.key, event.target.value)}
+                />
+                <button type="button" onClick={() => removeGroup(group.key)} disabled={draft.groups.length < 2}>Remove</button>
+              </div>
+              <div className="guide-toc-editor-items">
+                {groupItems.map((item) => (
+                  <div className="guide-toc-editor-item" key={item.key}>
+                    <span>{item.marker}</span>
+                    <input
+                      aria-label={`${item.sourceLabel} navigation label`}
+                      value={item.label}
+                      onChange={(event) => commit({
+                        ...draft,
+                        items: draft.items.map((entry) => (entry.key === item.key ? { ...entry, label: event.target.value } : entry)),
+                      })}
+                    />
+                    <select
+                      aria-label={`${item.sourceLabel} section`}
+                      value={item.group}
+                      onChange={(event) => commit({
+                        ...draft,
+                        items: draft.items.map((entry) => (entry.key === item.key ? { ...entry, group: event.target.value } : entry)),
+                      })}
+                    >
+                      {draft.groups.map((option) => <option value={option.key} key={option.key}>{option.title}</option>)}
+                    </select>
+                  </div>
+                ))}
+                {!groupItems.length && <p className="admin-preview-empty">Move a guide item into this section using its section menu.</p>}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", previewConfig = {}, token, monthSlug, documentKey = "document", actor, hideHeader = false, mode: controlledMode, onModeChange }) {
   const [localMode, setLocalMode] = useState("edit");
   const mode = controlledMode || localMode;
   const setMode = onModeChange || setLocalMode;
@@ -2038,22 +2150,23 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", t
         </div>
       ) : (
         <div className="markdown-editor-preview">
-          <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} />
+          <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
         </div>
       )}
     </article>
   );
 }
 
-function CustomerMarkdownPreview({ content, kind, monthSlug = "" }) {
+function CustomerMarkdownPreview({ content, kind, monthSlug = "", previewConfig = {} }) {
   if (!content?.trim()) return <p className="admin-preview-empty">Nothing written yet.</p>;
-  if (kind === "guide") return <GuideCustomerPreview content={content} monthSlug={monthSlug} />;
+  if (kind === "guide") return <GuideCustomerPreview content={content} monthSlug={monthSlug} tocConfig={previewConfig} />;
   if (kind === "challenge") return <ChallengeCustomerPreview content={content} />;
   return <MarkdownBlocks blocks={blocksWithHeadingIds(content)} />;
 }
 
-function GuideCustomerPreview({ content, monthSlug = "" }) {
+function GuideCustomerPreview({ content, monthSlug = "", tocConfig = {} }) {
   const guide = useMemo(() => getGuideModel(content), [content]);
+  const navigation = useMemo(() => guideTocDraft(guide, tocConfig), [guide, tocConfig]);
 
   if (!guide.introSections.length && !guide.steps.length && !guide.closingSections.length) {
     return <GenericGuideCards content={content} />;
@@ -2061,6 +2174,15 @@ function GuideCustomerPreview({ content, monthSlug = "" }) {
 
   return (
     <div className="admin-customer-preview">
+      <div className="admin-guide-toc-preview">
+        <span>{navigation.title}</span>
+        {navigation.groups.map((group) => (
+          <div key={group.key}>
+            <strong>{group.title}</strong>
+            <p>{navigation.items.filter((item) => item.group === group.key).map((item) => item.label).join(" · ")}</p>
+          </div>
+        ))}
+      </div>
       <div className="workbench-layout">
         <div className="workbench-stack">
           {guide.introSections.map((section) => (
@@ -2230,7 +2352,8 @@ function getGuideModel(content) {
     "Next Steps",
   ]);
   const steps = [];
-  let phase = "Prep";
+  let tocGroupKey = "workshop";
+  let tocGroupTitle = "Workshop";
   const firstStepIndex = sections.findIndex((section) => section.title.startsWith("Step "));
   const lastStepIndex = sections.findLastIndex((section) => section.title.startsWith("Step "));
   const introSections = sections.filter((section, index) => {
@@ -2250,12 +2373,16 @@ function getGuideModel(content) {
     }));
 
   sections.forEach((section) => {
-    if (section.title.startsWith("PART 1")) phase = "Demo";
-    if (section.title.startsWith("PART 2")) phase = "Your files";
+    const partMatch = section.title.match(/^PART\s+(\d+)\s*[:.-]\s*(.+)$/i);
+    if (partMatch) {
+      tocGroupKey = `part-${partMatch[1]}`;
+      tocGroupTitle = `${partMatch[1]} · ${toTitleCase(partMatch[2])}`;
+    }
     if (section.title.startsWith("Step ")) {
       steps.push({
         ...section,
-        phase,
+        tocGroupKey,
+        tocGroupTitle,
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
         summary: STEP_SUBHEADLINES[section.title] || "",
@@ -2269,6 +2396,80 @@ function getGuideModel(content) {
     steps,
     closingSections,
   };
+}
+
+function guideTocDraft(guide, config = {}) {
+  const baseItems = [
+    ...guide.introSections.map((section, index) => ({
+      key: `intro-${index}`,
+      marker: index === 0 ? "Start" : "Prep",
+      label: adminGuideTocLabel(section.title),
+      sourceLabel: section.title,
+      group: "start-here",
+      groupTitle: "Start Here",
+    })),
+    ...guide.steps.map((step) => ({
+      key: `step-${step.stepNumber}`,
+      marker: String(step.stepNumber).padStart(2, "0"),
+      label: adminGuideTocLabel(step.shortTitle),
+      sourceLabel: step.shortTitle,
+      group: step.tocGroupKey,
+      groupTitle: step.tocGroupTitle,
+    })),
+    ...guide.closingSections.map((section, index) => ({
+      key: `closing-${index}`,
+      marker: "End",
+      label: adminGuideTocLabel(section.title),
+      sourceLabel: section.title,
+      group: "finish",
+      groupTitle: "Finish",
+    })),
+  ];
+  const configuredItems = new Map((Array.isArray(config?.items) ? config.items : []).map((item) => [item.key, item]));
+  const groups = [];
+  const groupKeys = new Set();
+
+  (Array.isArray(config?.groups) ? config.groups : []).forEach((group) => {
+    if (!group?.key || groupKeys.has(group.key)) return;
+    groups.push({ key: group.key, title: group.title || "Section" });
+    groupKeys.add(group.key);
+  });
+
+  const items = baseItems.map((item) => {
+    const override = configuredItems.get(item.key) || {};
+    const group = override.group || item.group;
+    if (!groupKeys.has(group)) {
+      groups.push({ key: group, title: item.groupTitle || "Guide" });
+      groupKeys.add(group);
+    }
+    return { ...item, label: override.label || item.label, group };
+  });
+
+  return { title: config?.title || "Guide contents", groups, items };
+}
+
+const ADMIN_GUIDE_TOC_LABELS = {
+  "Create Your GitHub and Lovable Accounts": "Create Accounts",
+  "Connect Lovable to GitHub": "Connect GitHub",
+  "Generate Your GitHub Token": "Generate Token",
+  "Hand the Token and the Repository Name to Lovable": "Give Lovable the Token",
+  "Set Up Your AgentHub Folder in Cowork": "Set Up AgentHub",
+  "Connect Cowork to Your Repository": "Connect Cowork",
+  "Create CLAUDE.md (The Standing Rule)": "Create CLAUDE.md",
+  "Create a New Card for Daily Briefing": "Create Daily Briefing",
+  "Use the Ideas + Wins Board": "Use Ideas + Wins",
+  "You Did It! Next Steps": "Next Steps",
+};
+
+function adminGuideTocLabel(label = "") {
+  return ADMIN_GUIDE_TOC_LABELS[label] || label;
+}
+
+function toTitleCase(value = "") {
+  const smallWords = new Set(["a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "into", "nor", "of", "on", "or", "the", "to", "with"]);
+  return value.trim().toLowerCase().split(/\s+/).map((word, index) => (
+    index > 0 && smallWords.has(word) ? word : `${word.charAt(0).toUpperCase()}${word.slice(1)}`
+  )).join(" ");
 }
 
 function splitGuideSections(content) {

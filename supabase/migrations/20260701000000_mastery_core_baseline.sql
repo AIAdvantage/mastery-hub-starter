@@ -9,6 +9,7 @@ create table if not exists public.mastery_month_drafts (
   hero jsonb not null default '{}'::jsonb,
   resources jsonb not null default '[]'::jsonb,
   guide_markdown text not null default '',
+  guide_toc jsonb not null default '{}'::jsonb,
   challenge_markdown text not null default '',
   challenge_prompt text not null default '',
   prompts jsonb not null default '[]'::jsonb,
