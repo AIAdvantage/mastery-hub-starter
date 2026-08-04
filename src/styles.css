@@ -2334,14 +2334,14 @@ h1 {
 
 .markdown-document {
   display: grid;
-  gap: 8px;
+  gap: 14px;
   max-width: 980px;
 }
 
 .markdown-document h3,
 .markdown-document h4,
 .markdown-document h5 {
-  margin: 24px 0 4px;
+  margin: 34px 0 8px;
   color: var(--cream);
   font-family: var(--serif);
   font-weight: 500;
@@ -2368,7 +2368,7 @@ h1 {
 .markdown-document p {
   margin: 0;
   color: var(--txt);
-  line-height: 1.7;
+  line-height: 1.78;
 }
 
 .markdown-document strong {
@@ -2532,13 +2532,32 @@ h1 {
   line-height: 1.45;
 }
 
-.workbench-step-top span,
-.workbench-step-top small {
+.guide-workbench-section .resource-section-head .section-kicker,
+.workbench-step-top > span,
+.workbench-step-top > small {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(182, 138, 59, 0.28);
+  border-radius: var(--r-pill);
+  background: rgba(182, 138, 59, 0.08);
   color: var(--gold-2);
+  padding: 5px 10px;
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: none;
+}
+
+.guide-workbench-section .prep-experience-box span,
+.guide-workbench-section .md-note strong,
+.guide-workbench-section .md-learning-callout strong,
+.admin-customer-preview .prep-experience-box span,
+.admin-customer-preview .md-note strong,
+.admin-customer-preview .md-learning-callout strong {
+  letter-spacing: 0.03em;
+  text-transform: none;
 }
 
 .guide-workbench-section {
@@ -2692,7 +2711,7 @@ h1 {
 
 .workbench-layout {
   display: grid;
-  gap: 18px;
+  gap: 26px;
 }
 
 .guide-path {
@@ -2799,14 +2818,14 @@ h1 {
 
 .workbench-stack {
   display: grid;
-  gap: 16px;
+  gap: 26px;
 }
 
 .workbench-step {
   border: 1px solid var(--line);
   border-radius: var(--r-card);
   background: rgba(255, 253, 248, 0.86);
-  padding: clamp(18px, 3vw, 28px);
+  padding: clamp(22px, 3.5vw, 34px);
   scroll-margin-top: 92px;
 }
 
@@ -3107,7 +3126,7 @@ h1 {
 }
 
 .workbench-step h3 {
-  margin: 4px 0 10px;
+  margin: 12px 0 18px;
   color: var(--cream);
   font-family: var(--serif);
   font-size: clamp(28px, 4vw, 42px);
@@ -3138,6 +3157,7 @@ h1 {
 }
 
 .markdown-document-embedded {
+  row-gap: 14px;
   max-width: none;
 }
 
@@ -4674,13 +4694,13 @@ h1 {
   }
 
   .markdown-document {
-    gap: 7px;
+    gap: 11px;
   }
 
   .markdown-document h3,
   .markdown-document h4,
   .markdown-document h5 {
-    margin-top: 20px;
+    margin-top: 28px;
   }
 
   .markdown-document h3 {
