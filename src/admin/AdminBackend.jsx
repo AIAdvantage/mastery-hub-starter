@@ -651,11 +651,23 @@ function adminDeepLink(slug, tab = "content") {
 }
 
 function resourceEditorTab(item = {}) {
+  if (item.content_kind === "page") return "guide";
   const haystack = `${item.category || ""} ${item.type || ""} ${item.title || ""} ${item.url || ""}`.toLowerCase();
   if (haystack.includes("challenge")) return "challenge";
   if (haystack.includes("extra") || haystack.includes("publishing")) return "extras";
   if (haystack.includes("live") || haystack.includes("prompt") || haystack.includes("/prompts")) return "prompts";
   return "guide";
+}
+
+function isStandaloneResourcePage(item = {}, monthSlug = "") {
+  if (!item || item.content_kind !== "page") return false;
+  if (!monthSlug) return true;
+  return String(item.url || "").startsWith(`/monthly-resources/${monthSlug}/`);
+}
+
+function newResourceId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `page-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function resourceEditorLabel(tab) {
@@ -891,6 +903,11 @@ export default function AdminBackend({ navigate }) {
 
   function addResource(category = "Workshop") {
     const cleanCategory = normalizedResourceCategory(category);
+    const nextIndex = (monthRef.current?.resources || []).length;
+    if (cleanCategory === "Workshop") {
+      setActiveResourceIndex(nextIndex);
+      setActiveResourceTab("guide");
+    }
     setMonth((current) => {
       const resources = current?.resources || [];
       const monthSlug = current?.slug || slugify(current?.label || "month");
@@ -904,17 +921,16 @@ export default function AdminBackend({ navigate }) {
         is_published: false,
         url: "",
       };
-      const patch = {};
-
       if (cleanCategory === "Workshop") {
         const baseUrl = `/monthly-resources/${monthSlug}/guide/${slugify(`${label} workshop guide`) || "workshop-guide"}`;
+        nextResource.id = newResourceId();
+        nextResource.content_kind = "page";
         nextResource.type = "Walkthrough";
         nextResource.title = `${label} Workshop Guide`;
         nextResource.description = "Placeholder workshop description. Replace this with what members will build and why it matters.";
         nextResource.url = uniqueResourceUrl(resources, baseUrl);
-        if (!current?.guide_markdown?.trim()) {
-          patch.guide_markdown = monthTemplateGuide(label);
-        }
+        nextResource.content_markdown = monthTemplateGuide(label);
+        nextResource.content_toc = {};
       } else if (cleanCategory === "Challenge") {
         nextResource.type = "Challenge";
         nextResource.title = `${label} Challenge`;
@@ -928,7 +944,6 @@ export default function AdminBackend({ navigate }) {
 
       return {
         ...current,
-        ...patch,
         resources: [...resources, nextResource],
       };
     });
@@ -1371,6 +1386,9 @@ export default function AdminBackend({ navigate }) {
                       <div className="admin-section-actions">
                         <div>
                           <h2>Selected card content</h2>
+                          {activeResourceIndex != null && month.resources?.[activeResourceIndex]?.title && (
+                            <p className="muted">{month.resources[activeResourceIndex].title}</p>
+                          )}
                         </div>
                         {activeResourceTab === "guide" && (
                           <EditorModeToggle mode={guideEditorMode} onChange={setGuideEditorMode} />
@@ -1379,19 +1397,43 @@ export default function AdminBackend({ navigate }) {
                       {activeResourceTab === "guide" && (
                         <div className="admin-stack">
                           <GuideTocEditor
-                            content={month.guide_markdown || ""}
-                            value={month.guide_toc || {}}
-                            onChange={(value) => updateMonth({ guide_toc: value })}
+                            content={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? month.resources[activeResourceIndex].content_markdown || ""
+                              : month.guide_markdown || ""}
+                            value={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? month.resources[activeResourceIndex].content_toc || {}
+                              : month.guide_toc || {}}
+                            onChange={(value) => {
+                              if (isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)) {
+                                updateResource(activeResourceIndex, "content_toc", value);
+                              } else {
+                                updateMonth({ guide_toc: value });
+                              }
+                            }}
                           />
                           <MarkdownBoxEditor
-                            title="Guide markdown"
-                            value={month.guide_markdown || ""}
-                            onChange={(value) => updateMonth({ guide_markdown: value })}
+                            title={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? `${month.resources[activeResourceIndex].title || "Page"} markdown`
+                              : "Guide markdown"}
+                            value={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? month.resources[activeResourceIndex].content_markdown || ""
+                              : month.guide_markdown || ""}
+                            onChange={(value) => {
+                              if (isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)) {
+                                updateResource(activeResourceIndex, "content_markdown", value);
+                              } else {
+                                updateMonth({ guide_markdown: value });
+                              }
+                            }}
                             previewKind="guide"
-                            previewConfig={month.guide_toc || {}}
+                            previewConfig={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? month.resources[activeResourceIndex].content_toc || {}
+                              : month.guide_toc || {}}
                             token={token}
                             monthSlug={month.slug}
-                            documentKey="guide"
+                            documentKey={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
+                              ? `resource-${month.resources[activeResourceIndex].id || slugify(month.resources[activeResourceIndex].url || "page")}`
+                              : "guide"}
                             actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
                             hideHeader
                             mode={guideEditorMode}

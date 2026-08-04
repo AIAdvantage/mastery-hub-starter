@@ -25,6 +25,7 @@ function service() {
 }
 
 function resourceContentKey(resource = {}) {
+  if (resource.content_kind === "page") return "resource";
   const haystack = `${resource.category || ""} ${resource.type || ""} ${resource.title || ""} ${resource.url || ""}`.toLowerCase();
   if (haystack.includes("challenge") || haystack.includes("/challenges/")) return "challenge";
   if (haystack.includes("extra") || haystack.includes("/extras")) return "extras";

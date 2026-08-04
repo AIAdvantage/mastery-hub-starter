@@ -125,7 +125,7 @@ function cleanGuideToc(input) {
 function cleanResource(input = {}) {
   const legacyStatus = input.status === "tested" ? "testing" : input.status === "final" ? "final draft" : input.status;
   const isPublished = Boolean(input.is_published) || legacyStatus === "published";
-  return {
+  const resource = {
     category: cleanResourceCategory(input.category),
     type: input.type || "Resource",
     title: input.title || "",
@@ -134,6 +134,13 @@ function cleanResource(input = {}) {
     is_published: isPublished,
     url: input.url || "",
   };
+  if (input.content_kind === "page") {
+    resource.id = String(input.id || "").trim().slice(0, 120);
+    resource.content_kind = "page";
+    resource.content_markdown = String(input.content_markdown || "");
+    resource.content_toc = cleanGuideToc(input.content_toc);
+  }
+  return resource;
 }
 
 function cleanResourceCategory(category) {

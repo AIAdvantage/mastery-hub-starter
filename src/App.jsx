@@ -1695,6 +1695,31 @@ function cmsMonthToContent(month) {
   };
 }
 
+function normalizedResourcePath(url = "") {
+  try {
+    return new URL(url, "https://mastery.aiadvantage.com").pathname.replace(/\/$/, "") || "/";
+  } catch {
+    return "";
+  }
+}
+
+function standaloneResourcePage(month, path) {
+  return (month?.resources || []).find((resource) => (
+    resource?.content_kind === "page"
+    && normalizedResourcePath(resource.url) === path
+  ));
+}
+
+function cmsResourcePageContent(month, resource) {
+  return {
+    guide: resource?.content_markdown || "",
+    guideToc: resource?.content_toc || {},
+    challenge: "",
+    challengePrompt: "",
+    prompts: Array.isArray(month?.prompts) ? month.prompts : [],
+  };
+}
+
 function cmsExtrasToContent(month) {
   const extras = month.extras || {};
   return {
@@ -1752,6 +1777,39 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [], li
   }
 
   if (cmsMonth) {
+    const resourcePage = standaloneResourcePage(cmsMonth, path);
+    if (resourcePage) {
+      if (!resourcePage.content_markdown?.trim()) {
+        return (
+          <MonthUnavailable
+            basePath="/monthly-resources"
+            label={segment}
+            navigate={navigate}
+            title="This page is not live yet."
+            message="The card is published, but its page content has not been added yet."
+          />
+        );
+      }
+      return (
+        <GuidePage
+          navigate={navigate}
+          content={cmsResourcePageContent(cmsMonth, resourcePage)}
+          monthLabel={cmsMonth.label}
+          monthSlug={cmsMonth.slug}
+          pageTitle={resourcePage.title || `${cmsMonth.label} Workshop Page`}
+          pageIntro={resourcePage.description || "Follow this page for the workshop."}
+          pageLabel={resourcePage.title || "Workshop Page"}
+          showMaterials={false}
+          customHelpContext={{
+            ...cmsGuideHelpContext(cmsMonth),
+            guideName: resourcePage.title || `${cmsMonth.label} workshop page`,
+            guideLink: `https://mastery.aiadvantage.com${normalizedResourcePath(resourcePage.url)}`,
+          }}
+          isCurrentWorkshop={isCurrentWorkshop}
+        />
+      );
+    }
+
     if (path === `/monthly-resources/${segment}/guide` || path.startsWith(`/monthly-resources/${segment}/guide/`)) {
       if (!cmsHasContent(cmsMonth, "guide")) {
         return (
@@ -2503,6 +2561,7 @@ function GuidePage({
   monthSlug = "june",
   pageTitle = "June Guide: Fill Any Form with Claude",
   pageIntro = "Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.",
+  pageLabel = "Guide",
   showMaterials = true,
   customHelpContext,
   isCurrentWorkshop = false,
@@ -2514,7 +2573,7 @@ function GuidePage({
   return (
     <section className="section page-section month-section guide-page-section" aria-labelledby="guide-title">
       <Breadcrumbs
-        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: "Guide" })}
+        items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel, monthSlug, leafLabel: pageLabel })}
         navigate={navigate}
       />
       <div className="guide-page-layout">
