@@ -2596,10 +2596,16 @@ h1 {
 }
 
 .guide-toc-desktop {
-  position: sticky;
-  top: 112px;
-  max-height: calc(100vh - 136px);
+  position: fixed;
+  top: 88px;
+  left: max(20px, calc(50% - 860px));
+  z-index: 18;
+  width: 260px;
+  max-height: calc(100vh - 108px);
   overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: rgba(135, 103, 57, 0.3) transparent;
 }
@@ -2611,7 +2617,7 @@ h1 {
 .guide-toc-head {
   display: grid;
   gap: 14px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .guide-toc-head span {
@@ -2631,8 +2637,8 @@ h1 {
 
 .guide-toc-groups {
   display: grid;
-  gap: 26px;
-  padding-bottom: 24px;
+  gap: 20px;
+  padding-bottom: 12px;
 }
 
 .guide-toc-group {
@@ -2661,7 +2667,7 @@ h1 {
   gap: 2px;
   border-left: 2px solid transparent;
   color: var(--muted);
-  padding: 6px 6px 6px 10px;
+  padding: 5px 6px 5px 10px;
   text-decoration: none;
   transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
 }
