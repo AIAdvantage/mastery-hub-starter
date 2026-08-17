@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node scripts/qa-prompt-controls.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

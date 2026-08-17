@@ -2,6 +2,11 @@ import React, { Component, useEffect, useMemo, useRef, useState } from "react";
 import { SignIn, SignUp, useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import { supabase } from "./lib/supabase.js";
 import { trackEvent, trackStepHelpClick } from "./lib/analytics.js";
+import {
+  normalizePromptContext,
+  parsePromptControlMarker,
+  resolvePromptControl,
+} from "./lib/prompt-controls.js";
 import AdminBackend from "./admin/AdminBackend.jsx";
 import { MONTH6_CONTENT } from "./month6Content.js";
 import { JULY_CONTENT } from "./julyContent.js";
@@ -3551,10 +3556,7 @@ function parseGlossary(glossary) {
 
 function CopyPromptButton({ promptNumber, promptContext = {} }) {
   const [copied, setCopied] = useState(false);
-  const prompt = (promptContext.prompts || []).find((p) => {
-    const title = p.title || "";
-    return title.startsWith(`Prompt ${promptNumber}:`) || title.startsWith(`Prompt ${promptNumber} (`);
-  });
+  const prompt = resolvePromptControl({ type: "copy-prompt", prompt: promptNumber }, promptContext);
   if (!prompt) return null;
   async function onCopy() {
     await copyText(prompt.text);
@@ -3588,8 +3590,9 @@ function CopyPromptButton({ promptNumber, promptContext = {} }) {
 
 function ChallengePromptButton({ promptContext = {} }) {
   const [copied, setCopied] = useState(false);
-  const text = promptContext.challengePrompt || "";
-  if (!text) return null;
+  const prompt = resolvePromptControl({ type: "copy-challenge-prompt" }, promptContext);
+  if (!prompt) return null;
+  const text = prompt.text;
 
   async function onCopy() {
     await copyText(text);
@@ -3774,7 +3777,9 @@ function ChallengeWorkbench({
   explainers = {},
   guide,
 }) {
-  const fallbackGuide = useMemo(() => getChallengeGuideModel(content, explainers), [content, explainers]);
+  const challengeMarkdown = content?.challenge || "";
+  const promptContext = normalizePromptContext(content);
+  const fallbackGuide = useMemo(() => getChallengeGuideModel(challengeMarkdown, explainers), [challengeMarkdown, explainers]);
   const challengeGuide = guide || fallbackGuide;
 
   return (
@@ -3790,7 +3795,7 @@ function ChallengeWorkbench({
               <p className="workbench-step-explainer">{step.explainer}</p>
             )}
             <h3>{renderInlineMarkdown(step.title)}</h3>
-            <MarkdownBlocks blocks={step.blocks} />
+            <MarkdownBlocks blocks={step.blocks} promptContext={promptContext} />
           </article>
         ))}
       </div>
@@ -4055,14 +4060,9 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
-    const copyPromptMatch = trimmed.match(/^\[\[copy-prompt:([A-Za-z0-9]+)\]\]$/);
-    if (copyPromptMatch) {
-      blocks.push({ type: "copy-prompt", prompt: copyPromptMatch[1] });
-      continue;
-    }
-
-    if (trimmed === "[[copy-challenge-prompt]]") {
-      blocks.push({ type: "copy-challenge-prompt" });
+    const promptControl = parsePromptControlMarker(trimmed);
+    if (promptControl) {
+      blocks.push(promptControl);
       continue;
     }
 
@@ -4766,7 +4766,7 @@ function CmsChallengeGuidePage({ month, navigate, isCurrentWorkshop = false }) {
           </div>
         </div>
         <ChallengeWorkbench
-          content={challenge}
+          content={cmsMonthToContent(month)}
           helpContext={cmsGuideHelpContext(month, "challenge")}
           guide={challengeGuide}
         />
@@ -4998,7 +4998,7 @@ function JulyChallengeGuidePage({ navigate }) {
           </div>
         </div>
         <ChallengeWorkbench
-          content={JULY_CONTENT.challenge}
+          content={JULY_CONTENT}
           helpContext={CHALLENGE_HELP_CONTEXTS.july}
           guide={challengeGuide}
         />
@@ -5032,7 +5032,7 @@ function ChallengeGuidePage({ navigate }) {
           </div>
         </div>
         <ChallengeWorkbench
-          content={MONTH6_CONTENT.challenge}
+          content={MONTH6_CONTENT}
           helpContext={CHALLENGE_HELP_CONTEXTS.june || GUIDE_HELP_CONTEXTS.june}
           guide={challengeGuide}
         />
