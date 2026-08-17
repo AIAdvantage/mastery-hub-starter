@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Component, useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { JULY_CONTENT } from "../julyContent.js";
 import MasteryRequests from "./MasteryRequests.jsx";
 
 const TOKEN_KEY = "mastery_admin_token";
+const FULL_PREVIEW_STORAGE_PREFIX = "mastery_full_preview_";
 const WORKSHOP_YEAR = "2026";
 const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";
 
@@ -106,68 +107,6 @@ const RESOURCE_EDITOR_TABS = ["guide", "challenge", "prompts", "extras"];
 const ADMIN_SECTIONS = ["content", "analytics", "requests"];
 const RESOURCE_CATEGORIES = ["Workshop", "Challenge", "Other", "Next month"];
 const RESOURCE_STATUSES = ["idea", "outline", "first draft", "testing", "final draft", "ready to publish", "published"];
-const CLAUDE_DESKTOP_URL = "https://claude.com/download";
-const GITHUB_URL = "https://github.com/";
-const LOVABLE_URL = "https://lovable.dev/";
-
-const JULY_PREREQUISITES = [
-  {
-    label: "GitHub account ready",
-    detail: "Create a free GitHub account and make sure you are signed in before you start the guide.",
-    link: GITHUB_URL,
-    linkLabel: "Open GitHub",
-  },
-  {
-    label: "Lovable account ready",
-    detail: "Create a free Lovable account and make sure you are signed in with GitHub connected.",
-    link: LOVABLE_URL,
-    linkLabel: "Open Lovable",
-  },
-  {
-    label: "Mastery Resources account ready",
-    detail: "Make sure you can sign in here with the same email or Google account connected to your AI Mastery access.",
-    link: "/sign-in",
-    linkLabel: "Sign in to Mastery Resources",
-    internal: true,
-  },
-  {
-    label: "Claude Pro, Max, or Team plan",
-    detail: "Cowork is required for this workflow, so make sure you are signed into a Claude plan that includes it.",
-    link: "https://claude.com/settings/billing",
-    linkLabel: "Check Claude plan",
-  },
-  {
-    label: "Claude Desktop app installed",
-    detail: "Install the desktop app before Step 6, then open the Cowork tab inside Claude.",
-    link: CLAUDE_DESKTOP_URL,
-    linkLabel: "Download Claude Desktop",
-  },
-  {
-    label: "July Live Prompts ready",
-    detail: "Open the July Live Prompts page so the Lovable setup, Cowork connect, CLAUDE.md, Daily Briefing, and Help prompts are ready.",
-    link: "/monthly-resources/july/prompts",
-    linkLabel: "Open Live Prompts",
-    internal: true,
-  },
-];
-
-const PREP_SERVICE_LINKS = [
-  { match: /\bgithub\b/i, link: GITHUB_URL, linkLabel: "Open GitHub" },
-  { match: /\blovable\b/i, link: LOVABLE_URL, linkLabel: "Open Lovable" },
-  { match: /\bmastery resources?\b|\bmastery account\b/i, link: "/sign-in", linkLabel: "Sign in to Mastery Resources", internal: true },
-  { match: /\bclaude desktop\b/i, link: CLAUDE_DESKTOP_URL, linkLabel: "Download Claude Desktop" },
-  { match: /\bclaude (pro|max|team|plan|account)\b/i, link: "https://claude.com/settings/billing", linkLabel: "Check Claude plan" },
-  { match: /\bprompts?\b|\blive materials?\b/i, linkLabel: "Open Prompts", internal: true },
-];
-
-function inferPrepServiceLink(title = "", detail = "", monthSlug = "") {
-  const haystack = `${title} ${detail}`;
-  const match = PREP_SERVICE_LINKS.find((item) => item.match.test(haystack));
-  if (!match) return {};
-  const link = match.link || (match.linkLabel === "Open Prompts" && monthSlug ? `/monthly-resources/${monthSlug}/prompts` : "");
-  return link ? { link, linkLabel: match.linkLabel, internal: match.internal } : {};
-}
-
 function extractMarkdownLink(text = "") {
   const linkMatch = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
   if (!linkMatch) return { text };
@@ -214,7 +153,7 @@ function prepExperienceText(text = "") {
     .trim();
 }
 
-function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
+function prepChecklistFromBlocks(blocks = []) {
   const items = [];
   const notes = [];
   const experience = [];
@@ -259,7 +198,7 @@ function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
       return {
         label: item.title,
         detail,
-        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : inferPrepServiceLink(item.title, detail, monthSlug)),
+        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : {}),
       };
     }),
     notes: notes.filter(Boolean),
@@ -267,63 +206,49 @@ function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
   };
 }
 
-const STEP_SUBHEADLINES = {
-  "Step 1: Create Your Paperwork Folder + Connect Cowork": "Connect Claude Cowork to one clean workspace so it can create, read, and update your paperwork files.",
-  "Step 2: Get Your Materials Bundle": "Download the June materials and let Claude unpack the exact folder structure for the workflow.",
-  "Step 3: Paperwork Setup": "Use Igor's demo DNA to generate the first paperwork profile Claude will use to fill forms.",
-  "Step 4: Review the Files": "Open the generated profile so you can see the kind of reusable information the system stores.",
-  "Step 5: Fill Your Form": "Run the form-filling prompt and produce a completed W-8BEN from the profile Claude just built.",
-  "Step 6: Read the Missing-Info Section": "Use Claude's gap list to see what the profile still needs before the next run.",
-  "Step 7: Reset. Let Claude Clean Up.": "Clear the demo files while keeping the reusable workspace, prompts, form, and skill folder.",
-  "Step 8: Install the Paperwork Skill": "Turn the workflow into an installed Claude skill so you can launch it from Cowork without pasting prompts.",
-  "Step 9: Add YOUR DNA + Run the Skill": "Swap in your own DNA, run the skill, answer missing fields, and grow your paperwork profile.",
-  "Step 10: Run the Skill Again (See the Compounding)": "Run a second form to watch the missing-info list shrink as your profile gets sharper.",
-  "Step 1: Create Your GitHub and Lovable Accounts": "Create the free GitHub and Lovable accounts your Hub is built on.",
-  "Step 2: Set Up Lovable": "Paste the setup prompt and let Lovable build your Hub.",
-  "Step 3: Connect Lovable to GitHub": "Connect Lovable to GitHub so it can create your private repository.",
-  "Step 4: Generate Your GitHub Token": "Generate a fine-grained GitHub token so your Hub and Claude can reach your repo.",
-  "Step 5: Hand the Token and the Repository Name to Lovable": "Paste your token and repo name into Lovable to clear the 401 error.",
-  "Step 6: Set Up Your AgentHub Folder in Cowork": "Set up a Cowork folder and give it the token it needs to talk to GitHub.",
-  "Step 7: Connect Cowork to Your Repository": "Connect Cowork to your repository and watch new cards appear on the Hub.",
-  "Step 8: Create CLAUDE.md (The Standing Rule)": "Let Claude write CLAUDE.md with the card-emitter standing rule inside.",
-  "Step 9: Create a New Card for Daily Briefing": "Create a scheduled task, run it once, and watch it appear in your Hub.",
-  "Step 10: Use the Ideas + Wins Board": "Drop an idea on the kanban, drag it to Done, watch it become a Win.",
-};
-
-const STEP_EXPLAINERS = {
-  "Step 1: Create Your GitHub and Lovable Accounts": "So basically, this step gets your two main accounts ready so Lovable and GitHub can work together.",
-  "Step 2: Set Up Lovable": "This is where Lovable builds the first version of your Hub, and the scary-looking error is expected for now.",
-  "Step 3: Connect Lovable to GitHub": "Now you connect Lovable to GitHub so your Hub has a private home for its files.",
-  "Step 4: Generate Your GitHub Token": "This step creates the private key your Hub and Claude use to read and write your files safely.",
-  "Step 5: Hand the Token and the Repository Name to Lovable": "Now you paste the key and repo name into Lovable so the Hub can finally load your cards.",
-  "Step 6: Set Up Your AgentHub Folder in Cowork": "This is where you make one clean folder on your computer that Claude can use as its working space.",
-  "Step 7: Connect Cowork to Your Repository": "Now Claude writes your first Hub card into GitHub, and you reload the Hub to see it appear.",
-  "Step 8: Create CLAUDE.md (The Standing Rule)": "This step gives Claude a simple rulebook so it knows how to write Hub cards the same way every time.",
-  "Step 9: Create a New Card for Daily Briefing": "Now you set up your first automatic task, run it once, and watch it publish into your Hub.",
-  "Step 10: Use the Ideas + Wins Board": "This is the quick win: add an idea, move it to Done, and see your Hub turn it into a Win.",
-};
-
-const MARKDOWN_BLOCKS = [
-  { label: "Page Title", template: "# Page Title\n\n" },
-  { label: "Generic Card", template: "## New Card\n\nWrite the card content here.\n\n" },
-  { label: "Prep Card", template: "## Before You Start\n\n- [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)\n- [ ] **Starter files ready:** Download or prepare the files you will use during the workshop.\n- [ ] **Workspace ready:** Open the tool or folder where you will build today.\n\n> 💡 No previous experience required. You only need the accounts, files, and workspace listed above.\n\n" },
-  { label: "Outcome Card", template: "## What You'll Have When Done\n\n- [ ] Clear outcome one\n- [ ] Clear outcome two\n\n" },
-  { label: "Step Card", template: "## Step 1: New Step\n\nWrite one clear sentence explaining the outcome.\n\n1. First instruction.\n2. Second instruction.\n\n" },
-  { label: "Learning Moment", template: "💡 Learning moment: Explain the concept in simple, beginner-friendly terms.\n\n" },
-  { label: "Your Win", template: "🏆 **Your Win:** Name the milestone they just reached.\n\n" },
-  { label: "Bonus Card", template: "## 🏆 Bonus: New Bonus\n\n1. First bonus instruction.\n\n" },
-  { label: "Finish Card", template: "## Next Steps\n\n- What to do next.\n\n" },
-  { label: "Subheading", template: "### New Subheading\n\n" },
-  { label: "Bullet", template: "- New bullet\n" },
-  { label: "Check", template: "- [ ] New checklist item\n" },
-  { label: "Callout", template: "**Note:** Add Igor's note here.\n\n" },
-  { label: "Warning", template: "🛟 **Heads up:** Add the important warning here.\n\n" },
-  { label: "Code", template: "```\nPaste code or prompt text here.\n```\n\n" },
-  { label: "Quote", template: "> Add a quote or key teaching line here.\n\n" },
-  { label: "Divider", template: "\n---\n\n" },
-  { label: "Copy Prompt", template: "\n[[copy-prompt:1]]\n\n" },
-  { label: "Challenge Prompt", template: "\n[[copy-challenge-prompt]]\n\n" },
+const MARKDOWN_TOOL_GROUPS = [
+  {
+    title: "Guide cards",
+    items: [
+      { label: "Page Title", template: "# Page Title\n\n", syntax: "# Page Title", preview: "Large document title." },
+      { label: "Generic Card", template: "## New Card\n\nWrite the card content here.\n\n", syntax: "## New Card", preview: "A standard customer card." },
+      { label: "Part Break", template: "## PART 1: New Section\n\n", syntax: "## PART 1: Title", preview: "Starts a table-of-contents group. It does not render as a card." },
+      { label: "Prep Card", template: "## Before You Start\n\n- [ ] **Primary account ready:** Make sure you can sign in before you start the guide. [Open service](https://example.com)\n- [ ] **Starter files ready:** Download or prepare the files you will use during the workshop.\n- [ ] **Workspace ready:** Open the tool or folder where you will build today.\n\n**Previous experience required:** No previous experience required. You only need the accounts, files, and workspace listed above.\n\n", syntax: "## Before You Start", preview: "Prep checklist card with setup links." },
+      { label: "Outcome Card", template: "## What You'll Have When Done\n\n- [ ] Clear outcome one\n- [ ] Clear outcome two\n\n", syntax: "## What You'll Have When Done", preview: "Outcome checklist card." },
+      { label: "Step Card", template: "## Step 1: New Step\n\nWrite one clear sentence explaining the outcome.\n\n1. First instruction.\n2. Second instruction.\n\n", syntax: "## Step 1: Title", preview: "Numbered guide card." },
+      { label: "Bonus Card", template: "## 🏆 Bonus: New Bonus\n\n1. First bonus instruction.\n\n", syntax: "## 🏆 Bonus: Title", preview: "Closing bonus card." },
+      { label: "Finish Card", template: "## Next Steps\n\n- What to do next.\n\n", syntax: "## Next Steps", preview: "Finish card." },
+    ],
+  },
+  {
+    title: "Inside a card",
+    items: [
+      { label: "Subheading", template: "### New Subheading\n\n", syntax: "### New Subheading", preview: "Small heading inside the current card." },
+      { label: "Bullet", template: "- New bullet\n", syntax: "- Bullet", preview: "Bullet row." },
+      { label: "Check", template: "- [ ] New checklist item\n", syntax: "- [ ] Checklist item", preview: "Checklist row." },
+      { label: "Numbered Step", template: "1. First instruction.\n", syntax: "1. Instruction", preview: "Numbered instruction row." },
+      { label: "Quote", template: "> Add a quote or key teaching line here.\n\n", syntax: "> Teaching line", preview: "Quote block." },
+      { label: "Divider", template: "\n---\n\n", syntax: "---", preview: "Horizontal divider." },
+    ],
+  },
+  {
+    title: "Custom preview blocks",
+    items: [
+      { label: "Learning Moment", template: "💡 Learning moment: Explain the concept in simple, beginner-friendly terms.\n\n", syntax: "💡 Learning moment: Text", preview: "Learning Moment callout." },
+      { label: "Your Win", template: "🏆 **Your Win:** Name the milestone they just reached.\n\n", syntax: "🏆 **Your Win:** Text", preview: "Your Win callout." },
+      { label: "Note", template: "**Note:** Add Igor's note here.\n\n", syntax: "**Note:** Text", preview: "Note from Igor callout." },
+      { label: "Igor's Note", template: "📝 **Igor's Note:** Add Igor's personal note here.\n\n", syntax: "📝 **Igor's Note:** Text", preview: "Igor note callout with Igor's image." },
+      { label: "Heads Up", template: "🛟 **Heads up:** Add the important warning here.\n\n", syntax: "🛟 **Heads up:** Text", preview: "Heads up warning callout." },
+      { label: "Experience Note", template: "**Previous experience required:** No previous experience required.\n\n", syntax: "**Previous experience required:** Text", preview: "Prep-card experience note." },
+      { label: "Image Figure", template: "![Describe this screenshot](https://example.com/image.png)\n\n", syntax: "![Alt text](image-url)", preview: "Image figure with optional alt-text caption." },
+      { label: "Code / Prompt", template: "```\nPaste code or prompt text here.\n```\n\n", syntax: "``` code block ```", preview: "Copyable prompt/code box." },
+      { label: "Copy Prompt", template: "\n[[copy-prompt:1]]\n\n", syntax: "[[copy-prompt:1]]", preview: "Button that copies Prompt 1." },
+      { label: "Challenge Prompt", template: "\n[[copy-challenge-prompt]]\n\n", syntax: "[[copy-challenge-prompt]]", preview: "Button that copies the challenge prompt." },
+    ],
+  },
 ];
+
+const MARKDOWN_BLOCKS = MARKDOWN_TOOL_GROUPS.flatMap((group) => group.items);
 
 function slugify(value) {
   return value
@@ -577,7 +502,7 @@ function createMonthTemplate(preset = {}) {
         description: "Use what you built this month, submit your version, and see what other members made.",
         status: "first draft",
         is_published: false,
-        url: `/challenges/${slug}`,
+        url: `/challenges/${slug}/guide`,
       },
       {
         category: "Other",
@@ -690,6 +615,14 @@ function isStandaloneResourcePage(item = {}, monthSlug = "") {
   if (!item || (item.content_kind !== "page" && item.content_ref !== "page")) return false;
   if (!monthSlug) return true;
   return String(item.url || "").startsWith(`/monthly-resources/${monthSlug}/`);
+}
+
+function normalizedResourceUrl(url = "") {
+  try {
+    return new URL(url, MASTERY_ORIGIN).pathname.replace(/\/$/, "") || "/";
+  } catch {
+    return "/";
+  }
 }
 
 function newResourceId() {
@@ -1143,6 +1076,49 @@ export default function AdminBackend({ navigate }) {
     await persistMonth(monthRef.current, { source: "manual" });
   }
 
+  function openFullPreview() {
+    const currentMonth = monthRef.current;
+    if (!currentMonth?.slug) return;
+
+    const resource = currentMonth.resources?.[activeResourceIndex];
+    const isResourcePage = isStandaloneResourcePage(resource, currentMonth.slug);
+    const content = isResourcePage ? resource.content_markdown || "" : currentMonth.guide_markdown || "";
+    const previewId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const pagePath = isResourcePage
+      ? normalizedResourceUrl(resource.url || `/monthly-resources/${currentMonth.slug}/guide/${slugify(resource.title || "preview")}`)
+      : `/monthly-resources/${currentMonth.slug}/guide`;
+
+    const payload = {
+      createdAt: Date.now(),
+      monthSlug: currentMonth.slug,
+      monthLabel: currentMonth.label || currentMonth.slug,
+      monthTopic: currentMonth.topic || "",
+      monthFocus: currentMonth.focus || "",
+      path: pagePath,
+      pageTitle: isResourcePage
+        ? resource.title || `${currentMonth.label || "Month"} Workshop Page`
+        : `${currentMonth.label || "Month"} Guide: ${currentMonth.focus || currentMonth.topic || "Mastery Workshop"}`,
+      pageIntro: isResourcePage
+        ? resource.description || "Follow this page for the workshop."
+        : currentMonth.outcome || "Follow the written guide for this month.",
+      pageLabel: isResourcePage ? resource.title || "Workshop Page" : "Guide",
+      showGuideVideo: !isResourcePage,
+      content: {
+        guide: content,
+        guideToc: {},
+        challengePrompt: currentMonth.challenge_prompt || "",
+        prompts: Array.isArray(currentMonth.prompts) ? currentMonth.prompts : [],
+      },
+    };
+
+    try {
+      localStorage.setItem(`${FULL_PREVIEW_STORAGE_PREFIX}${previewId}`, JSON.stringify(payload));
+      window.open(`/admin/full-preview?preview=${encodeURIComponent(previewId)}`, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      setError(err.message || "Could not open the full preview.");
+    }
+  }
+
   async function restoreVersion(version) {
     if (!version?.id || !month?.slug) return;
     const label = version.snapshot?.label || month.label || month.slug;
@@ -1428,26 +1404,23 @@ export default function AdminBackend({ navigate }) {
                           )}
                         </div>
                         {activeResourceTab === "guide" && (
-                          <EditorModeToggle mode={guideEditorMode} onChange={setGuideEditorMode} />
+                          <>
+                            <button
+                              type="button"
+                              className="admin-full-preview-button"
+                              onClick={openFullPreview}
+                              disabled={!month?.slug}
+                              title="Open this draft in the full customer-facing guide page."
+                            >
+                              Full Preview
+                            </button>
+                            <EditorModeToggle mode={guideEditorMode} onChange={setGuideEditorMode} />
+                          </>
                         )}
                       </div>
                       {activeResourceTab === "guide" && (
                         <div className="admin-stack">
-                          <GuideTocEditor
-                            content={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
-                              ? month.resources[activeResourceIndex].content_markdown || ""
-                              : month.guide_markdown || ""}
-                            value={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
-                              ? month.resources[activeResourceIndex].content_toc || {}
-                              : month.guide_toc || {}}
-                            onChange={(value) => {
-                              if (isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)) {
-                                updateResource(activeResourceIndex, "content_toc", value);
-                              } else {
-                                updateMonth({ guide_toc: value });
-                              }
-                            }}
-                          />
+                          <GuideNavigationNotice />
                           <MarkdownBoxEditor
                             title={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
                               ? `${month.resources[activeResourceIndex].title || "Page"} markdown`
@@ -1463,9 +1436,7 @@ export default function AdminBackend({ navigate }) {
                               }
                             }}
                             previewKind="guide"
-                            previewConfig={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
-                              ? month.resources[activeResourceIndex].content_toc || {}
-                              : month.guide_toc || {}}
+                            previewConfig={{}}
                             token={token}
                             monthSlug={month.slug}
                             documentKey={isStandaloneResourcePage(month.resources?.[activeResourceIndex], month.slug)
@@ -1891,103 +1862,15 @@ function EditorModeToggle({ mode, onChange }) {
   );
 }
 
-function GuideTocEditor({ content = "", value = {}, onChange }) {
-  const guide = useMemo(() => getGuideModel(content), [content]);
-  const draft = useMemo(() => guideTocDraft(guide, value), [guide, value]);
-
-  function commit(next) {
-    onChange({
-      title: next.title || "Guide contents",
-      groups: next.groups.map(({ key, title }) => ({ key, title })),
-      items: next.items.map(({ key, label, group }) => ({ key, label, group })),
-    });
-  }
-
-  function updateGroup(key, title) {
-    commit({ ...draft, groups: draft.groups.map((group) => (group.key === key ? { ...group, title } : group)) });
-  }
-
-  function addGroup() {
-    const title = window.prompt("Section heading", "New section");
-    if (!title?.trim()) return;
-    const base = sectionId(title) || "section";
-    let key = base;
-    let count = 2;
-    while (draft.groups.some((group) => group.key === key)) {
-      key = `${base}-${count}`;
-      count += 1;
-    }
-    commit({ ...draft, groups: [...draft.groups, { key, title: title.trim() }] });
-  }
-
-  function removeGroup(key) {
-    if (draft.groups.length < 2) return;
-    const fallback = draft.groups.find((group) => group.key !== key)?.key || "start-here";
-    commit({
-      ...draft,
-      groups: draft.groups.filter((group) => group.key !== key),
-      items: draft.items.map((item) => (item.group === key ? { ...item, group: fallback } : item)),
-    });
-  }
-
-  if (!draft.items.length) return null;
-
+function GuideNavigationNotice() {
   return (
     <section className="guide-toc-editor">
       <div className="guide-toc-editor-head">
         <div>
           <p className="section-kicker">Side navigation</p>
           <h3>Guide contents</h3>
-          <p>Group related steps and edit the shorter labels members see in the permanent navigation.</p>
+          <p>Generated only from the Markdown below. Use <strong>Step Card</strong> blocks for numbered cards, <strong>Part Break</strong> blocks to group those cards, and <strong>Subheading</strong> inside a card.</p>
         </div>
-        <button type="button" onClick={addGroup}>Add section</button>
-      </div>
-      <label className="guide-toc-title-field">
-        Navigation title
-        <input value={draft.title} onChange={(event) => commit({ ...draft, title: event.target.value })} />
-      </label>
-      <div className="guide-toc-editor-groups">
-        {draft.groups.map((group) => {
-          const groupItems = draft.items.filter((item) => item.group === group.key);
-          return (
-            <section className="guide-toc-editor-group" key={group.key}>
-              <div className="guide-toc-editor-group-head">
-                <input
-                  aria-label="Section heading"
-                  value={group.title}
-                  onChange={(event) => updateGroup(group.key, event.target.value)}
-                />
-                <button type="button" onClick={() => removeGroup(group.key)} disabled={draft.groups.length < 2}>Remove</button>
-              </div>
-              <div className="guide-toc-editor-items">
-                {groupItems.map((item) => (
-                  <div className="guide-toc-editor-item" key={item.key}>
-                    <span>{item.marker}</span>
-                    <input
-                      aria-label={`${item.sourceLabel} navigation label`}
-                      value={item.label}
-                      onChange={(event) => commit({
-                        ...draft,
-                        items: draft.items.map((entry) => (entry.key === item.key ? { ...entry, label: event.target.value } : entry)),
-                      })}
-                    />
-                    <select
-                      aria-label={`${item.sourceLabel} section`}
-                      value={item.group}
-                      onChange={(event) => commit({
-                        ...draft,
-                        items: draft.items.map((entry) => (entry.key === item.key ? { ...entry, group: event.target.value } : entry)),
-                      })}
-                    >
-                      {draft.groups.map((option) => <option value={option.key} key={option.key}>{option.title}</option>)}
-                    </select>
-                  </div>
-                ))}
-                {!groupItems.length && <p className="admin-preview-empty">Move a guide item into this section using its section menu.</p>}
-              </div>
-            </section>
-          );
-        })}
       </div>
     </section>
   );
@@ -2145,8 +2028,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
           data: dataUrl,
         }),
       });
-      const alt = window.prompt("Alt text", file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ")) || "Screenshot";
-      insertText(`\n![${alt}](${data.url})\n\n`);
+      const suggestedAlt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+      const alt = window.prompt("Caption / alt text (optional)", suggestedAlt) || "";
+      insertText(`\n![${alt.trim()}](${data.url})\n\n`);
+      setMode("preview");
       setUploadState("Screenshot inserted");
       window.setTimeout(() => setUploadState(""), 2200);
     } catch (err) {
@@ -2166,16 +2051,40 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
       )}
       {mode === "edit" && (
         <div className="notion-editor-toolbar" aria-label={`${title} block controls`}>
-          <div className="notion-editor-row">
-            {MARKDOWN_BLOCKS.map((block) => (
-              <button type="button" key={block.label} onClick={() => insertText(block.template)}>
-                {block.label}
-              </button>
+          <div className="notion-editor-groups">
+            {MARKDOWN_TOOL_GROUPS.map((group) => (
+              <section className="notion-editor-group" key={group.title}>
+                <h3>{group.title}</h3>
+                <div className="notion-editor-row">
+                  {group.items.map((block) => (
+                    <button type="button" key={block.label} onClick={() => insertText(block.template)}>
+                      {block.label}
+                    </button>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
           <p className="admin-toolbar-hint">
-            Step cards are created with <strong>Step Card</strong>. The customer preview turns each <code>## Step 1: Title</code> heading into a numbered guide card. <strong>Prep Card</strong> creates the setup checklist card.
+            Every custom customer element is addable above. Use <strong>Step Card</strong> for numbered guide cards, <strong>Prep Card</strong> for setup checklists, and <strong>Part Break</strong> to group the guide contents.
           </p>
+          <details className="markdown-schema-panel">
+            <summary>Markdown schema: what becomes what</summary>
+            <div className="markdown-schema-grid">
+              {MARKDOWN_BLOCKS.map((block) => (
+                <div className="markdown-schema-row" key={`${block.label}-${block.syntax}`}>
+                  <strong>{block.label}</strong>
+                  <code>{block.syntax}</code>
+                  <span>{block.preview}</span>
+                </div>
+              ))}
+              <div className="markdown-schema-row">
+                <strong>Inline formatting</strong>
+                <code>**bold** · *italic* · `code` · [link](url)</code>
+                <span>Inline text styling inside most blocks.</span>
+              </div>
+            </div>
+          </details>
           <div className="notion-editor-row notion-editor-row-inline">
             <button type="button" onClick={() => wrapSelection("**")}>Bold</button>
             <button type="button" onClick={() => wrapSelection("*")}>Italic</button>
@@ -2240,11 +2149,53 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
         </div>
       ) : (
         <div className="markdown-editor-preview">
-          <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
+          <MarkdownPreviewErrorBoundary
+            resetKey={`${previewKind}:${monthSlug}:${value}`}
+            fallback={<CustomerMarkdownFallback content={value} kind={previewKind} />}
+          >
+            <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
+          </MarkdownPreviewErrorBoundary>
         </div>
       )}
     </article>
   );
+}
+
+class MarkdownPreviewErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null, resetKey: props.resetKey };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.resetKey !== state.resetKey) {
+      return { error: null, resetKey: props.resetKey };
+    }
+    return null;
+  }
+
+  render() {
+    if (this.state.error) {
+      if (this.props.fallback) return this.props.fallback;
+      return (
+        <div className="admin-preview-error" role="alert">
+          <strong>Preview could not render this block.</strong>
+          <p>Check the newest Markdown line, especially image URLs and brackets. The editor content is still saved.</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function CustomerMarkdownFallback({ content, kind = "document" }) {
+  if (kind === "guide") return <GenericGuideCards content={content} />;
+  if (kind === "challenge") return <ChallengeCustomerPreview content={content} />;
+  return <MarkdownBlocks blocks={blocksWithHeadingIds(content)} />;
 }
 
 function CustomerMarkdownPreview({ content, kind, monthSlug = "", previewConfig = {} }) {
@@ -2278,18 +2229,23 @@ function GuideCustomerPreview({ content, monthSlug = "", tocConfig = {} }) {
           {guide.introSections.map((section) => (
             <IntroCustomerPreview section={section} monthSlug={monthSlug} key={section.title} />
           ))}
-          {guide.steps.map((step, index) => (
-            <article className="workbench-step" id={step.id} key={step.id}>
-              <div className="workbench-step-top">
-                <small>{String(index + 1).padStart(2, "0")}</small>
-                {index + 1 !== 9 && <AdminStepHelpActions />}
-              </div>
-              {step.explainer && <p className="workbench-step-explainer">{step.explainer}</p>}
-              <h3>{step.title}</h3>
-              {!step.explainer && step.summary && <p className="workbench-step-subtitle">{step.summary}</p>}
-              <MarkdownBlocks blocks={step.blocks} />
-            </article>
-          ))}
+          {guide.steps.map((step, index) => {
+            const leadBlocks = stepLeadBlocks(step);
+            const bodyBlocks = stepBodyBlocks(step);
+            return (
+              <article className="workbench-step" id={step.id} key={step.id}>
+                <div className="workbench-step-top">
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                  <AdminStepHelpActions />
+                </div>
+                {leadBlocks.length > 0 && <MarkdownBlocks blocks={leadBlocks} />}
+                {step.explainer && <p className="workbench-step-explainer">{step.explainer}</p>}
+                <h3>{step.title}</h3>
+                {!step.explainer && step.summary && <p className="workbench-step-subtitle">{step.summary}</p>}
+                <MarkdownBlocks blocks={bodyBlocks} />
+              </article>
+            );
+          })}
           {guide.closingSections.map((section) => (
             <article className="workbench-step workbench-close" id={section.id} key={section.title}>
               <div className="workbench-step-top">
@@ -2307,8 +2263,8 @@ function GuideCustomerPreview({ content, monthSlug = "", tocConfig = {} }) {
 
 function IntroCustomerPreview({ section, monthSlug = "" }) {
   const isBeforeStart = section.title === "Before You Start";
-  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks, monthSlug) : { items: [], notes: [], experience: "" };
-  const checklistItems = monthSlug === "july" ? JULY_PREREQUISITES : dynamicPrep.items;
+  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks) : { items: [], notes: [], experience: "" };
+  const checklistItems = dynamicPrep.items;
 
   if (isBeforeStart && checklistItems.length) {
     return (
@@ -2320,17 +2276,15 @@ function IntroCustomerPreview({ section, monthSlug = "" }) {
           <div>
             <h3>{section.title}</h3>
             <p className="workbench-step-subtitle">
-              {monthSlug === "july"
-                ? "Get these six setup pieces ready before you start building your AI Hub."
-                : "Get these setup pieces ready before you start the guide."}
+              Get these setup pieces ready before you start the guide.
             </p>
           </div>
         </div>
         <BeforeStartChecklist items={checklistItems} />
-        {monthSlug !== "july" && dynamicPrep.notes.map((note) => (
+        {dynamicPrep.notes.map((note) => (
           <MarkdownNote text={`Note: ${note}`} key={note} />
         ))}
-        {monthSlug !== "july" && dynamicPrep.experience && <PrepExperienceBox>{dynamicPrep.experience}</PrepExperienceBox>}
+        {dynamicPrep.experience && <PrepExperienceBox>{dynamicPrep.experience}</PrepExperienceBox>}
       </article>
     );
   }
@@ -2457,10 +2411,7 @@ function getGuideModel(content) {
       if (lastStepIndex === -1 || index <= lastStepIndex) return false;
       return !section.title.startsWith("PART ");
     })
-    .map((section) => ({
-      ...section,
-      title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
-    }));
+    .map((section) => ({ ...section }));
 
   sections.forEach((section) => {
     const partMatch = section.title.match(/^PART\s+(\d+)\s*[:.-]\s*(.+)$/i);
@@ -2475,8 +2426,8 @@ function getGuideModel(content) {
         tocGroupTitle,
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
-        summary: STEP_SUBHEADLINES[section.title] || "",
-        explainer: STEP_EXPLAINERS[section.title] || "",
+        summary: blocksToPlainText(stepBodyBlocks(section).slice(0, 1)).replace(/\s+/g, " ").trim(),
+        explainer: "",
       });
     }
   });
@@ -2488,7 +2439,7 @@ function getGuideModel(content) {
   };
 }
 
-function guideTocDraft(guide, config = {}) {
+function guideTocDraft(guide) {
   const baseItems = [
     ...guide.introSections.map((section, index) => ({
       key: `intro-${index}`,
@@ -2515,44 +2466,23 @@ function guideTocDraft(guide, config = {}) {
       groupTitle: "Finish",
     })),
   ];
-  const configuredItems = new Map((Array.isArray(config?.items) ? config.items : []).map((item) => [item.key, item]));
   const groups = [];
   const groupKeys = new Set();
 
-  (Array.isArray(config?.groups) ? config.groups : []).forEach((group) => {
-    if (!group?.key || groupKeys.has(group.key)) return;
-    groups.push({ key: group.key, title: group.title || "Section" });
-    groupKeys.add(group.key);
-  });
-
   const items = baseItems.map((item) => {
-    const override = configuredItems.get(item.key) || {};
-    const group = override.group || item.group;
+    const group = item.group;
     if (!groupKeys.has(group)) {
       groups.push({ key: group, title: item.groupTitle || "Guide" });
       groupKeys.add(group);
     }
-    return { ...item, label: override.label || item.label, group };
+    return { ...item, group };
   });
 
-  return { title: config?.title || "Guide contents", groups, items };
+  return { title: "Guide contents", groups, items };
 }
 
-const ADMIN_GUIDE_TOC_LABELS = {
-  "Create Your GitHub and Lovable Accounts": "Create Accounts",
-  "Connect Lovable to GitHub": "Connect GitHub",
-  "Generate Your GitHub Token": "Generate Token",
-  "Hand the Token and the Repository Name to Lovable": "Give Lovable the Token",
-  "Set Up Your AgentHub Folder in Cowork": "Set Up AgentHub",
-  "Connect Cowork to Your Repository": "Connect Cowork",
-  "Create CLAUDE.md (The Standing Rule)": "Create CLAUDE.md",
-  "Create a New Card for Daily Briefing": "Create Daily Briefing",
-  "Use the Ideas + Wins Board": "Use Ideas + Wins",
-  "You Did It! Next Steps": "Next Steps",
-};
-
 function adminGuideTocLabel(label = "") {
-  return ADMIN_GUIDE_TOC_LABELS[label] || label;
+  return label;
 }
 
 function toTitleCase(value = "") {
@@ -2566,14 +2496,28 @@ function splitGuideSections(content) {
   const blocks = buildMarkdownBlocks(content);
   const sections = [];
   let current = null;
+  let pendingLeadBlocks = [];
 
   blocks.forEach((block) => {
-    if ((block.type === "h3" || block.type === "h4") && block.text !== "Table of Contents") {
+    if (isGuideCardLeadIn(block) && !isGuideStepTitle(current?.title)) {
+      pendingLeadBlocks = [block];
+      return;
+    }
+
+    if (pendingLeadBlocks.length && !isGuideSectionBreak(block)) {
+      if (block.type !== "rule" && block.type !== "space") pendingLeadBlocks.push(block);
+      return;
+    }
+
+    if (isGuideSectionBreak(block)) {
+      const leadBlocks = isGuideStepTitle(block.text) ? pendingLeadBlocks : [];
       current = {
         id: sectionId(block.text),
         title: block.text,
-        blocks: [],
+        blocks: leadBlocks,
+        leadBlockCount: leadBlocks.length,
       };
+      pendingLeadBlocks = [];
       sections.push(current);
       return;
     }
@@ -2583,7 +2527,33 @@ function splitGuideSections(content) {
     }
   });
 
+  if (pendingLeadBlocks.length && current) current.blocks.push(...pendingLeadBlocks);
+
   return sections.filter((section) => section.blocks.length || section.title.startsWith("Step "));
+}
+
+function isGuideSectionBreak(block) {
+  if (!block?.text || block.text === "Table of Contents") return false;
+  if (block.type === "h4") return true;
+  return block.type === "h3" && /^PART\s+\d+\s*[:.-]/i.test(block.text);
+}
+
+function isGuideCardLeadIn(block) {
+  return block?.type === "h5" && /^PART\s+\d+\s*[:.-]/i.test(block.text || "");
+}
+
+function isGuideStepTitle(title = "") {
+  return /^Step\s+\d+\s*[:.-]/i.test(title);
+}
+
+function stepLeadBlocks(step = {}) {
+  const count = step.leadBlockCount || 0;
+  return count ? (step.blocks || []).slice(0, count) : [];
+}
+
+function stepBodyBlocks(step = {}) {
+  const count = step.leadBlockCount || 0;
+  return count ? (step.blocks || []).slice(count) : (step.blocks || []);
 }
 
 function groupedMarkdownSections(content) {
@@ -2668,9 +2638,9 @@ function buildMarkdownBlocks(content = "") {
       continue;
     }
 
-    const image = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    const image = parseMarkdownImageLine(trimmed);
     if (image) {
-      blocks.push({ type: "image", alt: image[1], src: image[2] });
+      blocks.push(image);
       continue;
     }
 
@@ -2706,17 +2676,65 @@ function buildMarkdownBlocks(content = "") {
   });
 }
 
+function parseMarkdownImageLine(line = "") {
+  const match = line.match(/^!\[([^\]]*)\]\((.*)\)$/);
+  if (!match) return null;
+  return {
+    type: "image",
+    alt: match[1] || "",
+    src: cleanMarkdownImageSrc(match[2]),
+  };
+}
+
+function cleanMarkdownImageSrc(value = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if ((raw.startsWith("<") && raw.endsWith(">")) || (raw.startsWith("\"") && raw.endsWith("\""))) {
+    return raw.slice(1, -1).trim();
+  }
+  const titleMatch = raw.match(/^(\S+)\s+(?:"[^"]*"|'[^']*'|\([^)]*\))$/);
+  return (titleMatch ? titleMatch[1] : raw).trim();
+}
+
 function MarkdownBlocks({ blocks }) {
   return (
     <div className="markdown-document markdown-document-embedded">
-      {blocks.map((block, index) => <MarkdownBlock key={`${index}-${block.type}-${block.text?.slice(0, 12) || ""}`} block={block} />)}
+      {blocks.map((block, index) => (
+        <MarkdownBlockErrorBoundary block={block} key={`${index}-${block.type}-${block.text?.slice(0, 12) || block.src?.slice(0, 12) || ""}`}>
+          <MarkdownBlock block={block} />
+        </MarkdownBlockErrorBoundary>
+      ))}
     </div>
   );
 }
 
+class MarkdownBlockErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      const block = this.props.block || {};
+      return (
+        <div className="admin-preview-error" role="alert">
+          <strong>Preview skipped one Markdown block.</strong>
+          <p>{block.type === "image" ? "The image line is malformed or unavailable." : "This line could not be rendered. The editor content is still saved."}</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function MarkdownHeading({ block }) {
   const Tag = block.type;
-  return <Tag id={block.id}>{renderInlineMarkdown(block.text)}</Tag>;
+  return <Tag id={block.id} className={isGuideCardLeadIn(block) ? "md-part-heading" : undefined}>{renderInlineMarkdown(block.text)}</Tag>;
 }
 
 function MarkdownBlock({ block }) {
@@ -2724,23 +2742,15 @@ function MarkdownBlock({ block }) {
   if (block.type === "rule") return <hr className="md-rule" />;
   if (block.type === "code") return <AdminCopyableCodeBlock text={block.text} />;
   if (block.type === "image") {
-    const figureClassName = [
-      "md-figure",
-      block.src === "/july/ch7-18.png" ? "md-figure-compact-phone" : "",
-    ].filter(Boolean).join(" ");
-
-    return (
-      <figure className={figureClassName}>
-        <img className="md-image" src={block.src} alt={block.alt} loading="lazy" />
-        {block.alt && <figcaption>{block.alt}</figcaption>}
-      </figure>
-    );
+    return <MarkdownImageFigure block={block} />;
   }
   if (block.type === "copy-prompt") return <AdminCopyPromptButton promptNumber={block.prompt} />;
   if (block.type === "copy-challenge-prompt") return <AdminChallengePromptButton />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (["paragraph", "quote"].includes(block.type) && isWarningBlock(block.text)) return <MarkdownWarning text={block.text} />;
   if (["paragraph", "quote"].includes(block.type) && isWinBlock(block.text)) return <MarkdownWin text={block.text} />;
   if (["paragraph", "quote"].includes(block.type) && isLearningBlock(block.text)) return <MarkdownLearning text={block.text} />;
+  if (["paragraph", "quote"].includes(block.type) && isIgorNoteBlock(block.text)) return <MarkdownIgorNote text={block.text} />;
   if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
@@ -2748,6 +2758,52 @@ function MarkdownBlock({ block }) {
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function MarkdownImageFigure({ block }) {
+  const [failed, setFailed] = useState(false);
+  const src = cleanMarkdownImageSrc(block.src);
+  const alt = block.alt || "";
+  const imageAlt = alt || "Screenshot";
+  const isRenderable = /^(https?:\/\/|\/)/i.test(src);
+  const figureClassName = [
+    "md-figure",
+    src === "/july/ch7-18.png" ? "md-figure-compact-phone" : "",
+  ].filter(Boolean).join(" ");
+
+  return (
+    <figure className={figureClassName}>
+      {isRenderable && !failed ? (
+        <a href={src} target="_blank" rel="noreferrer" className="md-image-link">
+          <img className="md-image" src={src} alt={imageAlt} loading="lazy" onError={() => setFailed(true)} />
+        </a>
+      ) : (
+        <div className="md-image-fallback">
+          <strong>Screenshot preview unavailable</strong>
+          <span>{src || "Missing image URL"}</span>
+        </div>
+      )}
+      {shouldShowImageCaption(alt) && <figcaption>{alt}</figcaption>}
+    </figure>
+  );
+}
+
+function shouldShowImageCaption(value = "") {
+  const caption = String(value || "").trim();
+  return Boolean(caption && !/^(screenshot|image)$/i.test(caption));
+}
+
+function isWarningBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("🛟") || /^heads up:/i.test(trimmed) || /^warning:/i.test(trimmed);
+}
+
+function warningText(text = "") {
+  return text
+    .trim()
+    .replace(/^🛟\s*/, "")
+    .replace(/^(\*\*)?\s*(heads up|warning)\s*:?\s*(\*\*)?\s*:?\s*/i, "")
+    .trim();
 }
 
 function isLearningBlock(text = "") {
@@ -2776,6 +2832,19 @@ function winText(text = "") {
     .trim();
 }
 
+function isIgorNoteBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("📝") && /igor'?s note/i.test(trimmed);
+}
+
+function igorNoteText(text = "") {
+  return text
+    .trim()
+    .replace(/^📝\s*/, "")
+    .replace(/^(\*\*)?\s*igor'?s note\s*:?\s*(\*\*)?\s*:?\s*/i, "")
+    .trim();
+}
+
 function MarkdownLearning({ text }) {
   return (
     <aside className="md-learning-callout">
@@ -2792,6 +2861,27 @@ function MarkdownWin({ text }) {
       <div className="md-win-copy">
         <strong>Your Win</strong>
         <p>{renderInlineMarkdown(winText(text))}</p>
+      </div>
+    </aside>
+  );
+}
+
+function MarkdownWarning({ text }) {
+  return (
+    <aside className="md-warning-callout">
+      <strong>Heads up</strong>
+      <p>{renderInlineMarkdown(warningText(text))}</p>
+    </aside>
+  );
+}
+
+function MarkdownIgorNote({ text }) {
+  return (
+    <aside className="md-igor-note">
+      <img src="/guide-assets/igor-note.jpg" alt="" loading="lazy" />
+      <div>
+        <strong>Igor's Note</strong>
+        <p>{renderInlineMarkdown(igorNoteText(text))}</p>
       </div>
     </aside>
   );
@@ -2831,15 +2921,9 @@ function AdminCopyableCodeBlock({ text }) {
 }
 
 function AdminCopyPromptButton({ promptNumber }) {
-  const prompt = (JULY_CONTENT.prompts || []).find((p) => {
-    const title = p.title || "";
-    return title.startsWith(`Prompt ${promptNumber}:`) || title.startsWith(`Prompt ${promptNumber} (`);
-  });
-  const label = prompt?.title || `Prompt ${promptNumber}`;
-
   return (
     <button type="button" className="guide-copy-prompt admin-preview-copy" disabled>
-      Copy {label}
+      Copy Prompt {promptNumber}
     </button>
   );
 }

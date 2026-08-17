@@ -107,26 +107,7 @@ function cleanMonth(input = {}) {
 }
 
 function cleanGuideToc(input) {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
-  if (!Object.keys(input).length) return {};
-  const groups = Array.isArray(input.groups)
-    ? input.groups.slice(0, 20).map((group, index) => ({
-      key: String(group?.key || `group-${index + 1}`).trim().slice(0, 80),
-      title: String(group?.title || "Section").trim().slice(0, 120),
-    })).filter((group) => group.key && group.title)
-    : [];
-  const items = Array.isArray(input.items)
-    ? input.items.slice(0, 100).map((item) => ({
-      key: String(item?.key || "").trim().slice(0, 80),
-      label: String(item?.label || "").trim().slice(0, 160),
-      group: String(item?.group || "").trim().slice(0, 80),
-    })).filter((item) => item.key && item.label)
-    : [];
-  return {
-    title: String(input.title || "Guide contents").trim().slice(0, 120) || "Guide contents",
-    groups,
-    items,
-  };
+  return {};
 }
 
 function cleanResource(input = {}) {
@@ -501,7 +482,7 @@ export default async function handler(req, res) {
           .eq("slug", slug)
           .single();
         if (error && error.code !== "PGRST116") throw error;
-        return json(res, 200, { month: data || null });
+        return json(res, 200, { month: data ? monthEditableSnapshot(data) : null });
       }
 
       if (action === "history") {

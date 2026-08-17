@@ -13,6 +13,7 @@ export const JULY_CHALLENGE_ARCHIVE = {
   "imageAssetCount": 234,
   "interestCategories": [
     "All",
+    "🏆 Winner",
     "Mobile-first",
     "Dark / cinematic",
     "Minimal / calm",
@@ -1942,6 +1943,7 @@ export const JULY_CHALLENGE_ARCHIVE = {
       "excerpt": "We've been busy turning Nigel's Nook into something that feels less like software and more like a space to land. It now feels like a warm, cozy, masculine library where ideas are explored, refined, and brought to life. Nigel has become much more than a research assistant. He's a true creative partner, helping me think through challenges, troubleshoot problems, organize complex ideas, and transform information into...",
       "interests": [
         "All",
+        "🏆 Winner",
         "Dark / cinematic",
         "Minimal / calm",
         "Business branded",

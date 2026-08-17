@@ -48,7 +48,8 @@ function sanitizePublishedMonth(month) {
   const publishedKeys = new Set(publishedResources.map(resourceContentKey));
   const sanitized = {
     ...month,
-    resources: publishedResources,
+    guide_toc: {},
+    resources: publishedResources.map((resource) => ({ ...resource, content_toc: {} })),
   };
 
   Object.entries(CONTENT_KEYS).forEach(([key, fields]) => {

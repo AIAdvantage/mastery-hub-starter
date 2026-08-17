@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Component, useEffect, useMemo, useRef, useState } from "react";
 import { SignIn, SignUp, useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import { supabase } from "./lib/supabase.js";
 import { trackEvent, trackStepHelpClick } from "./lib/analytics.js";
@@ -214,6 +214,7 @@ const HOME_VISUALS = [
 ];
 
 const SUBMISSION_STORAGE_KEY = "mastery-hub-submissions";
+const FULL_PREVIEW_STORAGE_PREFIX = "mastery_full_preview_";
 
 const NAV_ITEMS = [
   { path: "/", label: "Home" },
@@ -248,9 +249,16 @@ const CHALLENGE_HELP_CONTEXTS = {
 
 const MONTH_HELP_OVERRIDES = {
   august: {
-    guideName: "AI Mastery August Personal Secretary guide",
-    overallGoal: "Build a private personal secretary app in Lovable: a contact memory, birthday reminders, context files, Gmail and Google Calendar connections, automated jobs, a polished app interface, and secure login.",
-    aiInstruction: "Help me complete this exact step of the August personal secretary build. Stay specific to Lovable, the visible database/table progression, contacts, birthday reminders, context files, Gmail, Google Calendar, scheduled jobs, and secure login when relevant. Do not skip ahead. Ask me for only the missing information you need, then give me the next concrete action.",
+    guideName: "AI Mastery August Relationship Manager guide",
+    overallGoal: "Build a private AI Relationship Manager in Lovable: a personal CRM that remembers people, important dates, relationship notes, context files, Gmail and Google Calendar connections, automated reminders, a polished app interface, and secure login.",
+    aiInstruction: "Help me complete this exact step of the August Relationship Manager build. Stay specific to Lovable, the visible database/table progression, contacts, birthday reminders, relationship context, Gmail, Google Calendar, scheduled jobs, and secure login when relevant. Do not skip ahead. Ask me for only the missing information you need, then give me the next concrete action.",
+  },
+};
+const CHALLENGE_HELP_OVERRIDES = {
+  august: {
+    guideName: "AI Mastery August Relationship Manager Challenge",
+    overallGoal: "Finish and submit the August AI Relationship Manager challenge: prove the personal CRM works with real relationship context, reminders or automations, a usable interface, and a clear explanation of what the system now helps you remember or do.",
+    aiInstruction: "Help me complete this exact August challenge step. Keep the guidance practical and specific to the Relationship Manager / Personal CRM build, including contact memory, relationship notes, important dates, reminders, Gmail or Calendar connections, automations, proof of function, and the final community submission when relevant. Ask me for only the missing information you need, then give me the next concrete action.",
   },
 };
 const CLAUDE_DESKTOP_URL = "https://claude.com/download";
@@ -561,23 +569,6 @@ const JULY_PREREQUISITES = [
   },
 ];
 
-const PREP_SERVICE_LINKS = [
-  { match: /\bgithub\b/i, link: GITHUB_URL, linkLabel: "Open GitHub" },
-  { match: /\blovable\b/i, link: LOVABLE_URL, linkLabel: "Open Lovable" },
-  { match: /\bmastery resources?\b|\bmastery account\b/i, link: "/sign-in", linkLabel: "Sign in to Mastery Resources", internal: true },
-  { match: /\bclaude desktop\b/i, link: CLAUDE_DESKTOP_URL, linkLabel: "Download Claude Desktop" },
-  { match: /\bclaude (pro|max|team|plan|account)\b/i, link: "https://claude.com/settings/billing", linkLabel: "Check Claude plan" },
-  { match: /\bprompts?\b|\blive materials?\b/i, linkLabel: "Open Prompts", internal: true },
-];
-
-function inferPrepServiceLink(title = "", detail = "", monthSlug = "") {
-  const haystack = `${title} ${detail}`;
-  const match = PREP_SERVICE_LINKS.find((item) => item.match.test(haystack));
-  if (!match) return {};
-  const link = match.link || (match.linkLabel === "Open Prompts" && monthSlug ? `/monthly-resources/${monthSlug}/prompts` : "");
-  return link ? { link, linkLabel: match.linkLabel, internal: match.internal } : {};
-}
-
 function extractMarkdownLink(text = "") {
   const linkMatch = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
   if (!linkMatch) return { text };
@@ -624,7 +615,7 @@ function prepExperienceText(text = "") {
     .trim();
 }
 
-function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
+function prepChecklistFromBlocks(blocks = []) {
   const items = [];
   const notes = [];
   const experience = [];
@@ -669,7 +660,7 @@ function prepChecklistFromBlocks(blocks = [], monthSlug = "") {
       return {
         label: item.title,
         detail,
-        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : inferPrepServiceLink(item.title, detail, monthSlug)),
+        ...(item.link ? { link: item.link, linkLabel: item.linkLabel } : {}),
       };
     }),
     notes: notes.filter(Boolean),
@@ -719,74 +710,6 @@ function monthRecordingsTitle(month) {
   return `${month.label} Recordings`;
 }
 
-
-const STEP_SUBHEADLINES = {
-  "Step 1: Create Your Paperwork Folder + Connect Cowork": "Connect Claude Cowork to one clean workspace so it can create, read, and update your paperwork files.",
-  "Step 2: Get Your Materials Bundle": "Download the June materials and let Claude unpack the exact folder structure for the workflow.",
-  "Step 3: Paperwork Setup": "Use Igor's demo DNA to generate the first paperwork profile Claude will use to fill forms.",
-  "Step 4: Review the Files": "Open the generated profile so you can see the kind of reusable information the system stores.",
-  "Step 5: Fill Your Form": "Run the form-filling prompt and produce a completed W-8BEN from the profile Claude just built.",
-  "Step 6: Read the Missing-Info Section": "Use Claude's gap list to see what the profile still needs before the next run.",
-  "Step 7: Reset. Let Claude Clean Up.": "Clear the demo files while keeping the reusable workspace, prompts, form, and skill folder.",
-  "Step 8: Install the Paperwork Skill": "Turn the workflow into an installed Claude skill so you can launch it from Cowork without pasting prompts.",
-  "Step 9: Add YOUR DNA + Run the Skill": "Swap in your own DNA, run the skill, answer missing fields, and grow your paperwork profile.",
-  "Step 10: Run the Skill Again (See the Compounding)": "Run a second form to watch the missing-info list shrink as your profile gets sharper.",
-  "Step 1: Create Your GitHub and Lovable Accounts": "Create the free GitHub and Lovable accounts your Hub is built on.",
-  "Step 2: Set Up Lovable": "Paste the setup prompt and let Lovable build your Hub.",
-  "Step 3: Connect Lovable to GitHub": "Connect Lovable to GitHub so it can create your private repository.",
-  "Step 4: Generate Your GitHub Token": "Generate a fine-grained GitHub token so your Hub and Claude can reach your repo.",
-  "Step 5: Hand the Token and the Repository Name to Lovable": "Paste your token and repo name into Lovable to clear the 401 error.",
-  "Step 6: Set Up Your AgentHub Folder in Cowork": "Set up a Cowork folder and give it the token it needs to talk to GitHub.",
-  "Step 7: Connect Cowork to Your Repository": "Connect Cowork to your repository and watch new cards appear on the Hub.",
-  "Step 8: Create CLAUDE.md (The Standing Rule)": "Let Claude write CLAUDE.md with the card-emitter standing rule inside.",
-  "Step 9: Create a New Card for Daily Briefing": "Create a scheduled task, run it once, and watch it appear in your Hub.",
-  "Step 10: Use the Ideas + Wins Board": "Drop an idea on the kanban, drag it to Done, watch it become a Win.",
-};
-
-const STEP_EXPLAINERS = {
-  "Step 1: Create Your GitHub and Lovable Accounts": "So basically, this step gets your two main accounts ready so Lovable and GitHub can work together.",
-  "Step 2: Set Up Lovable": "This is where Lovable builds the first version of your Hub, and the scary-looking error is expected for now.",
-  "Step 3: Connect Lovable to GitHub": "Now you connect Lovable to GitHub so your Hub has a private home for its files.",
-  "Step 4: Generate Your GitHub Token": "This step creates the private key your Hub and Claude use to read and write your files safely.",
-  "Step 5: Hand the Token and the Repository Name to Lovable": "Now you paste the key and repo name into Lovable so the Hub can finally load your cards.",
-  "Step 6: Set Up Your AgentHub Folder in Cowork": "This is where you make one clean folder on your computer that Claude can use as its working space.",
-  "Step 7: Connect Cowork to Your Repository": "Now Claude writes your first Hub card into GitHub, and you reload the Hub to see it appear.",
-  "Step 8: Create CLAUDE.md (The Standing Rule)": "This step gives Claude a simple rulebook so it knows how to write Hub cards the same way every time.",
-  "Step 9: Create a New Card for Daily Briefing": "Now you set up your first automatic task, run it once, and watch it publish into your Hub.",
-  "Step 10: Use the Ideas + Wins Board": "This is the quick win: add an idea, move it to Done, and see your Hub turn it into a Win.",
-};
-
-const JULY_CHALLENGE_EXPLAINERS = {
-  "Step 1: Put the idea on your board": "So basically, this step turns the redesign from a vague idea into a real card on your board.",
-  "Step 2: Find your direction in Claude Cowork": "This is where Claude becomes your design director and turns your taste into a clear mobile-first direction.",
-  "Step 3: Build it live in Lovable": "Now Lovable takes the brief and turns it into the first real version you can see and test.",
-  "Step 4: Refine until it's yours": "This step is where you tune the look until it feels like something you would actually open every day.",
-  "Step 5: Publish, then check your phone": "This is the reality check: publish it, open it on your phone, and fix anything that feels cramped or awkward.",
-  "Step 6: Move it to Done and catch your Win": "This is the finish line: move the work to Done, capture the Win, and make the improvement visible.",
-};
-
-const BEFORE_START_ITEMS = [
-  {
-    label: "Your DNA files ready",
-    detail: "Have your personal DNA and business DNA nearby. You will use them when the guide switches from Igor's demo files to your own files.",
-  },
-  {
-    label: "Claude Pro, Max, or Team plan",
-    detail: "Cowork is required for this workflow, so make sure you are signed into a Claude plan that includes it.",
-  },
-  {
-    label: "Claude Desktop app installed",
-    detail: "Install the desktop app before Step 1, then open the Cowork tab inside Claude.",
-    link: CLAUDE_DESKTOP_URL,
-    linkLabel: "Download Claude Desktop",
-  },
-  {
-    label: "June Materials Bundle ZIP",
-    detail: "Download the ZIP before Step 2. You will move it into your Paperwork folder and let Claude unpack it.",
-    link: MONTH6_CONTENT.materialsUrl,
-    linkLabel: "Download Materials Bundle ZIP",
-  },
-];
 
 function getPath() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
@@ -996,6 +919,7 @@ export default function App() {
             {isLayoutLabPath && <HomepageLayoutLab navigate={navigate} />}
             {path === "/" && <HomePage navigate={navigate} cmsMonths={cmsMonths} />}
             {path === "/admin" && <AdminBackend navigate={navigate} />}
+            {path === "/admin/full-preview" && <FullGuidePreviewPage navigate={navigate} />}
             {path === "/fundamentalsjuly" && <FundamentalsJulyPage />}
             {(resolvedPath.startsWith("/monthly-resources") || resolvedPath.startsWith(CURRENT_WORKSHOP_PATH)) && (
               <MonthlyResourcesPage
@@ -1018,7 +942,7 @@ export default function App() {
             )}
             {resolvedPath.startsWith("/past-workshops") && <PastWorkshopsPage path={resolvedPath} navigate={navigate} cmsMonths={cmsMonths} />}
             {path === "/faq" && <TutorialPage navigate={navigate} />}
-            {!isLayoutLabPath && path !== "/admin" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} cmsMonths={cmsMonths} />}
+            {!isLayoutLabPath && path !== "/admin" && path !== "/admin/full-preview" && path !== "/fundamentalsjuly" && !resolvedPath.startsWith("/monthly-resources") && !resolvedPath.startsWith(CURRENT_WORKSHOP_PATH) && !resolvedPath.startsWith("/challenges") && !resolvedPath.startsWith("/past-workshops") && path !== "/faq" && !NAV_ITEMS.some((item) => item.path === path) && <HomePage navigate={navigate} cmsMonths={cmsMonths} />}
           </AccessGate>
         )}
       </main>
@@ -1688,7 +1612,7 @@ function isPastWorkshopPath(path, liveSlug = CURRENT_WORKSHOP_SLUG) {
 function cmsMonthToContent(month) {
   return {
     guide: month.guide_markdown || "",
-    guideToc: month.guide_toc || {},
+    guideToc: {},
     challenge: month.challenge_markdown || "",
     challengePrompt: month.challenge_prompt || "",
     prompts: Array.isArray(month.prompts) ? month.prompts : [],
@@ -1713,12 +1637,78 @@ function standaloneResourcePage(month, path) {
 function cmsResourcePageContent(month, resource) {
   return {
     guide: resource?.content_markdown || "",
-    guideToc: resource?.content_toc || {},
+    guideToc: {},
     challenge: "",
     challengePrompt: "",
     prompts: Array.isArray(month?.prompts) ? month.prompts : [],
   };
 }
+
+function readFullPreviewPayload() {
+  const params = new URLSearchParams(window.location.search);
+  const previewId = params.get("preview");
+  if (!previewId) return null;
+
+  try {
+    const storageKey = `${FULL_PREVIEW_STORAGE_PREFIX}${previewId}`;
+    const payload = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (!payload?.content?.guide) return null;
+    if (payload.createdAt && Date.now() - payload.createdAt > 1000 * 60 * 60 * 8) {
+      localStorage.removeItem(storageKey);
+      return null;
+    }
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function FullGuidePreviewPage({ navigate }) {
+  const payload = useMemo(() => readFullPreviewPayload(), []);
+
+  if (!payload) {
+    return (
+      <MonthUnavailable
+        basePath="/admin"
+        label="preview"
+        navigate={navigate}
+        title="This preview is no longer available."
+        message="Open Full Preview again from the admin editor to refresh the draft page."
+      />
+    );
+  }
+
+  const monthSlug = payload.monthSlug || "preview";
+  const monthLabel = payload.monthLabel || "Preview";
+  const previewMonth = {
+    slug: monthSlug,
+    label: monthLabel,
+    topic: payload.monthTopic || "",
+    focus: payload.monthFocus || "",
+    outcome: payload.pageIntro || "",
+  };
+  const previewHelpContext = cmsGuideHelpContext(previewMonth);
+
+  return (
+      <GuidePage
+        navigate={navigate}
+        content={payload.content}
+      monthLabel={monthLabel}
+      monthSlug={monthSlug}
+      pageTitle={payload.pageTitle || `${monthLabel} Guide`}
+      pageIntro={payload.pageIntro || "Draft customer preview."}
+      pageLabel={payload.pageLabel || "Guide"}
+      showMaterials={false}
+      customHelpContext={{
+        ...previewHelpContext,
+        guideName: payload.pageTitle || previewHelpContext.guideName,
+        guideLink: `${window.location.origin}${payload.path || `/monthly-resources/${monthSlug}/guide`}`,
+        }}
+        isCurrentWorkshop={false}
+        showGuideVideo={payload.showGuideVideo !== false}
+      />
+    );
+  }
 
 function cmsExtrasToContent(month) {
   const extras = month.extras || {};
@@ -1730,7 +1720,7 @@ function cmsExtrasToContent(month) {
 
 function cmsGuideHelpContext(month, type = "guide") {
   const isChallenge = type === "challenge";
-  const override = !isChallenge ? MONTH_HELP_OVERRIDES[month.slug] : null;
+  const override = isChallenge ? CHALLENGE_HELP_OVERRIDES[month.slug] : MONTH_HELP_OVERRIDES[month.slug];
   return {
     guideName: override?.guideName || `AI Mastery ${month.label} ${isChallenge ? "Challenge" : "guide"}`,
     guideLink: `https://mastery.aiadvantage.com/${isChallenge ? "challenges" : "monthly-resources"}/${month.slug}${isChallenge ? "/guide" : "/guide"}`,
@@ -1806,6 +1796,7 @@ function MonthlyResourcesPage({ currentMonth, path, navigate, cmsMonths = [], li
             guideLink: `https://mastery.aiadvantage.com${normalizedResourcePath(resourcePage.url)}`,
           }}
           isCurrentWorkshop={isCurrentWorkshop}
+          showGuideVideo={false}
         />
       );
     }
@@ -2077,12 +2068,53 @@ function monthQuickAccessLinks(resources = [], navigate) {
   });
 }
 
+function isChallengeGuideResource(item = {}) {
+  const category = normalizedResourceCategory(item.category);
+  const haystack = `${item.type || ""} ${item.title || ""} ${item.url || ""}`.toLowerCase();
+  if (category !== "Challenge") return false;
+  if (/submissions?|submit/.test(haystack)) return false;
+  return true;
+}
+
+function publicMonthResourceCards(month = {}) {
+  const cards = Array.isArray(month.resources) ? month.resources.filter((item) => item?.title) : [];
+  const normalizedCards = cards.map((item) => {
+    if (!isChallengeGuideResource(item)) return item;
+    return {
+      ...item,
+      type: "Challenge",
+      title: "Challenge Guide",
+      description: item.description || "Read the mission, steps, deliverables, and working prompt for this month.",
+      url: `/challenges/${month.slug}/guide`,
+    };
+  });
+
+  const hasChallengeGuide = normalizedCards.some(isChallengeGuideResource);
+  const hasClubSubmitCard = normalizedCards.some((item) => {
+    const category = normalizedResourceCategory(item.category);
+    const haystack = `${item.type || ""} ${item.title || ""} ${item.url || ""}`.toLowerCase();
+    return category === "Challenge" && (/submit/.test(haystack) || item.url === CHALLENGE_SUBMISSIONS_URL);
+  });
+
+  if (hasChallengeGuide && !hasClubSubmitCard) {
+    normalizedCards.push({
+      category: "Challenge",
+      type: "Submit",
+      title: "Submit in the Club",
+      description: "Share your work in the Challenge Submissions space when you are ready.",
+      url: CHALLENGE_SUBMISSIONS_URL,
+    });
+  }
+
+  return normalizedCards;
+}
+
 function CmsResourcesMenu({ month, navigate, isPast = false }) {
   const displayMonth = cmsMonthToMonth(month);
   const hasGuide = cmsHasContent(month, "guide");
   const hasPrompts = cmsHasContent(month, "prompts");
   const hasExtras = cmsHasContent(month, "extras");
-  const resourceCards = Array.isArray(month.resources) ? month.resources.filter((item) => item?.title) : [];
+  const resourceCards = publicMonthResourceCards(month);
   const quickAccessLinks = monthQuickAccessLinks(resourceCards, navigate);
   const groupedResources = resourceCards.reduce((groups, item) => {
     const category = normalizedResourceCategory(item.category);
@@ -2134,7 +2166,6 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
                   >
                     <div className="resource-card-top">
                       <span>{item.type || "Resource"}</span>
-                      {shouldShowResourceStatus(item) && <small>{item.status || "Open"}</small>}
                     </div>
                     <h4>{item.title}</h4>
                     <p>{item.description || "Open this month's resource."}</p>
@@ -2149,7 +2180,6 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
           <button className="resource-card resource-card-button" type="button" disabled={!hasGuide} onClick={() => navigate(`/monthly-resources/${month.slug}/guide`)}>
             <div className="resource-card-top">
               <span>Guide</span>
-              <small>{hasGuide ? "Published" : "Drafting"}</small>
             </div>
             <h4>{month.label} Guide</h4>
             <p>{month.outcome || "Open the main written guide for this month."}</p>
@@ -2157,7 +2187,6 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
           <button className="resource-card resource-card-button" type="button" disabled={!hasPrompts} onClick={() => navigate(`/monthly-resources/${month.slug}/prompts`)}>
             <div className="resource-card-top">
               <span>Live prompts</span>
-              <small>{hasPrompts ? "Ready" : "Drafting"}</small>
             </div>
             <h4>Live Prompts</h4>
             <p>Copy the prompts that support this month's guide.</p>
@@ -2165,7 +2194,6 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
           <button className="resource-card resource-card-button" type="button" disabled={!hasExtras} onClick={() => navigate(`/monthly-resources/${month.slug}/extras`)}>
             <div className="resource-card-top">
               <span>Extras</span>
-              <small>{hasExtras ? "Ready" : "Drafting"}</small>
             </div>
             <h4>Extras</h4>
             <p>Open optional follow-up resources, extra prompts, and supporting material.</p>
@@ -2179,12 +2207,6 @@ function CmsResourcesMenu({ month, navigate, isPast = false }) {
       )}
     </section>
   );
-}
-
-function shouldShowResourceStatus(item) {
-  const type = String(item?.type || "").trim().toLowerCase();
-  const status = String(item?.status || "").trim().toLowerCase();
-  return !(type === "walkthrough" && status === "published");
 }
 
 function MonthResourcesMenu({ month, segment, navigate }) {
@@ -2563,12 +2585,13 @@ function GuidePage({
   pageIntro = "Build a paperwork system that fills forms from your DNA, shows what is missing, and gets smarter every time you run it.",
   pageLabel = "Guide",
   showMaterials = true,
+  showGuideVideo = true,
   customHelpContext,
   isCurrentWorkshop = false,
 }) {
   const guide = useMemo(() => getGuideModel(content.guide), [content]);
   const helpContext = customHelpContext || GUIDE_HELP_CONTEXTS[monthSlug] || GUIDE_HELP_CONTEXTS.june;
-  const guideVideo = GUIDE_VIDEO_BY_MONTH[monthSlug];
+  const guideVideo = showGuideVideo ? content.guideVideo || GUIDE_VIDEO_BY_MONTH[monthSlug] : null;
 
   return (
     <section className="section page-section month-section guide-page-section" aria-labelledby="guide-title">
@@ -2617,29 +2640,34 @@ function GuidePage({
           {guide.introSections.map((section) => (
             <IntroSectionCard section={section} monthSlug={monthSlug} navigate={navigate} key={section.title} />
           ))}
-          {guide.steps.map((step, index) => (
-            <article className="workbench-step" id={step.id} key={step.id}>
-              <div className="workbench-step-top">
-                <small>{String(index + 1).padStart(2, "0")}</small>
-                <StepHelpActions guide={guide} helpContext={helpContext} step={step} stepNumber={index + 1} />
-              </div>
-              {step.explainer && (
-                <p className="workbench-step-explainer">{step.explainer}</p>
-              )}
-              <h3>{step.title}</h3>
-              {!step.explainer && step.summary && (
-                <p className="workbench-step-subtitle">{step.summary}</p>
-              )}
-              <MarkdownBlocks blocks={step.blocks} />
-            </article>
-          ))}
+          {guide.steps.map((step, index) => {
+            const leadBlocks = stepLeadBlocks(step);
+            const bodyBlocks = stepBodyBlocks(step);
+            return (
+              <article className="workbench-step" id={step.id} key={step.id}>
+                <div className="workbench-step-top">
+                  <small>{String(index + 1).padStart(2, "0")}</small>
+                  <StepHelpActions guide={guide} helpContext={helpContext} step={step} stepNumber={index + 1} />
+                </div>
+                {leadBlocks.length > 0 && <MarkdownBlocks blocks={leadBlocks} promptContext={{ prompts: content.prompts, challengePrompt: content.challengePrompt }} />}
+                {step.explainer && (
+                  <p className="workbench-step-explainer">{step.explainer}</p>
+                )}
+                <h3>{step.title}</h3>
+                {!step.explainer && step.summary && (
+                  <p className="workbench-step-subtitle">{step.summary}</p>
+                )}
+                <MarkdownBlocks blocks={bodyBlocks} promptContext={{ prompts: content.prompts, challengePrompt: content.challengePrompt }} />
+              </article>
+            );
+          })}
           {guide.closingSections.map((section) => (
             <article className="workbench-step workbench-close" id={section.id} key={section.title}>
               <div className="workbench-step-top">
                 <span>{section.title.includes("Bonus") ? "Bonus" : "Finish"}</span>
               </div>
               <h3>{section.title}</h3>
-              <MarkdownBlocks blocks={section.blocks} />
+              <MarkdownBlocks blocks={section.blocks} promptContext={{ prompts: content.prompts, challengePrompt: content.challengePrompt }} />
             </article>
           ))}
         </div>
@@ -2650,8 +2678,8 @@ function GuidePage({
   );
 }
 
-function GuideTableOfContents({ guide, config = {} }) {
-  const navigation = useMemo(() => guideTocModel(guide, config), [guide, config]);
+function GuideTableOfContents({ guide, config = {}, title = "Guide contents" }) {
+  const navigation = useMemo(() => guideTocModel(guide, config, title), [guide, config, title]);
   const [activeId, setActiveId] = useState(navigation.groups[0]?.items[0]?.id || "");
   const desktopNavRef = useRef(null);
 
@@ -2800,22 +2828,8 @@ function HoverTableOfContents({ title = "Contents", items = [] }) {
   );
 }
 
-const GUIDE_TOC_LABELS = {
-  "Create Your GitHub and Lovable Accounts": "Create Accounts",
-  "Set Up Lovable": "Set Up Lovable",
-  "Connect Lovable to GitHub": "Connect GitHub",
-  "Generate Your GitHub Token": "Generate Token",
-  "Hand the Token and the Repository Name to Lovable": "Give Lovable the Token",
-  "Set Up Your AgentHub Folder in Cowork": "Set Up AgentHub",
-  "Connect Cowork to Your Repository": "Connect Cowork",
-  "Create CLAUDE.md (The Standing Rule)": "Create CLAUDE.md",
-  "Create a New Card for Daily Briefing": "Create Daily Briefing",
-  "Use the Ideas + Wins Board": "Use Ideas + Wins",
-  "You Did It! Next Steps": "Next Steps",
-};
-
 function guideTocLabel(label) {
-  return GUIDE_TOC_LABELS[label] || label;
+  return label;
 }
 
 function guideTocItems(guide) {
@@ -2825,6 +2839,7 @@ function guideTocItems(guide) {
       id: section.id,
       marker: index === 0 ? "Start" : "Prep",
       label: guideTocLabel(section.title),
+      sourceLabel: section.title,
       groupKey: "start-here",
       groupTitle: "Start Here",
       level: 1,
@@ -2834,6 +2849,7 @@ function guideTocItems(guide) {
       id: step.id,
       marker: String(step.stepNumber).padStart(2, "0"),
       label: guideTocLabel(step.shortTitle),
+      sourceLabel: step.shortTitle,
       groupKey: step.tocGroupKey,
       groupTitle: step.tocGroupTitle,
       level: 1,
@@ -2843,6 +2859,7 @@ function guideTocItems(guide) {
       id: section.id,
       marker: "End",
       label: guideTocLabel(section.title),
+      sourceLabel: section.title,
       groupKey: "finish",
       groupTitle: "Finish",
       level: 1,
@@ -2850,31 +2867,22 @@ function guideTocItems(guide) {
   ];
 }
 
-function guideTocModel(guide, config = {}) {
+function guideTocModel(guide, config = {}, title = "Guide contents") {
   const baseItems = guide.tocItems || [];
-  const configuredItems = new Map((Array.isArray(config?.items) ? config.items : []).map((item) => [item.key, item]));
-  const configuredGroups = Array.isArray(config?.groups) ? config.groups : [];
   const groupMap = new Map();
   const groupOrder = [];
 
-  configuredGroups.forEach((group) => {
-    if (!group?.key || groupMap.has(group.key)) return;
-    groupMap.set(group.key, { key: group.key, title: group.title || "Section", items: [] });
-    groupOrder.push(group.key);
-  });
-
   baseItems.forEach((item) => {
-    const override = configuredItems.get(item.key) || {};
-    const groupKey = override.group || item.groupKey || "guide";
+    const groupKey = item.groupKey || "guide";
     if (!groupMap.has(groupKey)) {
       groupMap.set(groupKey, { key: groupKey, title: item.groupTitle || "Guide", items: [] });
       groupOrder.push(groupKey);
     }
-    groupMap.get(groupKey).items.push({ ...item, label: override.label || item.label });
+    groupMap.get(groupKey).items.push(item);
   });
 
   return {
-    title: config?.title || "Guide contents",
+    title: config?.title || title,
     groups: groupOrder.map((key) => groupMap.get(key)).filter((group) => group.items.length),
   };
 }
@@ -2955,7 +2963,7 @@ function MarkdownHeading({ block }) {
   const Tag = block.type;
 
   return (
-    <Tag id={block.id}>
+    <Tag id={block.id} className={isGuideCardLeadIn(block) ? "md-part-heading" : undefined}>
       {renderInlineMarkdown(block.text)}
     </Tag>
   );
@@ -2963,16 +2971,8 @@ function MarkdownHeading({ block }) {
 
 function IntroSectionCard({ section, monthSlug = "june", navigate }) {
   const isBeforeStart = section.title === "Before You Start";
-  const hasLegacyChecklist = monthSlug === "june" || monthSlug === "july";
-  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks, monthSlug) : { items: [], notes: [], experience: "" };
-  const checklistItems = hasLegacyChecklist
-    ? (monthSlug === "july" ? JULY_PREREQUISITES : BEFORE_START_ITEMS)
-    : dynamicPrep.items;
-  const checklistSubtitle = monthSlug === "july"
-    ? "Get these six setup pieces ready before you start building your AI Hub."
-    : hasLegacyChecklist
-      ? "Get these four pieces ready before you start the Paperwork workflow."
-      : "Get these setup pieces ready before you start the guide.";
+  const dynamicPrep = isBeforeStart ? prepChecklistFromBlocks(section.blocks) : { items: [], notes: [], experience: "" };
+  const checklistItems = dynamicPrep.items;
 
   if (!isBeforeStart || !checklistItems.length) {
     return (
@@ -2995,22 +2995,22 @@ function IntroSectionCard({ section, monthSlug = "june", navigate }) {
         <div>
           <h3>{section.title}</h3>
           <p className="workbench-step-subtitle">
-            {checklistSubtitle}
+            Get these setup pieces ready before you start the guide.
           </p>
         </div>
       </div>
       <BeforeStartChecklist items={checklistItems} navigate={navigate} />
-      {!hasLegacyChecklist && dynamicPrep.notes.map((note) => (
+      {dynamicPrep.notes.map((note) => (
         <MarkdownNote text={`Note: ${note}`} key={note} />
       ))}
-      {!hasLegacyChecklist && dynamicPrep.experience && (
+      {dynamicPrep.experience && (
         <PrepExperienceBox>{dynamicPrep.experience}</PrepExperienceBox>
       )}
     </article>
   );
 }
 
-function BeforeStartChecklist({ items = BEFORE_START_ITEMS, navigate }) {
+function BeforeStartChecklist({ items = [], navigate }) {
   return (
     <div className="before-start-checklist">
       {items.map((item) => (
@@ -3044,12 +3044,6 @@ function PrepExperienceBox({ children }) {
 
 function StepHelpActions({ guide, helpContext, step, stepNumber }) {
   const [status, setStatus] = useState("");
-  const hideForJulyGuide = helpContext?.guideName === "AI Mastery July AI Hub guide"
-    && [9].includes(stepNumber);
-
-  if (hideForJulyGuide) {
-    return null;
-  }
 
   async function handleModHelp() {
     trackStepHelpClick("ask_mods_click", helpContext, step, stepNumber);
@@ -3555,9 +3549,9 @@ function parseGlossary(glossary) {
   };
 }
 
-function CopyPromptButton({ promptNumber }) {
+function CopyPromptButton({ promptNumber, promptContext = {} }) {
   const [copied, setCopied] = useState(false);
-  const prompt = (JULY_CONTENT.prompts || []).find((p) => {
+  const prompt = (promptContext.prompts || []).find((p) => {
     const title = p.title || "";
     return title.startsWith(`Prompt ${promptNumber}:`) || title.startsWith(`Prompt ${promptNumber} (`);
   });
@@ -3592,9 +3586,9 @@ function CopyPromptButton({ promptNumber }) {
   );
 }
 
-function ChallengePromptButton() {
+function ChallengePromptButton({ promptContext = {} }) {
   const [copied, setCopied] = useState(false);
-  const text = JULY_CONTENT.challengePrompt || "";
+  const text = promptContext.challengePrompt || "";
   if (!text) return null;
 
   async function onCopy() {
@@ -3622,7 +3616,7 @@ function ChallengePromptButton() {
         transition: "background .15s",
       }}
     >
-      {copied ? "✓ Copied to clipboard" : "📋 Copy Your Design Director"}
+      {copied ? "✓ Copied to clipboard" : "📋 Copy challenge prompt"}
     </button>
   );
 }
@@ -3642,10 +3636,14 @@ function GuideImageGallery({ images = [] }) {
   );
 }
 
-function MarkdownBlocks({ blocks }) {
+function MarkdownBlocks({ blocks, promptContext = {} }) {
   return (
     <div className="markdown-document markdown-document-embedded">
-      {blocks.map((block, index) => <MarkdownBlock key={`${index}-${block.type}-${block.text?.slice(0, 12)}`} block={block} />)}
+      {blocks.map((block, index) => (
+        <MarkdownBlockErrorBoundary block={block} key={`${index}-${block.type}-${block.text?.slice(0, 12) || block.src?.slice(0, 12) || ""}`}>
+          <MarkdownBlock block={block} promptContext={promptContext} />
+        </MarkdownBlockErrorBoundary>
+      ))}
     </div>
   );
 }
@@ -3655,9 +3653,37 @@ function MarkdownDocument({ content }) {
 
   return (
     <div className="markdown-document">
-      {blocks.map((block, index) => <MarkdownBlock key={`${index}-${block.type}-${block.text?.slice(0, 12)}`} block={block} />)}
+      {blocks.map((block, index) => (
+        <MarkdownBlockErrorBoundary block={block} key={`${index}-${block.type}-${block.text?.slice(0, 12) || block.src?.slice(0, 12) || ""}`}>
+          <MarkdownBlock block={block} />
+        </MarkdownBlockErrorBoundary>
+      ))}
     </div>
   );
+}
+
+class MarkdownBlockErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      const block = this.props.block || {};
+      return (
+        <div className="md-image-fallback" role="alert">
+          <strong>Preview unavailable</strong>
+          <span>{block.type === "image" ? "This screenshot could not be rendered." : "This Markdown line could not be rendered."}</span>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function MarkdownSectionCards({ content }) {
@@ -3696,8 +3722,6 @@ function GenericGuideCards({ content }) {
 }
 
 function deriveStepSummary(section = {}) {
-  if (STEP_SUBHEADLINES[section.title]) return STEP_SUBHEADLINES[section.title];
-
   const firstUsefulBlock = (section.blocks || []).find((block) => {
     if (!block?.text) return false;
     return ["paragraph", "quote", "bullet", "check"].includes(block.type);
@@ -3712,41 +3736,55 @@ function deriveStepSummary(section = {}) {
   return text.length > 210 ? `${text.slice(0, 207).trim()}...` : text;
 }
 
+function getChallengeGuideModel(content, explainers = {}) {
+  const sections = groupedMarkdownSections(content);
+  const steps = sections.map((section, index) => {
+    const heading = section.blocks[0];
+    const title = section.title;
+    return {
+      id: heading?.id || sectionId(title),
+      title,
+      shortTitle: challengeTocLabel(title),
+      stepNumber: index + 1,
+      summary: explainers[title] || deriveStepSummary({ title, blocks: section.blocks.slice(1) }),
+      explainer: explainers[title] || "",
+      blocks: section.blocks.slice(1),
+    };
+  });
+
+  return {
+    steps,
+    tocItems: steps.map((step) => ({
+      key: `challenge-${step.stepNumber}`,
+      id: step.id,
+      marker: String(step.stepNumber).padStart(2, "0"),
+      label: challengeTocLabel(step.shortTitle),
+      sourceLabel: step.title,
+      groupKey: "challenge",
+      groupTitle: "Challenge",
+      level: 1,
+    })),
+    fullContext: content,
+  };
+}
+
 function ChallengeWorkbench({
   content,
   helpContext,
   explainers = {},
+  guide,
 }) {
-  const sections = useMemo(() => groupedMarkdownSections(content), [content]);
-  const guide = useMemo(() => {
-    const steps = sections.map((section, index) => {
-      const heading = section.blocks[0];
-      const title = section.title;
-      return {
-        id: heading?.id || sectionId(title),
-        title,
-        shortTitle: challengeTocLabel(title),
-        stepNumber: index + 1,
-        summary: explainers[title] || deriveStepSummary({ title, blocks: section.blocks.slice(1) }),
-        explainer: explainers[title] || "",
-        blocks: section.blocks.slice(1),
-      };
-    });
-
-    return {
-      steps,
-      fullContext: content,
-    };
-  }, [content, explainers, sections]);
+  const fallbackGuide = useMemo(() => getChallengeGuideModel(content, explainers), [content, explainers]);
+  const challengeGuide = guide || fallbackGuide;
 
   return (
     <div className="workbench-layout challenge-workbench-layout">
       <div className="workbench-stack">
-        {guide.steps.map((step, index) => (
+        {challengeGuide.steps.map((step, index) => (
           <article className="workbench-step challenge-guide-card" id={step.id} key={step.id}>
             <div className="workbench-step-top">
               <small>{String(index + 1).padStart(2, "0")}</small>
-              <StepHelpActions guide={guide} helpContext={helpContext} step={step} stepNumber={index + 1} />
+              <StepHelpActions guide={challengeGuide} helpContext={helpContext} step={step} stepNumber={index + 1} />
             </div>
             {step.explainer && (
               <p className="workbench-step-explainer">{step.explainer}</p>
@@ -3784,10 +3822,7 @@ function getGuideModel(content) {
       if (lastStepIndex === -1 || index <= lastStepIndex) return false;
       return !section.title.startsWith("PART ");
     })
-    .map((section) => ({
-      ...section,
-      title: section.title === "Next Steps" ? "You Did It! Next Steps" : section.title,
-    }));
+    .map((section) => ({ ...section }));
 
   sections.forEach((section) => {
     const partMatch = section.title.match(/^PART\s+(\d+)\s*[:.-]\s*(.+)$/i);
@@ -3796,7 +3831,7 @@ function getGuideModel(content) {
       tocGroupTitle = `${partMatch[1]} · ${toTitleCase(partMatch[2])}`;
     }
     if (section.title.startsWith("Step ")) {
-      const summary = deriveStepSummary(section);
+      const summary = deriveStepSummary({ ...section, blocks: stepBodyBlocks(section) });
       steps.push({
         ...section,
         tocGroupKey,
@@ -3804,7 +3839,7 @@ function getGuideModel(content) {
         stepNumber: steps.length + 1,
         shortTitle: section.title.replace(/^Step \d+:\s*/, ""),
         summary,
-        explainer: STEP_EXPLAINERS[section.title] || "",
+        explainer: "",
       });
     }
   });
@@ -3915,14 +3950,28 @@ function splitGuideSections(content) {
   const blocks = buildMarkdownBlocks(content);
   const sections = [];
   let current = null;
+  let pendingLeadBlocks = [];
 
   blocks.forEach((block) => {
-    if ((block.type === "h3" || block.type === "h4") && block.text !== "Table of Contents") {
+    if (isGuideCardLeadIn(block) && !isGuideStepTitle(current?.title)) {
+      pendingLeadBlocks = [block];
+      return;
+    }
+
+    if (pendingLeadBlocks.length && !isGuideSectionBreak(block)) {
+      if (block.type !== "rule" && block.type !== "space") pendingLeadBlocks.push(block);
+      return;
+    }
+
+    if (isGuideSectionBreak(block)) {
+      const leadBlocks = isGuideStepTitle(block.text) ? pendingLeadBlocks : [];
       current = {
         id: sectionId(block.text),
         title: block.text,
-        blocks: [],
+        blocks: leadBlocks,
+        leadBlockCount: leadBlocks.length,
       };
+      pendingLeadBlocks = [];
       sections.push(current);
       return;
     }
@@ -3932,7 +3981,33 @@ function splitGuideSections(content) {
     }
   });
 
+  if (pendingLeadBlocks.length && current) current.blocks.push(...pendingLeadBlocks);
+
   return sections.filter((section) => section.blocks.length || section.title.startsWith("Step "));
+}
+
+function isGuideSectionBreak(block) {
+  if (!block?.text || block.text === "Table of Contents") return false;
+  if (block.type === "h4") return true;
+  return block.type === "h3" && /^PART\s+\d+\s*[:.-]/i.test(block.text);
+}
+
+function isGuideCardLeadIn(block) {
+  return block?.type === "h5" && /^PART\s+\d+\s*[:.-]/i.test(block.text || "");
+}
+
+function isGuideStepTitle(title = "") {
+  return /^Step\s+\d+\s*[:.-]/i.test(title);
+}
+
+function stepLeadBlocks(step = {}) {
+  const count = step.leadBlockCount || 0;
+  return count ? (step.blocks || []).slice(0, count) : [];
+}
+
+function stepBodyBlocks(step = {}) {
+  const count = step.leadBlockCount || 0;
+  return count ? (step.blocks || []).slice(count) : (step.blocks || []);
 }
 
 function sectionId(text) {
@@ -3969,9 +4044,9 @@ function buildMarkdownBlocks(content) {
       continue;
     }
 
-    const image = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    const image = parseMarkdownImageLine(trimmed);
     if (image) {
-      blocks.push({ type: "image", alt: image[1], src: image[2] });
+      blocks.push(image);
       continue;
     }
 
@@ -4007,30 +4082,40 @@ function buildMarkdownBlocks(content) {
   });
 }
 
-function MarkdownBlock({ block }) {
+function parseMarkdownImageLine(line = "") {
+  const match = line.match(/^!\[([^\]]*)\]\((.*)\)$/);
+  if (!match) return null;
+  return {
+    type: "image",
+    alt: match[1] || "",
+    src: cleanMarkdownImageSrc(match[2]),
+  };
+}
+
+function cleanMarkdownImageSrc(value = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if ((raw.startsWith("<") && raw.endsWith(">")) || (raw.startsWith("\"") && raw.endsWith("\""))) {
+    return raw.slice(1, -1).trim();
+  }
+  const titleMatch = raw.match(/^(\S+)\s+(?:"[^"]*"|'[^']*'|\([^)]*\))$/);
+  return (titleMatch ? titleMatch[1] : raw).trim();
+}
+
+function MarkdownBlock({ block, promptContext = {} }) {
   if (block.type === "space") return <div className="md-space" />;
   if (block.type === "rule") return <hr className="md-rule" />;
   if (block.type === "code") return <CopyableCodeBlock text={block.text} />;
   if (block.type === "image") {
-    const figureClassName = [
-      "md-figure",
-      block.src === "/july/ch7-18.png" ? "md-figure-compact-phone" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    return (
-      <figure className={figureClassName}>
-        <img className="md-image" src={block.src} alt={block.alt} loading="lazy" />
-        {block.alt && <figcaption>{block.alt}</figcaption>}
-      </figure>
-    );
+    return <MarkdownImageFigure block={block} />;
   }
-  if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} />;
-  if (block.type === "copy-challenge-prompt") return <ChallengePromptButton />;
+  if (block.type === "copy-prompt") return <CopyPromptButton promptNumber={block.prompt} promptContext={promptContext} />;
+  if (block.type === "copy-challenge-prompt") return <ChallengePromptButton promptContext={promptContext} />;
   if (block.type === "h3" || block.type === "h4" || block.type === "h5") return <MarkdownHeading block={block} />;
+  if (["paragraph", "quote"].includes(block.type) && isWarningBlock(block.text)) return <MarkdownWarning text={block.text} />;
   if (["paragraph", "quote"].includes(block.type) && isWinBlock(block.text)) return <MarkdownWin text={block.text} />;
   if (["paragraph", "quote"].includes(block.type) && isLearningBlock(block.text)) return <MarkdownLearning text={block.text} />;
+  if (["paragraph", "quote"].includes(block.type) && isIgorNoteBlock(block.text)) return <MarkdownIgorNote text={block.text} />;
   if (block.type === "quote" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "paragraph" && isNoteBlock(block.text)) return <MarkdownNote text={block.text} />;
   if (block.type === "quote") return <blockquote className="md-quote">{renderInlineMarkdown(block.text)}</blockquote>;
@@ -4038,6 +4123,52 @@ function MarkdownBlock({ block }) {
   if (block.type === "bullet") return <p className="md-bullet">{renderInlineMarkdown(block.text)}</p>;
   if (block.type === "step") return <p className="md-step">{renderInlineMarkdown(block.text)}</p>;
   return <p>{renderInlineMarkdown(block.text)}</p>;
+}
+
+function MarkdownImageFigure({ block }) {
+  const [failed, setFailed] = useState(false);
+  const src = cleanMarkdownImageSrc(block.src);
+  const alt = block.alt || "";
+  const imageAlt = alt || "Screenshot";
+  const isRenderable = /^(https?:\/\/|\/)/i.test(src);
+  const figureClassName = [
+    "md-figure",
+    src === "/july/ch7-18.png" ? "md-figure-compact-phone" : "",
+  ].filter(Boolean).join(" ");
+
+  return (
+    <figure className={figureClassName}>
+      {isRenderable && !failed ? (
+        <a href={src} target="_blank" rel="noreferrer" className="md-image-link">
+          <img className="md-image" src={src} alt={imageAlt} loading="lazy" onError={() => setFailed(true)} />
+        </a>
+      ) : (
+        <div className="md-image-fallback">
+          <strong>Screenshot preview unavailable</strong>
+          <span>{src || "Missing image URL"}</span>
+        </div>
+      )}
+      {shouldShowImageCaption(alt) && <figcaption>{alt}</figcaption>}
+    </figure>
+  );
+}
+
+function shouldShowImageCaption(value = "") {
+  const caption = String(value || "").trim();
+  return Boolean(caption && !/^(screenshot|image)$/i.test(caption));
+}
+
+function isWarningBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("🛟") || /^heads up:/i.test(trimmed) || /^warning:/i.test(trimmed);
+}
+
+function warningText(text = "") {
+  return text
+    .trim()
+    .replace(/^🛟\s*/, "")
+    .replace(/^(\*\*)?\s*(heads up|warning)\s*:?\s*(\*\*)?\s*:?\s*/i, "")
+    .trim();
 }
 
 function isLearningBlock(text = "") {
@@ -4066,6 +4197,19 @@ function winText(text = "") {
     .trim();
 }
 
+function isIgorNoteBlock(text = "") {
+  const trimmed = text.trim();
+  return trimmed.startsWith("📝") && /igor'?s note/i.test(trimmed);
+}
+
+function igorNoteText(text = "") {
+  return text
+    .trim()
+    .replace(/^📝\s*/, "")
+    .replace(/^(\*\*)?\s*igor'?s note\s*:?\s*(\*\*)?\s*:?\s*/i, "")
+    .trim();
+}
+
 function MarkdownLearning({ text }) {
   return (
     <aside className="md-learning-callout">
@@ -4082,6 +4226,27 @@ function MarkdownWin({ text }) {
       <div className="md-win-copy">
         <strong>Your Win</strong>
         <p>{renderInlineMarkdown(winText(text))}</p>
+      </div>
+    </aside>
+  );
+}
+
+function MarkdownWarning({ text }) {
+  return (
+    <aside className="md-warning-callout">
+      <strong>Heads up</strong>
+      <p>{renderInlineMarkdown(warningText(text))}</p>
+    </aside>
+  );
+}
+
+function MarkdownIgorNote({ text }) {
+  return (
+    <aside className="md-igor-note">
+      <img src="/guide-assets/igor-note.jpg" alt="" loading="lazy" />
+      <div>
+        <strong>Igor's Note</strong>
+        <p>{renderInlineMarkdown(igorNoteText(text))}</p>
       </div>
     </aside>
   );
@@ -4485,7 +4650,7 @@ function ChallengesPage({ handleSubmit, path, navigate, submissionStatus, submis
     }
     if (child === "guide") return <CmsChallengeGuidePage month={cmsMonth} navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
     if (child === "submit" || child === "submissions") return <ExternalRedirectRoute to={CHALLENGE_SUBMISSIONS_URL} />;
-    return <CmsChallengeLanding month={cmsMonth} navigate={navigate} isCurrentWorkshop={isCurrentWorkshop} />;
+    return <RedirectRoute to={`/challenges/${cmsMonth.slug}/guide`} navigate={navigate} />;
   }
 
   if (segment === "june") {
@@ -4580,16 +4745,17 @@ function CmsChallengeLanding({ month, navigate, isCurrentWorkshop = false }) {
 
 function CmsChallengeGuidePage({ month, navigate, isCurrentWorkshop = false }) {
   const challenge = month.challenge_markdown || "";
-  const tocItems = useMemo(() => markdownTocItems(challenge), [challenge]);
+  const challengeGuide = useMemo(() => getChallengeGuideModel(challenge), [challenge]);
   const challengeStatus = useMemo(() => challengeStatusFromMarkdown(challenge), [challenge]);
 
   return (
-    <section className="section page-section month-section has-hover-toc" aria-labelledby={`${month.slug}-challenge-guide-title`}>
-      <HoverTableOfContents title="Challenge contents" items={tocItems} />
+    <section className="section page-section month-section guide-page-section" aria-labelledby={`${month.slug}-challenge-guide-title`}>
       <Breadcrumbs
         items={workshopBreadcrumbItems({ isCurrentWorkshop, monthLabel: month.label, monthSlug: month.slug, leafLabel: "Challenge" })}
         navigate={navigate}
       />
+      <div className="guide-page-layout">
+      <GuideTableOfContents guide={challengeGuide} title="Challenge contents" />
       <div className="resource-section guide-workbench-section">
         <div className="resource-section-head">
           <div>
@@ -4602,7 +4768,9 @@ function CmsChallengeGuidePage({ month, navigate, isCurrentWorkshop = false }) {
         <ChallengeWorkbench
           content={challenge}
           helpContext={cmsGuideHelpContext(month, "challenge")}
+          guide={challengeGuide}
         />
+      </div>
       </div>
     </section>
   );
@@ -4807,10 +4975,9 @@ function ChallengeSubmissionRegistryCard({ submission }) {
 }
 
 function JulyChallengeGuidePage({ navigate }) {
-  const tocItems = useMemo(() => markdownTocItems(JULY_CONTENT.challenge), []);
+  const challengeGuide = useMemo(() => getChallengeGuideModel(JULY_CONTENT.challenge), []);
   return (
-    <section className="section page-section month-section has-hover-toc" aria-labelledby="challenge-title">
-      <HoverTableOfContents title="Challenge contents" items={tocItems} />
+    <section className="section page-section month-section guide-page-section" aria-labelledby="challenge-title">
       <Breadcrumbs
         items={[
           { label: "Challenges", path: "/challenges" },
@@ -4819,6 +4986,8 @@ function JulyChallengeGuidePage({ navigate }) {
         ]}
         navigate={navigate}
       />
+      <div className="guide-page-layout">
+      <GuideTableOfContents guide={challengeGuide} title="Challenge contents" />
       <div className="resource-section guide-workbench-section">
         <div className="resource-section-head">
           <div>
@@ -4831,19 +5000,19 @@ function JulyChallengeGuidePage({ navigate }) {
         <ChallengeWorkbench
           content={JULY_CONTENT.challenge}
           helpContext={CHALLENGE_HELP_CONTEXTS.july}
-          explainers={JULY_CHALLENGE_EXPLAINERS}
+          guide={challengeGuide}
         />
+      </div>
       </div>
     </section>
   );
 }
 
 function ChallengeGuidePage({ navigate }) {
-  const tocItems = useMemo(() => markdownTocItems(MONTH6_CONTENT.challenge), []);
+  const challengeGuide = useMemo(() => getChallengeGuideModel(MONTH6_CONTENT.challenge), []);
 
   return (
-    <section className="section page-section challenge-section has-hover-toc" aria-labelledby="challenge-title">
-      <HoverTableOfContents title="Challenge contents" items={tocItems} />
+    <section className="section page-section challenge-section guide-page-section" aria-labelledby="challenge-title">
       <Breadcrumbs
         items={[
           { label: "Past Workshops", path: "/past-workshops" },
@@ -4852,7 +5021,9 @@ function ChallengeGuidePage({ navigate }) {
         ]}
         navigate={navigate}
       />
-      <div className="resource-section">
+      <div className="guide-page-layout">
+      <GuideTableOfContents guide={challengeGuide} title="Challenge contents" />
+      <div className="resource-section guide-workbench-section">
         <div className="resource-section-head">
           <div>
             <p className="section-kicker">Challenge</p>
@@ -4860,7 +5031,12 @@ function ChallengeGuidePage({ navigate }) {
             <p>Use this page to complete the June challenge and submit the strongest version of your work.</p>
           </div>
         </div>
-        <MarkdownSectionCards content={MONTH6_CONTENT.challenge} />
+        <ChallengeWorkbench
+          content={MONTH6_CONTENT.challenge}
+          helpContext={CHALLENGE_HELP_CONTEXTS.june || GUIDE_HELP_CONTEXTS.june}
+          guide={challengeGuide}
+        />
+      </div>
       </div>
     </section>
   );
