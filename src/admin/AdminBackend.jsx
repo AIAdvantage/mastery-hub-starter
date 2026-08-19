@@ -712,7 +712,7 @@ export default function AdminBackend({ navigate }) {
   const [adminSection, setAdminSection] = useState("content");
   const [activeTab, setActiveTab] = useState("content");
   const [activeResourceTab, setActiveResourceTab] = useState("guide");
-  const [guideEditorMode, setGuideEditorMode] = useState("edit");
+  const [guideEditorMode, setGuideEditorMode] = useState("review");
   const [activeResourceIndex, setActiveResourceIndex] = useState(null);
   const [analytics, setAnalytics] = useState([]);
   const [analyticsReport, setAnalyticsReport] = useState(null);
@@ -1959,8 +1959,8 @@ function BasicsEditor({
 function EditorModeToggle({ mode, onChange }) {
   return (
     <div className="markdown-editor-mode" aria-label="Editor mode">
-      <button type="button" className={mode === "edit" ? "active" : ""} onClick={() => onChange("edit")}>Edit</button>
-      <button type="button" className={mode === "preview" ? "active" : ""} onClick={() => onChange("preview")}>Preview</button>
+      <button type="button" className={mode === "review" ? "active" : ""} onClick={() => onChange("review")}>Review</button>
+      <button type="button" className={mode === "edit" ? "active" : ""} onClick={() => onChange("edit")}>Advanced Markdown</button>
     </div>
   );
 }
@@ -1979,8 +1979,89 @@ function GuideNavigationNotice() {
   );
 }
 
+function markdownReviewOutline(content = "") {
+  return content.split("\n").flatMap((line) => {
+    const match = line.trim().match(/^(#{1,3})\s+(.+)$/);
+    if (!match || match[2] === "Table of Contents") return [];
+    const title = match[2].replace(/[*_`]/g, "").trim();
+    return [{ level: match[1].length, title, id: sectionId(title) }];
+  });
+}
+
+function markdownRangeForRenderedText(content = "", selectedText = "", occurrence = 0) {
+  const needle = selectedText.replace(/\s+/g, " ").trim();
+  if (!needle) return null;
+  const plain = [];
+  const rawIndexes = [];
+  let inLinkTarget = false;
+  for (let index = 0; index < content.length; index += 1) {
+    const char = content[index];
+    const next = content[index + 1];
+    if (char === "]" && next === "(") {
+      inLinkTarget = true;
+      index += 1;
+      continue;
+    }
+    if (inLinkTarget) {
+      if (char === ")") inLinkTarget = false;
+      continue;
+    }
+    if (char === "[" || char === "]" || char === "*" || char === "`" || char === "#") continue;
+    const normalized = /\s/.test(char) ? " " : char;
+    if (normalized === " " && plain.at(-1) === " ") continue;
+    plain.push(normalized);
+    rawIndexes.push(index);
+  }
+  const haystack = plain.join("");
+  let plainStart = -1;
+  let searchFrom = 0;
+  for (let index = 0; index <= occurrence; index += 1) {
+    plainStart = haystack.indexOf(needle, searchFrom);
+    if (plainStart < 0) break;
+    searchFrom = plainStart + needle.length;
+  }
+  if (plainStart < 0) return null;
+  const plainEnd = plainStart + needle.length - 1;
+  return {
+    start: rawIndexes[plainStart] ?? 0,
+    end: (rawIndexes[plainEnd] ?? rawIndexes[plainStart] ?? 0) + 1,
+    quotedText: needle,
+  };
+}
+
+function selectRenderedQuote(root, quotedText = "", occurrence = 0) {
+  if (!root || !quotedText.trim()) return false;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let text = "";
+  while (walker.nextNode()) {
+    nodes.push({ node: walker.currentNode, start: text.length, end: text.length + walker.currentNode.textContent.length });
+    text += walker.currentNode.textContent;
+  }
+  let start = -1;
+  let searchFrom = 0;
+  for (let index = 0; index <= occurrence; index += 1) {
+    start = text.indexOf(quotedText, searchFrom);
+    if (start < 0) break;
+    searchFrom = start + quotedText.length;
+  }
+  if (start < 0) return false;
+  const end = start + quotedText.length;
+  const startNode = nodes.find((item) => item.start <= start && item.end >= start);
+  const endNode = nodes.find((item) => item.start <= end && item.end >= end) || startNode;
+  if (!startNode || !endNode) return false;
+  const range = document.createRange();
+  range.setStart(startNode.node, Math.max(0, start - startNode.start));
+  range.setEnd(endNode.node, Math.max(0, Math.min(endNode.node.textContent.length, end - endNode.start)));
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+  startNode.node.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+  return true;
+}
+
 function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", previewConfig = {}, token, monthSlug, documentKey = "document", actor, hideHeader = false, mode: controlledMode, onModeChange }) {
-  const [localMode, setLocalMode] = useState("edit");
+  const [localMode, setLocalMode] = useState("review");
   const mode = controlledMode || localMode;
   const setMode = onModeChange || setLocalMode;
   const [uploadState, setUploadState] = useState("");
@@ -1992,13 +2073,18 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   const [hasSelection, setHasSelection] = useState(false);
   const [lease, setLease] = useState(null);
   const [leaseState, setLeaseState] = useState("Checking editor access...");
+  const [outlineQuery, setOutlineQuery] = useState("");
   const holderSession = useMemo(() => editorSessionId(), []);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+  const reviewRef = useRef(null);
+  const reviewOutline = useMemo(() => markdownReviewOutline(value), [value]);
 
   useEffect(() => {
     if (!token || !monthSlug) return;
     loadComments();
+    const timer = window.setInterval(loadComments, 1500);
+    return () => window.clearInterval(timer);
   }, [token, monthSlug, documentKey]);
 
   useEffect(() => {
@@ -2076,6 +2162,49 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     setCommentState("");
   }
 
+  function startRenderedComment() {
+    const selection = window.getSelection();
+    const selectedText = selection?.toString().replace(/\s+/g, " ").trim() || "";
+    if (!selectedText || !reviewRef.current?.contains(selection?.anchorNode)) {
+      setCommentState("Select a sentence in the rendered guide first, then click Comment on selection.");
+      return;
+    }
+    let occurrence = 0;
+    try {
+      const selectedRange = selection.getRangeAt(0);
+      const beforeRange = document.createRange();
+      beforeRange.selectNodeContents(reviewRef.current);
+      beforeRange.setEnd(selectedRange.startContainer, selectedRange.startOffset);
+      const beforeText = beforeRange.toString().replace(/\s+/g, " ");
+      occurrence = Math.max(0, beforeText.split(selectedText).length - 1);
+    } catch {
+      occurrence = 0;
+    }
+    const mapped = markdownRangeForRenderedText(String(value || ""), selectedText, occurrence);
+    if (!mapped) {
+      setCommentState("That selection crosses a complex block. Select one sentence or list item and try again.");
+      return;
+    }
+    setCommentSelection({
+      ...mapped,
+      anchorContext: {
+        occurrence,
+        before: String(value || "").slice(Math.max(0, mapped.start - 160), mapped.start),
+        after: String(value || "").slice(mapped.end, mapped.end + 160),
+      },
+    });
+    setCommentDraft("");
+    setCommentState("");
+  }
+
+  function jumpToComment(comment) {
+    if (!selectRenderedQuote(reviewRef.current, comment.quoted_text, Number(comment.anchor_context?.occurrence) || 0)) {
+      setCommentState("This comment needs re-anchoring because the quoted sentence changed.");
+    } else {
+      setCommentState("");
+    }
+  }
+
   async function createComment(parentId = null) {
     const bodyText = parentId ? replyDrafts[parentId] : commentDraft;
     if (!bodyText?.trim()) return;
@@ -2088,6 +2217,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
           parent_id: parentId, body: bodyText,
           selection_start: commentSelection?.start, selection_end: commentSelection?.end,
           quoted_text: commentSelection?.quotedText,
+          anchor_context: commentSelection?.anchorContext,
         }),
       });
       setCommentSelection(null);
@@ -2318,16 +2448,120 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
           </aside>
         </div>
       ) : (
-        <div className="markdown-editor-preview">
-          <MarkdownPreviewErrorBoundary
-            resetKey={`${previewKind}:${monthSlug}:${value}`}
-            fallback={<CustomerMarkdownFallback content={value} kind={previewKind} />}
-          >
-            <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
-          </MarkdownPreviewErrorBoundary>
+        <div className="review-workspace">
+          <aside className="review-outline" aria-label={`${title} sections`}>
+            <div className="review-outline-head">
+              <strong>Sections</strong>
+              <span>{reviewOutline.length}</span>
+            </div>
+            <input
+              type="search"
+              value={outlineQuery}
+              onChange={(event) => setOutlineQuery(event.target.value)}
+              placeholder="Find a section..."
+              aria-label="Find a section"
+            />
+            <nav>
+              {reviewOutline.filter((item) => item.title.toLowerCase().includes(outlineQuery.toLowerCase())).map((item, index) => (
+                <button
+                  type="button"
+                  className={`review-outline-level-${item.level}`}
+                  key={`${item.id}-${index}`}
+                  onClick={() => reviewRef.current?.querySelector(`#${CSS.escape(item.id)}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </nav>
+          </aside>
+          <div className="markdown-editor-preview review-rendered" ref={reviewRef}>
+            <div className="review-selection-bar">
+              <span>Select visible text to discuss it.</span>
+              <button type="button" onClick={startRenderedComment}>Comment on selection</button>
+            </div>
+            <MarkdownPreviewErrorBoundary
+              resetKey={`${previewKind}:${monthSlug}:${value}`}
+              fallback={<CustomerMarkdownFallback content={value} kind={previewKind} />}
+            >
+              <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
+            </MarkdownPreviewErrorBoundary>
+          </div>
+          <ReviewCommentRail
+            comments={comments}
+            actor={actor}
+            commentSelection={commentSelection}
+            commentDraft={commentDraft}
+            setCommentDraft={setCommentDraft}
+            setCommentSelection={setCommentSelection}
+            replyDrafts={replyDrafts}
+            setReplyDrafts={setReplyDrafts}
+            commentState={commentState}
+            createComment={createComment}
+            editComment={editComment}
+            deleteComment={deleteComment}
+            toggleResolved={toggleResolved}
+            jumpToComment={jumpToComment}
+          />
         </div>
       )}
     </article>
+  );
+}
+
+function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, setCommentDraft, setCommentSelection, replyDrafts, setReplyDrafts, commentState, createComment, editComment, deleteComment, toggleResolved, jumpToComment }) {
+  const threads = comments.filter((item) => !item.parent_id);
+  return (
+    <aside className="editor-comments review-comments" aria-label="Rendered guide comments">
+      <div className="editor-comments-head">
+        <strong>Comments</strong>
+        <span>{threads.filter((item) => !item.resolved_at).length} open</span>
+      </div>
+      {commentSelection && (
+        <div className="comment-composer">
+          <blockquote>{commentSelection.quotedText}</blockquote>
+          <textarea value={commentDraft} onChange={(event) => setCommentDraft(event.target.value)} rows={3} autoFocus placeholder="Leave a comment..." />
+          <div>
+            <button type="button" onClick={() => createComment()}>Comment</button>
+            <button type="button" onClick={() => setCommentSelection(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
+      {threads.map((comment) => {
+        const replies = comments.filter((item) => item.parent_id === comment.id);
+        const isCreator = comment.author_id === actor?.id;
+        return (
+          <article className={`comment-thread ${comment.resolved_at ? "resolved" : ""}`} key={comment.id}>
+            <button type="button" className="comment-anchor-button" onClick={() => jumpToComment(comment)}>
+              <blockquote>{comment.quoted_text}</blockquote>
+              <span>Jump to sentence</span>
+            </button>
+            <div className="comment-meta">
+              <span className="comment-author">{comment.author_avatar && <img src={comment.author_avatar} alt="" />}<strong>{comment.author_name}</strong></span>
+              <time>{new Date(comment.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
+            </div>
+            <p>{comment.body}</p>
+            {replies.map((reply) => (
+              <div className="comment-reply" key={reply.id}>
+                <div className="comment-meta">
+                  <span className="comment-author">{reply.author_avatar && <img src={reply.author_avatar} alt="" />}<strong>{reply.author_name}</strong></span>
+                  <time>{new Date(reply.created_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</time>
+                </div>
+                <p>{reply.body}</p>
+                {reply.author_id === actor?.id && <div className="comment-actions"><button type="button" onClick={() => editComment(reply)}>Edit</button><button type="button" onClick={() => deleteComment(reply)}>Delete</button></div>}
+              </div>
+            ))}
+            {!comment.resolved_at && <textarea value={replyDrafts[comment.id] || ""} onChange={(event) => setReplyDrafts((current) => ({ ...current, [comment.id]: event.target.value }))} rows={2} placeholder="Reply..." />}
+            <div className="comment-actions">
+              {!comment.resolved_at && replyDrafts[comment.id]?.trim() && <button type="button" onClick={() => createComment(comment.id)}>Reply</button>}
+              <button type="button" onClick={() => toggleResolved(comment)}>{comment.resolved_at ? "Reopen" : "Resolve"}</button>
+              {isCreator && <><button type="button" onClick={() => editComment(comment)}>Edit</button><button type="button" onClick={() => deleteComment(comment)}>Delete</button></>}
+            </div>
+          </article>
+        );
+      })}
+      {!threads.length && !commentSelection && <p className="admin-preview-empty">Select a sentence in the guide to start a discussion.</p>}
+      {commentState && <p className="admin-upload-status">{commentState}</p>}
+    </aside>
   );
 }
 

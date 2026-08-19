@@ -745,6 +745,12 @@ export default async function handler(req, res) {
       if (!actor.id || !commentBody || !monthSlug) return json(res, 400, { error: "Author, month, and comment are required." });
 
       const parentId = body.parent_id ? String(body.parent_id).trim() : null;
+      const anchorContext = body.anchor_context && typeof body.anchor_context === "object" ? {
+        occurrence: Math.max(0, Number(body.anchor_context.occurrence) || 0),
+        before: String(body.anchor_context.before || "").slice(-240),
+        after: String(body.anchor_context.after || "").slice(0, 240),
+        revision: Math.max(0, Number(body.anchor_context.revision) || 0),
+      } : {};
       let selectionStart = Math.max(0, Number(body.selection_start) || 0);
       let selectionEnd = Math.max(selectionStart, Number(body.selection_end) || selectionStart);
       let quotedText = String(body.quoted_text || "").slice(0, 4000);
@@ -776,6 +782,7 @@ export default async function handler(req, res) {
         author_name: actor.name,
         author_email: actor.email,
         author_avatar: actor.avatar,
+        anchor_context: anchorContext,
         parent_id: parentId,
       }).select("*").single();
       if (error) throw error;
