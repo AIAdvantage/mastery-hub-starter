@@ -180,6 +180,7 @@ function monthSnapshot(input = {}) {
     published_at: input.published_at || null,
     updated_at: input.updated_at || null,
     updated_by: input.updated_by || null,
+    revision: Number(input.revision) || 0,
   };
 }
 
@@ -485,6 +486,22 @@ export default async function handler(req, res) {
         return json(res, 200, { month: data ? monthEditableSnapshot(data) : null });
       }
 
+      if (action === "revision") {
+        const slug = String(url.searchParams.get("slug") || "").trim().toLowerCase();
+        if (!slug) return json(res, 400, { error: "Month slug is required." });
+        const { data, error } = await supabase
+          .from("mastery_month_drafts")
+          .select("slug, revision, updated_at, updated_by")
+          .eq("slug", slug)
+          .maybeSingle();
+        if (error) throw error;
+        return json(res, 200, {
+          revision: Number(data?.revision) || 0,
+          updated_at: data?.updated_at || null,
+          updated_by: data?.updated_by || null,
+        });
+      }
+
       if (action === "history") {
         const slug = url.searchParams.get("slug");
         const { data, error } = await supabase
@@ -558,6 +575,41 @@ export default async function handler(req, res) {
 
     const body = await readBody(req);
     const action = body.action || "save";
+
+    if (action === "editor-lease") {
+      const actor = cleanActor(body.actor);
+      const monthSlug = String(body.month_slug || "").trim().toLowerCase();
+      const documentKey = String(body.document_key || "guide").trim().slice(0, 80);
+      const holderSession = String(body.holder_session || "").trim().slice(0, 200);
+      const operation = body.operation === "release" ? "release" : "acquire";
+      if (!actor.id || !monthSlug || !documentKey || !holderSession) {
+        return json(res, 400, { error: "Editor identity, month, document, and browser session are required." });
+      }
+
+      if (operation === "release") {
+        const { data, error } = await supabase.rpc("mastery_release_editor_lease", {
+          p_month_slug: monthSlug,
+          p_document_key: documentKey,
+          p_holder_session: holderSession,
+        });
+        if (error) throw error;
+        return json(res, 200, { released: Boolean(data) });
+      }
+
+      const { data, error } = await supabase.rpc("mastery_acquire_editor_lease", {
+        p_month_slug: monthSlug,
+        p_document_key: documentKey,
+        p_holder_session: holderSession,
+        p_holder_id: actor.id,
+        p_holder_name: actor.name,
+        p_holder_email: actor.email,
+        p_holder_avatar: actor.avatar,
+        p_ttl_seconds: 30,
+      });
+      if (error) throw error;
+      const lease = Array.isArray(data) ? data[0] : data;
+      return json(res, 200, { lease: lease || null });
+    }
 
     if (action === "create-request") {
       const actor = cleanActor(body.actor);
@@ -871,13 +923,52 @@ export default async function handler(req, res) {
         .maybeSingle();
       if (existingError) throw existingError;
       const source = body.source || "manual";
+      const expectedRevision = Number(body.expected_revision);
+      if (!Number.isInteger(expectedRevision) || expectedRevision < 0) {
+        return json(res, 428, { error: "Refresh this month before saving. A base revision is required." });
+      }
 
-      const { data, error } = await supabase
-        .from("mastery_month_drafts")
-        .upsert(month, { onConflict: "slug" })
-        .select("*")
-        .single();
-      if (error) throw error;
+      let data;
+      if (!existing) {
+        if (expectedRevision !== 0) {
+          return json(res, 409, { error: "This month was created in another browser. Refresh before saving.", month: null });
+        }
+        const result = await supabase
+          .from("mastery_month_drafts")
+          .insert({ ...month, revision: 1 })
+          .select("*")
+          .single();
+        if (result.error) {
+          if (result.error.code === "23505") {
+            const { data: current } = await supabase.from("mastery_month_drafts").select("*").eq("slug", month.slug).single();
+            return json(res, 409, { error: "This month changed in another browser. Your local draft was preserved.", month: monthEditableSnapshot(current) });
+          }
+          throw result.error;
+        }
+        data = result.data;
+      } else {
+        const result = await supabase
+          .from("mastery_month_drafts")
+          .update({ ...month, revision: expectedRevision + 1 })
+          .eq("slug", month.slug)
+          .eq("revision", expectedRevision)
+          .select("*")
+          .maybeSingle();
+        if (result.error) throw result.error;
+        if (!result.data) {
+          const { data: current, error: currentError } = await supabase
+            .from("mastery_month_drafts")
+            .select("*")
+            .eq("slug", month.slug)
+            .single();
+          if (currentError) throw currentError;
+          return json(res, 409, {
+            error: "This month changed in another browser. Your local draft was preserved.",
+            month: monthEditableSnapshot(current),
+          });
+        }
+        data = result.data;
+      }
       // Autosave continuously protects the working draft, but only an explicit
       // save creates a durable team checkpoint in Version History.
       if (source !== "auto") {
@@ -904,6 +995,13 @@ export default async function handler(req, res) {
         .eq("slug", version.month_slug)
         .maybeSingle();
       if (existingError) throw existingError;
+      const expectedRevision = Number(body.expected_revision);
+      if (!existing || !Number.isInteger(expectedRevision) || expectedRevision !== Number(existing.revision || 0)) {
+        return json(res, 409, {
+          error: "This month changed before the restore completed. Refresh and review the latest version first.",
+          month: existing ? monthEditableSnapshot(existing) : null,
+        });
+      }
       if (existing) {
         await archiveMonthVersion(supabase, existing, {
           source: "restore",
@@ -918,10 +1016,19 @@ export default async function handler(req, res) {
       });
       const { data, error } = await supabase
         .from("mastery_month_drafts")
-        .upsert(restoredMonth, { onConflict: "slug" })
+        .update({ ...restoredMonth, revision: expectedRevision + 1 })
+        .eq("slug", version.month_slug)
+        .eq("revision", expectedRevision)
         .select("*")
-        .single();
+        .maybeSingle();
       if (error) throw error;
+      if (!data) {
+        const { data: current } = await supabase.from("mastery_month_drafts").select("*").eq("slug", version.month_slug).single();
+        return json(res, 409, {
+          error: "This month changed before the restore completed. Refresh and review the latest version first.",
+          month: current ? monthEditableSnapshot(current) : null,
+        });
+      }
       return json(res, 200, { month: data });
     }
 
@@ -931,7 +1038,7 @@ export default async function handler(req, res) {
 
       const { data: monthExists, error: monthExistsError } = await supabase
         .from("mastery_month_drafts")
-        .select("slug")
+        .select("slug, revision")
         .eq("slug", slug)
         .maybeSingle();
       if (monthExistsError) throw monthExistsError;
@@ -954,6 +1061,7 @@ export default async function handler(req, res) {
           status: "published",
           published_at: new Date().toISOString(),
           updated_by: body.updated_by || null,
+          revision: Number(monthExists.revision || 0) + 1,
         })
         .eq("slug", slug)
         .select("*")

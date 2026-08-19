@@ -5,6 +5,8 @@ import MasteryRequests from "./MasteryRequests.jsx";
 
 const TOKEN_KEY = "mastery_admin_token";
 const FULL_PREVIEW_STORAGE_PREFIX = "mastery_full_preview_";
+const RECOVERY_STORAGE_PREFIX = "mastery_admin_recovery_";
+const EDITOR_SESSION_KEY = "mastery_editor_session";
 const WORKSHOP_YEAR = "2026";
 const MASTERY_ORIGIN = "https://mastery.aiadvantage.com";
 
@@ -677,8 +679,26 @@ async function adminFetch(token, path, options = {}) {
       detail: { message: data.error || "Admin passcode was not accepted" },
     }));
   }
-  if (!res.ok) throw new Error(data.error || "Admin request failed");
+  if (!res.ok) {
+    const error = new Error(data.error || "Admin request failed");
+    error.status = res.status;
+    error.data = data;
+    throw error;
+  }
   return data;
+}
+
+function editorSessionId() {
+  let value = sessionStorage.getItem(EDITOR_SESSION_KEY);
+  if (!value) {
+    value = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    sessionStorage.setItem(EDITOR_SESSION_KEY, value);
+  }
+  return value;
+}
+
+function recoveryStorageKey(slug) {
+  return `${RECOVERY_STORAGE_PREFIX}${String(slug || "").toLowerCase()}`;
 }
 
 export default function AdminBackend({ navigate }) {
@@ -707,6 +727,7 @@ export default function AdminBackend({ navigate }) {
   const lastSavedSnapshotRef = useRef("");
   const monthRef = useRef(null);
   const saveRequestIdRef = useRef(0);
+  const saveBlockedRef = useRef(false);
 
   const canLoad = Boolean(token);
   const liveMonthSummary = liveMonthFromAdminMonths(months);
@@ -763,8 +784,23 @@ export default function AdminBackend({ navigate }) {
     const snapshot = JSON.stringify(month);
     if (!lastSavedSnapshotRef.current || snapshot === lastSavedSnapshotRef.current) return;
 
+    try {
+      localStorage.setItem(recoveryStorageKey(month.slug), JSON.stringify({
+        savedAt: new Date().toISOString(),
+        revision: Number(month.revision) || 0,
+        month,
+      }));
+    } catch {
+      // Server autosave still runs if this browser blocks local storage.
+    }
+
     setSaveState("dirty");
     setStatus("Unsaved changes");
+    if (saveBlockedRef.current) {
+      setSaveState("conflict");
+      setStatus("A newer team revision exists. Your browser copy is preserved and automatic saving is paused.");
+      return;
+    }
     if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
     autosaveTimerRef.current = window.setTimeout(() => {
       persistMonth(monthRef.current, { source: "auto" });
@@ -774,6 +810,37 @@ export default function AdminBackend({ navigate }) {
       if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
     };
   }, [month]);
+
+  useEffect(() => {
+    if (!selectedSlug || !canLoad) return undefined;
+    let cancelled = false;
+    const checkRevision = async () => {
+      try {
+        const data = await adminFetch(token, `/api/mastery-admin?action=revision&slug=${encodeURIComponent(selectedSlug)}`);
+        if (cancelled || !monthRef.current?.slug) return;
+        const remoteRevision = Number(data.revision) || 0;
+        const localRevision = Number(monthRef.current.revision) || 0;
+        if (remoteRevision <= localRevision) return;
+        const isClean = JSON.stringify(monthRef.current) === lastSavedSnapshotRef.current;
+        if (isClean) {
+          await loadMonth(selectedSlug, { checkRecovery: false });
+        } else {
+          saveBlockedRef.current = true;
+          if (autosaveTimerRef.current) window.clearTimeout(autosaveTimerRef.current);
+          setSaveState("conflict");
+          setStatus(`Team revision ${remoteRevision} is newer. Your local revision ${localRevision} is preserved and saving is paused.`);
+        }
+      } catch {
+        // Keep the editor usable during a transient presence/revision check failure.
+      }
+    };
+    checkRevision();
+    const timer = window.setInterval(checkRevision, 1500);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [selectedSlug, canLoad, token]);
 
   async function loadMonths() {
     setError("");
@@ -787,18 +854,35 @@ export default function AdminBackend({ navigate }) {
     }
   }
 
-  async function loadMonth(slug) {
+  async function loadMonth(slug, { checkRecovery = true } = {}) {
     setError("");
     try {
       const data = await adminFetch(token, `/api/mastery-admin?action=month&slug=${encodeURIComponent(slug)}`);
       const template = templateForSlug(slug);
-      const nextMonth = data.month || template;
-      lastSavedSnapshotRef.current = JSON.stringify(nextMonth || null);
+      const serverMonth = data.month || template;
+      let nextMonth = serverMonth;
+      let restoredRecovery = false;
+      if (checkRecovery) {
+        try {
+          const stored = JSON.parse(localStorage.getItem(recoveryStorageKey(slug)) || "null");
+          if (stored?.month && JSON.stringify(stored.month) !== JSON.stringify(nextMonth)) {
+            const restore = window.confirm(`A browser recovery copy from ${new Date(stored.savedAt).toLocaleString()} was found. Restore it now? Cancel keeps the team version and leaves the recovery copy safely stored.`);
+            if (restore) {
+              nextMonth = stored.month;
+              restoredRecovery = true;
+            }
+          }
+        } catch {
+          // Ignore malformed or unavailable local recovery data.
+        }
+      }
+      saveBlockedRef.current = false;
+      lastSavedSnapshotRef.current = JSON.stringify(serverMonth || null);
       setMonth(nextMonth);
       setActiveResourceIndex(null);
-      setSaveState(data.month ? "saved" : "idle");
+      setSaveState(restoredRecovery ? "dirty" : data.month ? "saved" : "idle");
       setLastSavedAt(data.month ? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "");
-      setStatus(data.month ? "Saved" : template ? "Template ready. Save to create this month." : "");
+      setStatus(restoredRecovery ? "Browser recovery restored. Review it before saving." : data.month ? `Saved at revision ${Number(data.month.revision) || 0}` : template ? "Template ready. Save to create this month." : "");
       if (nextMonth?.slug) await loadHistory(nextMonth.slug);
     } catch (err) {
       setError(err.message);
@@ -1029,6 +1113,11 @@ export default function AdminBackend({ navigate }) {
 
   async function persistMonth(monthToSave = monthRef.current, { source = "manual" } = {}) {
     if (!monthToSave) return null;
+    if (saveBlockedRef.current) {
+      setSaveState("conflict");
+      setStatus("Saving is paused because a newer team revision exists. Your browser recovery copy is preserved.");
+      return null;
+    }
     if (autosaveTimerRef.current) {
       window.clearTimeout(autosaveTimerRef.current);
       autosaveTimerRef.current = null;
@@ -1046,16 +1135,19 @@ export default function AdminBackend({ navigate }) {
         body: JSON.stringify({
           action: "save",
           source,
+          expected_revision: Number(monthToSave.revision) || 0,
           month: { ...monthToSave, updated_by: userLabel },
         }),
       });
       const currentSnapshot = JSON.stringify(monthRef.current);
       if (requestId === saveRequestIdRef.current && currentSnapshot === requestSnapshot) {
+        saveBlockedRef.current = false;
         lastSavedSnapshotRef.current = JSON.stringify(data.month);
         setMonth(data.month);
         setSaveState("saved");
         setLastSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
         setStatus(source === "auto" ? "Draft autosaved" : "Version saved");
+        try { localStorage.removeItem(recoveryStorageKey(data.month.slug)); } catch {}
         if (source !== "auto") await loadHistory(data.month.slug);
       } else {
         setSaveState("dirty");
@@ -1065,9 +1157,16 @@ export default function AdminBackend({ navigate }) {
       await loadMonths();
       return data.month;
     } catch (err) {
-      setError(err.message);
-      setSaveState("error");
-      setStatus("Save failed");
+      if (err.status === 409) {
+        saveBlockedRef.current = true;
+        setError("");
+        setSaveState("conflict");
+        setStatus(`${err.message} Team revision ${Number(err.data?.month?.revision) || "unknown"} is available. Automatic saving is paused.`);
+      } else {
+        setError(err.message);
+        setSaveState("error");
+        setStatus("Save failed. Your browser recovery copy is preserved.");
+      }
       return null;
     }
   }
@@ -1135,9 +1234,12 @@ export default function AdminBackend({ navigate }) {
           action: "restore-version",
           version_id: version.id,
           updated_by: userLabel,
+          expected_revision: Number(month.revision) || 0,
         }),
       });
       lastSavedSnapshotRef.current = JSON.stringify(data.month);
+      saveBlockedRef.current = false;
+      try { localStorage.removeItem(recoveryStorageKey(data.month.slug)); } catch {}
       setMonth(data.month);
       setSaveState("saved");
       setLastSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
@@ -1246,7 +1348,7 @@ export default function AdminBackend({ navigate }) {
             saveState={saveState}
             lastSavedAt={lastSavedAt}
             onClick={saveMonth}
-            disabled={!month || saveState === "saving"}
+            disabled={!month || saveState === "saving" || saveState === "conflict"}
           />
           <button
             type="button"
@@ -1515,6 +1617,7 @@ function SaveStatusButton({ saveState, lastSavedAt, onClick, disabled }) {
     saving: "Saving...",
     saved: "Save version",
     error: "Save failed",
+    conflict: "Refresh required",
   };
 
   return (
@@ -1887,6 +1990,9 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   const [commentSelection, setCommentSelection] = useState(null);
   const [commentState, setCommentState] = useState("");
   const [hasSelection, setHasSelection] = useState(false);
+  const [lease, setLease] = useState(null);
+  const [leaseState, setLeaseState] = useState("Checking editor access...");
+  const holderSession = useMemo(() => editorSessionId(), []);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -1894,6 +2000,57 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     if (!token || !monthSlug) return;
     loadComments();
   }, [token, monthSlug, documentKey]);
+
+  useEffect(() => {
+    if (!token || !monthSlug || !documentKey || !actor?.id || mode !== "edit") {
+      setLease(null);
+      return undefined;
+    }
+    let cancelled = false;
+    const syncLease = async () => {
+      try {
+        const data = await adminFetch(token, "/api/mastery-admin", {
+          method: "POST",
+          body: JSON.stringify({
+            action: "editor-lease",
+            operation: "acquire",
+            actor,
+            month_slug: monthSlug,
+            document_key: documentKey,
+            holder_session: holderSession,
+          }),
+        });
+        if (cancelled) return;
+        setLease(data.lease || null);
+        setLeaseState(data.lease?.granted
+          ? `You are editing. Lease renews automatically.`
+          : `${data.lease?.holder_name || "Another teammate"} is editing. You can still select text and comment.`);
+      } catch (err) {
+        if (cancelled) return;
+        setLease(null);
+        setLeaseState(`${err.message || "Editor access could not be checked"}. Direct editing is paused.`);
+      }
+    };
+    syncLease();
+    const timer = window.setInterval(syncLease, 1500);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+      adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "editor-lease",
+          operation: "release",
+          actor,
+          month_slug: monthSlug,
+          document_key: documentKey,
+          holder_session: holderSession,
+        }),
+      }).catch(() => {});
+    };
+  }, [token, monthSlug, documentKey, mode, actor?.id, actor?.name, actor?.email, actor?.avatar, holderSession]);
+
+  const canDirectEdit = mode === "edit" && Boolean(lease?.granted);
 
   async function loadComments() {
     try {
@@ -1965,6 +2122,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   }
 
   function insertText(template) {
+    if (!canDirectEdit) return;
     const textarea = textareaRef.current;
     const currentValue = value || "";
     if (!textarea) {
@@ -2010,6 +2168,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
 
   async function uploadScreenshot(file) {
     if (!file) return;
+    if (!canDirectEdit) {
+      setUploadState("Direct editing is currently held by another teammate.");
+      return;
+    }
     if (!token) {
       setUploadState("Unlock admin before uploading.");
       return;
@@ -2050,14 +2212,20 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
         </div>
       )}
       {mode === "edit" && (
-        <div className="notion-editor-toolbar" aria-label={`${title} block controls`}>
+        <>
+        <div className={`editor-lease-banner ${canDirectEdit ? "is-editor" : "is-viewer"}`} role="status">
+          <span className="editor-lease-dot" aria-hidden="true" />
+          <strong>{canDirectEdit ? "Editing enabled" : "Review mode"}</strong>
+          <span>{leaseState}</span>
+        </div>
+        <div className="notion-editor-toolbar" aria-label={`${title} block controls`} aria-disabled={!canDirectEdit}>
           <div className="notion-editor-groups">
             {MARKDOWN_TOOL_GROUPS.map((group) => (
               <section className="notion-editor-group" key={group.title}>
                 <h3>{group.title}</h3>
                 <div className="notion-editor-row">
                   {group.items.map((block) => (
-                    <button type="button" key={block.label} onClick={() => insertText(block.template)}>
+                    <button type="button" key={block.label} disabled={!canDirectEdit} onClick={() => insertText(block.template)}>
                       {block.label}
                     </button>
                   ))}
@@ -2086,10 +2254,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
             </div>
           </details>
           <div className="notion-editor-row notion-editor-row-inline">
-            <button type="button" onClick={() => wrapSelection("**")}>Bold</button>
-            <button type="button" onClick={() => wrapSelection("*")}>Italic</button>
-            <button type="button" onClick={() => wrapSelection("`")}>Code Text</button>
-            <button type="button" onClick={() => insertText((selected) => `[${selected || "Link text"}](https://example.com)`)}>Link</button>
+            <button type="button" disabled={!canDirectEdit} onClick={() => wrapSelection("**")}>Bold</button>
+            <button type="button" disabled={!canDirectEdit} onClick={() => wrapSelection("*")}>Italic</button>
+            <button type="button" disabled={!canDirectEdit} onClick={() => wrapSelection("`")}>Code Text</button>
+            <button type="button" disabled={!canDirectEdit} onClick={() => insertText((selected) => `[${selected || "Link text"}](https://example.com)`)}>Link</button>
             <input
               ref={fileInputRef}
               className="admin-file-input"
@@ -2097,20 +2265,22 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
               accept="image/png,image/jpeg,image/webp,image/gif"
               onChange={(event) => uploadScreenshot(event.target.files?.[0])}
             />
-            <button type="button" onClick={() => fileInputRef.current?.click()}>Upload Screenshot</button>
-            <button type="button" onClick={addImageUrl}>Image URL</button>
+            <button type="button" disabled={!canDirectEdit} onClick={() => fileInputRef.current?.click()}>Upload Screenshot</button>
+            <button type="button" disabled={!canDirectEdit} onClick={addImageUrl}>Image URL</button>
             {hasSelection && <button type="button" className="comment-button" onClick={startComment}>Comment on selection</button>}
           </div>
           {uploadState && <p className="admin-upload-status">{uploadState}</p>}
         </div>
+        </>
       )}
       {mode === "edit" ? (
         <div className="markdown-collaboration-layout">
           <textarea
             ref={textareaRef}
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={(event) => canDirectEdit && onChange(event.target.value)}
             onSelect={(event) => setHasSelection(event.currentTarget.selectionEnd > event.currentTarget.selectionStart)}
+            readOnly={!canDirectEdit}
             rows={24}
             spellCheck="true"
           />

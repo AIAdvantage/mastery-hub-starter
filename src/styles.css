@@ -5212,6 +5212,38 @@ h1 {
   align-items: start;
 }
 
+.editor-lease-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(49, 40, 32, 0.14);
+  border-radius: 8px;
+  background: #f8f3ea;
+  color: #5d5148;
+  font-size: 13px;
+}
+
+.editor-lease-banner.is-editor {
+  border-color: rgba(92, 127, 78, 0.35);
+  background: rgba(92, 127, 78, 0.1);
+  color: #31522c;
+}
+
+.editor-lease-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 999px;
+  background: #b03f2d;
+}
+
+.editor-lease-banner.is-editor .editor-lease-dot { background: #5c7f4e; }
+.editor-lease-banner span:last-child { margin-left: 2px; }
+.notion-editor-toolbar[aria-disabled="true"] button:not(.comment-button) { opacity: 0.48; }
+.markdown-collaboration-layout textarea[readonly] { background: #f8f3ea; cursor: text; }
+
 .editor-comments {
   display: grid;
   gap: 10px;
@@ -5414,6 +5446,12 @@ h1 {
 
 .save-status-error {
   border-color: rgba(176, 63, 45, 0.35) !important;
+  background: rgba(176, 63, 45, 0.12) !important;
+  color: #9f321f !important;
+}
+
+.save-status-conflict {
+  border-color: rgba(176, 63, 45, 0.4) !important;
   background: rgba(176, 63, 45, 0.12) !important;
   color: #9f321f !important;
 }

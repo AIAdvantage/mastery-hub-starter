@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "node scripts/qa-prompt-controls.mjs",
+    "test": "node scripts/qa-prompt-controls.mjs && node scripts/qa-collaboration-foundation.mjs",
+    "test:collaboration": "node scripts/qa-collaboration-foundation.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },
