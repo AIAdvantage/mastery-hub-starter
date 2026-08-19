@@ -2076,6 +2076,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionState, setSuggestionState] = useState("");
   const [hasSelection, setHasSelection] = useState(false);
+  const [renderedSelection, setRenderedSelection] = useState(null);
   const [lease, setLease] = useState(null);
   const [leaseState, setLeaseState] = useState("Checking editor access...");
   const [outlineQuery, setOutlineQuery] = useState("");
@@ -2084,6 +2085,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   const fileInputRef = useRef(null);
   const reviewRef = useRef(null);
   const reviewOutline = useMemo(() => markdownReviewOutline(value), [value]);
+
+  useEffect(() => {
+    if (mode !== "review") setRenderedSelection(null);
+  }, [mode]);
 
   useEffect(() => {
     if (!token || !monthSlug) return;
@@ -2206,8 +2211,25 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     };
   }
 
-  function startRenderedComment() {
+  function captureRenderedSelection() {
+    const selection = window.getSelection();
     const mapped = currentRenderedSelection();
+    if (!mapped || !selection?.rangeCount) {
+      setRenderedSelection((current) => current?.mode === "comment" ? current : null);
+      return;
+    }
+    const rect = selection.getRangeAt(0).getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const halfWidth = Math.min(160, Math.max(110, viewportWidth / 2 - 12));
+    const left = Math.min(viewportWidth - halfWidth, Math.max(halfWidth, rect.left + rect.width / 2));
+    const top = rect.bottom + 230 < viewportHeight ? rect.bottom + 8 : Math.max(12, rect.top - 218);
+    setRenderedSelection({ mapped, left, top, mode: "actions" });
+  }
+
+  function startRenderedComment(mappedSelection = null, contextual = false) {
+    const mapped = mappedSelection?.quotedText ? mappedSelection : currentRenderedSelection();
     if (!mapped) {
       setCommentState("Select one visible sentence or list item first, then click Comment on selection.");
       return;
@@ -2215,10 +2237,15 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     setCommentSelection(mapped);
     setCommentDraft("");
     setCommentState("");
+    if (contextual) {
+      setRenderedSelection((current) => current ? { ...current, mapped, mode: "comment" } : current);
+    } else {
+      setRenderedSelection(null);
+    }
   }
 
-  async function createSuggestion() {
-    const mapped = currentRenderedSelection();
+  async function createSuggestion(mappedSelection = null) {
+    const mapped = mappedSelection?.quotedText ? mappedSelection : currentRenderedSelection();
     if (!mapped) {
       setSuggestionState("Select one visible sentence or list item first, then click Suggest change.");
       return;
@@ -2243,6 +2270,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
         }),
       });
       setSuggestionState("Suggestion posted");
+      setRenderedSelection(null);
       await loadSuggestions();
     } catch (err) {
       setSuggestionState(err.message || "Could not post suggestion");
@@ -2298,6 +2326,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
       });
       setCommentSelection(null);
       setCommentDraft("");
+      if (!parentId) setRenderedSelection(null);
       setReplyDrafts((current) => ({ ...current, [parentId]: "" }));
       await loadComments();
     } catch (err) { setCommentState(err.message || "Could not post comment"); }
@@ -2550,12 +2579,18 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
               ))}
             </nav>
           </aside>
-          <div className="markdown-editor-preview review-rendered" ref={reviewRef}>
+          <div
+            className="markdown-editor-preview review-rendered"
+            ref={reviewRef}
+            onMouseUp={captureRenderedSelection}
+            onKeyUp={captureRenderedSelection}
+            onTouchEnd={captureRenderedSelection}
+          >
             <div className="review-selection-bar">
               <span>Select visible text to discuss it.</span>
               <div>
-                <button type="button" onClick={startRenderedComment}>Comment</button>
-                <button type="button" onClick={createSuggestion}>Suggest change</button>
+                <button type="button" onClick={() => startRenderedComment()}>Comment</button>
+                <button type="button" onClick={() => createSuggestion()}>Suggest change</button>
               </div>
             </div>
             <MarkdownPreviewErrorBoundary
@@ -2564,6 +2599,38 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
             >
               <CustomerMarkdownPreview content={value} kind={previewKind} monthSlug={monthSlug} previewConfig={previewConfig} />
             </MarkdownPreviewErrorBoundary>
+            {renderedSelection && (
+              <div
+                className={`review-selection-popover${renderedSelection.mode === "comment" ? " is-composing" : ""}`}
+                style={{ left: `${renderedSelection.left}px`, top: `${renderedSelection.top}px` }}
+                role={renderedSelection.mode === "comment" ? "dialog" : "toolbar"}
+                aria-label={renderedSelection.mode === "comment" ? "Add comment to selected text" : "Selected text actions"}
+                onMouseDown={(event) => renderedSelection.mode === "actions" && event.preventDefault()}
+              >
+                {renderedSelection.mode === "comment" ? (
+                  <div className="review-selection-composer">
+                    <blockquote>{renderedSelection.mapped.quotedText}</blockquote>
+                    <textarea
+                      value={commentDraft}
+                      onChange={(event) => setCommentDraft(event.target.value)}
+                      rows={3}
+                      autoFocus
+                      placeholder="Leave a comment..."
+                      aria-label="Comment"
+                    />
+                    <div>
+                      <button type="button" disabled={!commentDraft.trim()} onClick={() => createComment()}>Add comment</button>
+                      <button type="button" onClick={() => { setCommentSelection(null); setCommentDraft(""); setRenderedSelection(null); }}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button type="button" onClick={() => startRenderedComment(renderedSelection.mapped, true)}>Comment</button>
+                    <button type="button" onClick={() => createSuggestion(renderedSelection.mapped)}>Suggest</button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <ReviewCommentRail
             comments={comments}
@@ -2584,6 +2651,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
             suggestionState={suggestionState}
             decideSuggestion={decideSuggestion}
             jumpToSuggestion={jumpToSuggestion}
+            suppressComposer={renderedSelection?.mode === "comment"}
           />
         </div>
       )}
@@ -2591,7 +2659,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   );
 }
 
-function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, setCommentDraft, setCommentSelection, replyDrafts, setReplyDrafts, commentState, createComment, editComment, deleteComment, toggleResolved, jumpToComment, suggestions, suggestionState, decideSuggestion, jumpToSuggestion }) {
+function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, setCommentDraft, setCommentSelection, replyDrafts, setReplyDrafts, commentState, createComment, editComment, deleteComment, toggleResolved, jumpToComment, suggestions, suggestionState, decideSuggestion, jumpToSuggestion, suppressComposer = false }) {
   const threads = comments.filter((item) => !item.parent_id);
   return (
     <aside className="editor-comments review-comments" aria-label="Rendered guide comments">
@@ -2599,7 +2667,7 @@ function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, se
         <strong>Comments</strong>
         <span>{threads.filter((item) => !item.resolved_at).length} open</span>
       </div>
-      {commentSelection && (
+      {commentSelection && !suppressComposer && (
         <div className="comment-composer">
           <blockquote>{commentSelection.quotedText}</blockquote>
           <textarea value={commentDraft} onChange={(event) => setCommentDraft(event.target.value)} rows={3} autoFocus placeholder="Leave a comment..." />

@@ -23,6 +23,10 @@ for (const required of [
   "mastery_admin_recovery_",
   "editor-lease",
   "setInterval(checkRevision, 1500)",
+  "captureRenderedSelection",
+  "review-selection-popover",
+  "startRenderedComment(renderedSelection.mapped, true)",
+  "suppressComposer={renderedSelection?.mode === \"comment\"}",
 ]) assert.ok(editorSource.includes(required), `Editor collaboration guard missing: ${required}`);
 
 for (const forbidden of ["mastery_editor_comments", "mastery_editor_suggestions", "mastery_editor_leases"]) {

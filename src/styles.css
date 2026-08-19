@@ -5304,6 +5304,64 @@ h1 {
 .review-outline-level-3 { padding-left: 24px !important; }
 
 .review-rendered { min-width: 0; }
+.review-selection-popover {
+  position: fixed;
+  z-index: 40;
+  display: flex;
+  gap: 7px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 7px;
+  border: 1px solid rgba(49, 40, 32, 0.22);
+  border-radius: 9px;
+  background: #312820;
+  box-shadow: 0 12px 28px rgba(38, 28, 20, 0.24);
+  transform: translateX(-50%);
+}
+.review-selection-popover > button,
+.review-selection-composer button {
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  background: #fffdf8;
+  color: #312820;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.review-selection-popover > button:first-child,
+.review-selection-composer button:first-child {
+  border-color: #d6a64f;
+  background: #d6a64f;
+}
+.review-selection-popover.is-composing {
+  width: min(320px, calc(100vw - 24px));
+  padding: 10px;
+  background: #fffdf8;
+}
+.review-selection-composer { display: grid; gap: 8px; width: 100%; }
+.review-selection-composer blockquote {
+  max-height: 60px;
+  margin: 0;
+  overflow: hidden;
+  color: #5d5148;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.review-selection-composer textarea {
+  width: 100%;
+  min-height: 78px;
+  resize: vertical;
+  border: 1px solid rgba(49, 40, 32, 0.18);
+  border-radius: 7px;
+  background: #fff;
+  color: #312820;
+  font: inherit;
+  font-size: 13px;
+}
+.review-selection-composer > div { display: flex; justify-content: flex-end; gap: 7px; }
+.review-selection-composer button:disabled { cursor: not-allowed; opacity: 0.46; }
 .review-selection-bar {
   position: sticky;
   top: 74px;
@@ -5373,6 +5431,8 @@ h1 {
   .review-workspace { grid-template-columns: 1fr; }
   .review-outline { position: static; max-height: 260px; }
   .review-comments { grid-column: auto; }
+  .review-selection-popover { max-width: calc(100vw - 16px); }
+  .review-selection-popover.is-composing { width: calc(100vw - 24px); }
 }
 
 .editor-comments {
