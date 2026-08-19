@@ -5330,6 +5330,36 @@ h1 {
   font-weight: 800;
   cursor: pointer;
 }
+.review-selection-bar > div { display: flex; gap: 7px; flex-wrap: wrap; }
+.review-suggestions-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(49, 40, 32, 0.14);
+}
+.review-suggestions-head span { color: #76695d; font-size: 12px; }
+.suggestion-card {
+  padding: 12px;
+  border: 1px solid rgba(143, 105, 41, 0.22);
+  border-radius: 8px;
+  background: #fffdf8;
+}
+.suggestion-card blockquote {
+  margin: 0 0 4px;
+  padding: 8px 10px;
+  border-left: 3px solid #b03f2d;
+  background: rgba(176, 63, 45, 0.07);
+  color: #5d5148;
+  font-size: 12px;
+}
+.suggestion-change { margin: 10px 0; padding: 9px 10px; border-left: 3px solid #5c7f4e; background: rgba(92, 127, 78, 0.09); }
+.suggestion-change span { color: #31522c; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.suggestion-change p { margin: 4px 0 0; white-space: pre-wrap; }
+.suggestion-accepted { border-color: rgba(92, 127, 78, 0.35); }
+.suggestion-rejected, .suggestion-stale { opacity: 0.64; }
 .comment-anchor-button { width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
 .comment-anchor-button blockquote { margin-bottom: 4px; }
 .comment-anchor-button > span { color: #8f6929; font-size: 11px; font-weight: 800; }

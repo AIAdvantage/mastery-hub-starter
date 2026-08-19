@@ -1545,6 +1545,7 @@ export default function AdminBackend({ navigate }) {
                               ? `resource-${month.resources[activeResourceIndex].id || slugify(month.resources[activeResourceIndex].url || "page")}`
                               : "guide"}
                             actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                            sourceRevision={Number(month.revision) || 0}
                             hideHeader
                             mode={guideEditorMode}
                             onModeChange={setGuideEditorMode}
@@ -1562,6 +1563,7 @@ export default function AdminBackend({ navigate }) {
                             monthSlug={month.slug}
                             documentKey="challenge"
                             actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                            sourceRevision={Number(month.revision) || 0}
                           />
                           <MarkdownBoxEditor
                             title="Challenge prompt"
@@ -1572,6 +1574,7 @@ export default function AdminBackend({ navigate }) {
                             monthSlug={month.slug}
                             documentKey="challenge-prompt"
                             actor={{ id: user?.id, name: user?.fullName || userLabel, email: user?.primaryEmailAddress?.emailAddress || "", avatar: user?.imageUrl || "" }}
+                            sourceRevision={Number(month.revision) || 0}
                           />
                         </div>
                       )}
@@ -2060,7 +2063,7 @@ function selectRenderedQuote(root, quotedText = "", occurrence = 0) {
   return true;
 }
 
-function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", previewConfig = {}, token, monthSlug, documentKey = "document", actor, hideHeader = false, mode: controlledMode, onModeChange }) {
+function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", previewConfig = {}, token, monthSlug, documentKey = "document", actor, sourceRevision = 0, hideHeader = false, mode: controlledMode, onModeChange }) {
   const [localMode, setLocalMode] = useState("review");
   const mode = controlledMode || localMode;
   const setMode = onModeChange || setLocalMode;
@@ -2070,6 +2073,8 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   const [replyDrafts, setReplyDrafts] = useState({});
   const [commentSelection, setCommentSelection] = useState(null);
   const [commentState, setCommentState] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionState, setSuggestionState] = useState("");
   const [hasSelection, setHasSelection] = useState(false);
   const [lease, setLease] = useState(null);
   const [leaseState, setLeaseState] = useState("Checking editor access...");
@@ -2083,7 +2088,8 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   useEffect(() => {
     if (!token || !monthSlug) return;
     loadComments();
-    const timer = window.setInterval(loadComments, 1500);
+    loadSuggestions();
+    const timer = window.setInterval(() => { loadComments(); loadSuggestions(); }, 1500);
     return () => window.clearInterval(timer);
   }, [token, monthSlug, documentKey]);
 
@@ -2148,6 +2154,15 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     }
   }
 
+  async function loadSuggestions() {
+    try {
+      const data = await adminFetch(token, `/api/mastery-admin?action=suggestions&slug=${encodeURIComponent(monthSlug)}&document_key=${encodeURIComponent(documentKey)}`);
+      setSuggestions(data.suggestions || []);
+    } catch (err) {
+      setSuggestionState(err.message || "Could not load suggestions");
+    }
+  }
+
   function startComment() {
     const textarea = textareaRef.current;
     const start = textarea?.selectionStart ?? 0;
@@ -2162,12 +2177,11 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     setCommentState("");
   }
 
-  function startRenderedComment() {
+  function currentRenderedSelection() {
     const selection = window.getSelection();
     const selectedText = selection?.toString().replace(/\s+/g, " ").trim() || "";
     if (!selectedText || !reviewRef.current?.contains(selection?.anchorNode)) {
-      setCommentState("Select a sentence in the rendered guide first, then click Comment on selection.");
-      return;
+      return null;
     }
     let occurrence = 0;
     try {
@@ -2181,20 +2195,74 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
       occurrence = 0;
     }
     const mapped = markdownRangeForRenderedText(String(value || ""), selectedText, occurrence);
-    if (!mapped) {
-      setCommentState("That selection crosses a complex block. Select one sentence or list item and try again.");
-      return;
-    }
-    setCommentSelection({
+    if (!mapped) return null;
+    return {
       ...mapped,
       anchorContext: {
         occurrence,
         before: String(value || "").slice(Math.max(0, mapped.start - 160), mapped.start),
         after: String(value || "").slice(mapped.end, mapped.end + 160),
       },
-    });
+    };
+  }
+
+  function startRenderedComment() {
+    const mapped = currentRenderedSelection();
+    if (!mapped) {
+      setCommentState("Select one visible sentence or list item first, then click Comment on selection.");
+      return;
+    }
+    setCommentSelection(mapped);
     setCommentDraft("");
     setCommentState("");
+  }
+
+  async function createSuggestion() {
+    const mapped = currentRenderedSelection();
+    if (!mapped) {
+      setSuggestionState("Select one visible sentence or list item first, then click Suggest change.");
+      return;
+    }
+    const rawType = window.prompt("Suggestion type: replacement, insertion, or deletion", "replacement");
+    const suggestionType = String(rawType || "").trim().toLowerCase();
+    if (!["replacement", "insertion", "deletion"].includes(suggestionType)) return;
+    const replacementText = suggestionType === "deletion" ? "" : window.prompt(
+      suggestionType === "insertion" ? "Text to insert after the selection" : "Replacement text",
+      suggestionType === "replacement" ? mapped.quotedText : ""
+    );
+    if (suggestionType !== "deletion" && !replacementText?.trim()) return;
+    setSuggestionState("Posting suggestion...");
+    try {
+      await adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "create-suggestion", actor, month_slug: monthSlug, document_key: documentKey,
+          suggestion_type: suggestionType, selection_start: mapped.start, selection_end: mapped.end,
+          quoted_text: mapped.quotedText, replacement_text: replacementText || "",
+          anchor_context: mapped.anchorContext, source_revision: sourceRevision,
+        }),
+      });
+      setSuggestionState("Suggestion posted");
+      await loadSuggestions();
+    } catch (err) {
+      setSuggestionState(err.message || "Could not post suggestion");
+    }
+  }
+
+  async function decideSuggestion(suggestion, decision) {
+    if (decision === "accepted" && !window.confirm("Accept and apply this exact suggestion? A version checkpoint will be created.")) return;
+    setSuggestionState(decision === "accepted" ? "Applying suggestion..." : "Rejecting suggestion...");
+    try {
+      await adminFetch(token, "/api/mastery-admin", {
+        method: "POST",
+        body: JSON.stringify({ action: "decide-suggestion", actor, suggestion_id: suggestion.id, decision }),
+      });
+      setSuggestionState(decision === "accepted" ? "Suggestion applied. The shared revision is updating." : "Suggestion rejected");
+      await loadSuggestions();
+    } catch (err) {
+      setSuggestionState(err.message || "Could not decide suggestion");
+      await loadSuggestions();
+    }
   }
 
   function jumpToComment(comment) {
@@ -2202,6 +2270,14 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
       setCommentState("This comment needs re-anchoring because the quoted sentence changed.");
     } else {
       setCommentState("");
+    }
+  }
+
+  function jumpToSuggestion(suggestion) {
+    if (!selectRenderedQuote(reviewRef.current, suggestion.quoted_text, Number(suggestion.anchor_context?.occurrence) || 0)) {
+      setSuggestionState("This suggestion needs reconciliation because the quoted sentence changed.");
+    } else {
+      setSuggestionState("");
     }
   }
 
@@ -2477,7 +2553,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
           <div className="markdown-editor-preview review-rendered" ref={reviewRef}>
             <div className="review-selection-bar">
               <span>Select visible text to discuss it.</span>
-              <button type="button" onClick={startRenderedComment}>Comment on selection</button>
+              <div>
+                <button type="button" onClick={startRenderedComment}>Comment</button>
+                <button type="button" onClick={createSuggestion}>Suggest change</button>
+              </div>
             </div>
             <MarkdownPreviewErrorBoundary
               resetKey={`${previewKind}:${monthSlug}:${value}`}
@@ -2501,6 +2580,10 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
             deleteComment={deleteComment}
             toggleResolved={toggleResolved}
             jumpToComment={jumpToComment}
+            suggestions={suggestions}
+            suggestionState={suggestionState}
+            decideSuggestion={decideSuggestion}
+            jumpToSuggestion={jumpToSuggestion}
           />
         </div>
       )}
@@ -2508,7 +2591,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
   );
 }
 
-function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, setCommentDraft, setCommentSelection, replyDrafts, setReplyDrafts, commentState, createComment, editComment, deleteComment, toggleResolved, jumpToComment }) {
+function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, setCommentDraft, setCommentSelection, replyDrafts, setReplyDrafts, commentState, createComment, editComment, deleteComment, toggleResolved, jumpToComment, suggestions, suggestionState, decideSuggestion, jumpToSuggestion }) {
   const threads = comments.filter((item) => !item.parent_id);
   return (
     <aside className="editor-comments review-comments" aria-label="Rendered guide comments">
@@ -2561,6 +2644,31 @@ function ReviewCommentRail({ comments, actor, commentSelection, commentDraft, se
       })}
       {!threads.length && !commentSelection && <p className="admin-preview-empty">Select a sentence in the guide to start a discussion.</p>}
       {commentState && <p className="admin-upload-status">{commentState}</p>}
+      <div className="review-suggestions-head">
+        <strong>Suggestions</strong>
+        <span>{suggestions.filter((item) => item.status === "pending").length} pending</span>
+      </div>
+      {suggestions.map((suggestion) => (
+        <article className={`suggestion-card suggestion-${suggestion.status}`} key={suggestion.id}>
+          <button type="button" className="comment-anchor-button" onClick={() => jumpToSuggestion(suggestion)}>
+            <blockquote>{suggestion.quoted_text}</blockquote>
+            <span>Jump to sentence</span>
+          </button>
+          <div className="suggestion-change">
+            <span>{suggestion.suggestion_type}</span>
+            {suggestion.suggestion_type !== "deletion" && <p>{suggestion.replacement_text}</p>}
+          </div>
+          <div className="comment-meta"><strong>{suggestion.proposer_name}</strong><span>{suggestion.status}</span></div>
+          {suggestion.status === "pending" && (
+            <div className="comment-actions">
+              <button type="button" onClick={() => decideSuggestion(suggestion, "accepted")}>Accept</button>
+              <button type="button" onClick={() => decideSuggestion(suggestion, "rejected")}>Reject</button>
+            </div>
+          )}
+        </article>
+      ))}
+      {!suggestions.length && <p className="admin-preview-empty">Select visible text and click Suggest change.</p>}
+      {suggestionState && <p className="admin-upload-status">{suggestionState}</p>}
     </aside>
   );
 }

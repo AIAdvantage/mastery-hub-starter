@@ -289,6 +289,32 @@ function cleanCommentBody(value) {
   return String(value || "").trim().slice(0, 5000);
 }
 
+function monthDocumentValue(month, documentKey) {
+  if (documentKey === "guide") return String(month.guide_markdown || "");
+  if (documentKey === "challenge") return String(month.challenge_markdown || "");
+  if (documentKey === "challenge-prompt") return String(month.challenge_prompt || "");
+  if (documentKey.startsWith("resource-")) {
+    const resourceId = documentKey.slice("resource-".length);
+    return String((month.resources || []).find((item) => String(item.id || "") === resourceId)?.content_markdown || "");
+  }
+  return null;
+}
+
+function withMonthDocumentValue(month, documentKey, value) {
+  if (documentKey === "guide") return { guide_markdown: value };
+  if (documentKey === "challenge") return { challenge_markdown: value };
+  if (documentKey === "challenge-prompt") return { challenge_prompt: value };
+  if (documentKey.startsWith("resource-")) {
+    const resourceId = documentKey.slice("resource-".length);
+    const resources = (month.resources || []).map((item) => (
+      String(item.id || "") === resourceId ? { ...item, content_markdown: value } : item
+    ));
+    if (!resources.some((item) => String(item.id || "") === resourceId)) return null;
+    return { resources };
+  }
+  return null;
+}
+
 const REQUEST_STATUSES = new Set(["new", "planned", "in-progress", "done"]);
 const REQUEST_PRIORITIES = new Set(["low", "medium", "high"]);
 const REQUEST_AREAS = new Set(["Platform", "Month Content", "Guide", "Workshop", "Challenge", "Resources", "Member Experience", "Backend", "Other"]);
@@ -528,6 +554,19 @@ export default async function handler(req, res) {
         return json(res, 200, { comments: data || [] });
       }
 
+      if (action === "suggestions") {
+        const slug = String(url.searchParams.get("slug") || "").trim().toLowerCase();
+        const documentKey = String(url.searchParams.get("document_key") || "guide").trim().slice(0, 80);
+        const { data, error } = await supabase
+          .from("mastery_editor_suggestions")
+          .select("*")
+          .eq("month_slug", slug)
+          .eq("document_key", documentKey)
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return json(res, 200, { suggestions: data || [] });
+      }
+
       if (action === "requests") {
         const { data: requests, error: requestError } = await supabase
           .from("mastery_admin_requests")
@@ -609,6 +648,95 @@ export default async function handler(req, res) {
       if (error) throw error;
       const lease = Array.isArray(data) ? data[0] : data;
       return json(res, 200, { lease: lease || null });
+    }
+
+    if (action === "create-suggestion") {
+      const actor = cleanActor(body.actor);
+      const monthSlug = String(body.month_slug || "").trim().toLowerCase();
+      const documentKey = String(body.document_key || "guide").trim().slice(0, 80);
+      const suggestionType = ["replacement", "insertion", "deletion"].includes(body.suggestion_type) ? body.suggestion_type : "replacement";
+      const selectionStart = Math.max(0, Number(body.selection_start) || 0);
+      const selectionEnd = Math.max(selectionStart, Number(body.selection_end) || selectionStart);
+      const quotedText = String(body.quoted_text || "").slice(0, 4000);
+      const replacementText = String(body.replacement_text || "").slice(0, 20000);
+      const sourceRevision = Math.max(0, Number(body.source_revision) || 0);
+      if (!actor.id || !monthSlug || !documentKey || !quotedText.trim() || selectionEnd <= selectionStart) {
+        return json(res, 400, { error: "Select rendered text before proposing a change." });
+      }
+      if (suggestionType !== "deletion" && !replacementText.trim()) {
+        return json(res, 400, { error: "Replacement or insertion text is required." });
+      }
+      const { data, error } = await supabase.from("mastery_editor_suggestions").insert({
+        month_slug: monthSlug,
+        document_key: documentKey,
+        suggestion_type: suggestionType,
+        selection_start: selectionStart,
+        selection_end: selectionEnd,
+        quoted_text: quotedText,
+        replacement_text: replacementText,
+        anchor_context: body.anchor_context && typeof body.anchor_context === "object" ? body.anchor_context : {},
+        source_revision: sourceRevision,
+        proposer_id: actor.id,
+        proposer_name: actor.name,
+        proposer_email: actor.email,
+        proposer_avatar: actor.avatar,
+      }).select("*").single();
+      if (error) throw error;
+      return json(res, 200, { suggestion: data });
+    }
+
+    if (action === "decide-suggestion") {
+      const actor = cleanActor(body.actor);
+      const suggestionId = String(body.suggestion_id || "").trim();
+      const decision = body.decision === "accepted" ? "accepted" : body.decision === "rejected" ? "rejected" : "";
+      if (!actor.id || !suggestionId || !decision) return json(res, 400, { error: "Suggestion, reviewer, and decision are required." });
+      const { data: suggestion, error: suggestionError } = await supabase
+        .from("mastery_editor_suggestions").select("*").eq("id", suggestionId).single();
+      if (suggestionError) throw suggestionError;
+      if (suggestion.status !== "pending") return json(res, 409, { error: `This suggestion is already ${suggestion.status}.` });
+
+      if (decision === "rejected") {
+        const { data, error } = await supabase.from("mastery_editor_suggestions").update({
+          status: "rejected", decided_by: actor.id, decided_by_name: actor.name, decided_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        }).eq("id", suggestionId).eq("status", "pending").select("*").maybeSingle();
+        if (error) throw error;
+        if (!data) return json(res, 409, { error: "This suggestion was decided in another browser." });
+        return json(res, 200, { suggestion: data });
+      }
+
+      const { data: month, error: monthError } = await supabase
+        .from("mastery_month_drafts").select("*").eq("slug", suggestion.month_slug).single();
+      if (monthError) throw monthError;
+      const currentRevision = Number(month.revision) || 0;
+      const content = monthDocumentValue(month, suggestion.document_key);
+      const start = Number(suggestion.selection_start) || 0;
+      const end = Number(suggestion.selection_end) || start;
+      const sourceMatches = content != null && content.slice(start, end) === suggestion.quoted_text;
+      if (currentRevision !== Number(suggestion.source_revision) || !sourceMatches) {
+        await supabase.from("mastery_editor_suggestions").update({ status: "stale", updated_at: new Date().toISOString() }).eq("id", suggestionId).eq("status", "pending");
+        return json(res, 409, { error: "The source changed after this suggestion was made. It was marked stale and was not applied." });
+      }
+      const inserted = suggestion.suggestion_type === "deletion" ? "" : suggestion.replacement_text;
+      const nextContent = suggestion.suggestion_type === "insertion"
+        ? `${content.slice(0, end)}${inserted}${content.slice(end)}`
+        : `${content.slice(0, start)}${inserted}${content.slice(end)}`;
+      const documentPatch = withMonthDocumentValue(month, suggestion.document_key, nextContent);
+      if (!documentPatch) return json(res, 400, { error: "This suggestion targets an unsupported document." });
+      const { data: updatedMonth, error: updateError } = await supabase.from("mastery_month_drafts").update({
+        ...documentPatch, revision: currentRevision + 1, updated_by: actor.name,
+      }).eq("slug", month.slug).eq("revision", currentRevision).select("*").maybeSingle();
+      if (updateError) throw updateError;
+      if (!updatedMonth) {
+        await supabase.from("mastery_editor_suggestions").update({ status: "stale", updated_at: new Date().toISOString() }).eq("id", suggestionId).eq("status", "pending");
+        return json(res, 409, { error: "The document changed while accepting this suggestion. Nothing was applied." });
+      }
+      await archiveMonthVersion(supabase, updatedMonth, { source: "suggestion-accepted", savedBy: actor.name });
+      const { data: decided, error: decisionError } = await supabase.from("mastery_editor_suggestions").update({
+        status: "accepted", decided_by: actor.id, decided_by_name: actor.name, decided_at: new Date().toISOString(),
+        applied_revision: currentRevision + 1, updated_at: new Date().toISOString(),
+      }).eq("id", suggestionId).eq("status", "pending").select("*").single();
+      if (decisionError) throw decisionError;
+      return json(res, 200, { suggestion: decided, month: monthEditableSnapshot(updatedMonth) });
     }
 
     if (action === "create-request") {

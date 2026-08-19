@@ -4,10 +4,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const apiSource = await readFile(new URL("../api/mastery-admin.js", import.meta.url), "utf8");
 const editorSource = await readFile(new URL("../src/admin/AdminBackend.jsx", import.meta.url), "utf8");
+const publicApiSource = await readFile(new URL("../api/mastery-content.js", import.meta.url), "utf8");
 
 for (const required of [
   'action === "revision"',
   'action === "editor-lease"',
+  'action === "create-suggestion"',
+  'action === "decide-suggestion"',
   'expected_revision',
   '.eq("revision", expectedRevision)',
   'return json(res, 409',
@@ -21,6 +24,14 @@ for (const required of [
   "editor-lease",
   "setInterval(checkRevision, 1500)",
 ]) assert.ok(editorSource.includes(required), `Editor collaboration guard missing: ${required}`);
+
+for (const forbidden of ["mastery_editor_comments", "mastery_editor_suggestions", "mastery_editor_leases"]) {
+  assert.ok(!publicApiSource.includes(forbidden), `Public content API must not expose ${forbidden}`);
+}
+for (const forbiddenColumn of ["revision", "updated_by", "admin_notes"]) {
+  const publicColumns = publicApiSource.match(/PUBLIC_MONTH_COLUMNS = "([^"]+)"/)?.[1] || "";
+  assert.ok(!publicColumns.split(",").map((item) => item.trim()).includes(forbiddenColumn), `Public content columns must not include ${forbiddenColumn}`);
+}
 
 if (process.env.MASTERY_COLLAB_INTEGRATION !== "1") {
   console.log("Collaboration foundation source QA passed.");
@@ -36,6 +47,8 @@ const handler = baseUrl ? null : (await import(`../api/mastery-admin.js?qa=${Dat
 const slug = `s1-collab-qa-${Date.now()}`;
 const actorA = { id: "qa-browser-a", name: "QA Browser A", email: "qa-a@example.com" };
 const actorB = { id: "qa-browser-b", name: "QA Browser B", email: "qa-b@example.com" };
+const customPrefix = "[[part-break:Part 1]]\n";
+const customSuffix = "\n[[copy-prompt:1]]";
 
 async function request(body) {
   if (baseUrl) {
@@ -76,7 +89,7 @@ try {
 
   const savedA = await request({
     action: "save", source: "manual", expected_revision: 1,
-    month: { ...created.data.month, guide_markdown: "Browser A saved" },
+    month: { ...created.data.month, guide_markdown: `${customPrefix}Browser A saved${customSuffix}` },
   });
   assert.equal(savedA.status, 200);
   assert.equal(savedA.data.month.revision, 2);
@@ -87,7 +100,7 @@ try {
   });
   assert.equal(staleB.status, 409);
   assert.equal(staleB.data.month.revision, 2);
-  assert.equal(staleB.data.month.guide_markdown, "Browser A saved");
+  assert.equal(staleB.data.month.guide_markdown, `${customPrefix}Browser A saved${customSuffix}`);
 
   const leaseA = await request({
     action: "editor-lease", operation: "acquire", actor: actorA,
@@ -114,16 +127,63 @@ try {
   });
   assert.equal(leaseBAfterRelease.data.lease.granted, true);
 
+  const makeSuggestion = async ({ type, content, quoted, replacement, revision }) => {
+    const start = content.indexOf(quoted);
+    assert.ok(start >= 0, `QA quote not found: ${quoted}`);
+    const createdSuggestion = await request({
+      action: "create-suggestion", actor: actorB, month_slug: slug, document_key: "guide",
+      suggestion_type: type, selection_start: start, selection_end: start + quoted.length,
+      quoted_text: quoted, replacement_text: replacement, source_revision: revision,
+    });
+    assert.equal(createdSuggestion.status, 200);
+    return createdSuggestion.data.suggestion;
+  };
+
+  let currentContent = `${customPrefix}Browser A saved${customSuffix}`;
+  let suggestion = await makeSuggestion({ type: "replacement", content: currentContent, quoted: "A", replacement: "Alpha", revision: 2 });
+  let decision = await request({ action: "decide-suggestion", actor: actorA, suggestion_id: suggestion.id, decision: "accepted" });
+  assert.equal(decision.status, 200);
+  assert.equal(decision.data.month.revision, 3);
+  currentContent = `${customPrefix}Browser Alpha saved${customSuffix}`;
+  assert.equal(decision.data.month.guide_markdown, currentContent);
+
+  suggestion = await makeSuggestion({ type: "insertion", content: currentContent, quoted: "Alpha", replacement: " team", revision: 3 });
+  decision = await request({ action: "decide-suggestion", actor: actorA, suggestion_id: suggestion.id, decision: "accepted" });
+  assert.equal(decision.status, 200);
+  assert.equal(decision.data.month.revision, 4);
+  currentContent = `${customPrefix}Browser Alpha team saved${customSuffix}`;
+  assert.equal(decision.data.month.guide_markdown, currentContent);
+
+  suggestion = await makeSuggestion({ type: "deletion", content: currentContent, quoted: "team ", replacement: "", revision: 4 });
+  decision = await request({ action: "decide-suggestion", actor: actorA, suggestion_id: suggestion.id, decision: "accepted" });
+  assert.equal(decision.status, 200);
+  assert.equal(decision.data.month.revision, 5);
+  currentContent = `${customPrefix}Browser Alpha saved${customSuffix}`;
+  assert.equal(decision.data.month.guide_markdown, currentContent);
+
+  suggestion = await makeSuggestion({ type: "replacement", content: currentContent, quoted: "Alpha", replacement: "Stale", revision: 5 });
+  const intervening = await request({
+    action: "save", source: "auto", expected_revision: 5,
+    month: { ...decision.data.month, guide_markdown: `${currentContent}\nElsewhere` },
+  });
+  assert.equal(intervening.status, 200);
+  const staleDecision = await request({ action: "decide-suggestion", actor: actorA, suggestion_id: suggestion.id, decision: "accepted" });
+  assert.equal(staleDecision.status, 409);
+  const { data: staleRow, error: staleError } = await supabase.from("mastery_editor_suggestions").select("status").eq("id", suggestion.id).single();
+  if (staleError) throw staleError;
+  assert.equal(staleRow.status, "stale");
+
   const { count, error } = await supabase
     .from("mastery_month_draft_versions")
     .select("id", { count: "exact", head: true })
     .eq("month_slug", slug);
   if (error) throw error;
-  assert.equal(count, 1, "Manual save should create exactly one checkpoint");
+  assert.equal(count, 4, "Manual save plus three accepted suggestions should create four checkpoints");
 
   console.log("Collaboration foundation integration QA passed.");
 } finally {
   await supabase.from("mastery_editor_leases").delete().eq("month_slug", slug);
+  await supabase.from("mastery_editor_suggestions").delete().eq("month_slug", slug);
   await supabase.from("mastery_month_draft_versions").delete().eq("month_slug", slug);
   await supabase.from("mastery_month_drafts").delete().eq("slug", slug);
 }
