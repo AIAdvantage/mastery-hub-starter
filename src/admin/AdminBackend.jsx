@@ -2399,7 +2399,7 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
       const suggestedAlt = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
       const alt = window.prompt("Caption / alt text (optional)", suggestedAlt) || "";
       insertText(`\n![${alt.trim()}](${data.url})\n\n`);
-      setMode("preview");
+      setMode("review");
       setUploadState("Screenshot inserted");
       window.setTimeout(() => setUploadState(""), 2200);
     } catch (err) {
