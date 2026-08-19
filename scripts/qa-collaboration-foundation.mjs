@@ -27,6 +27,7 @@ for (const required of [
   "review-selection-popover",
   "startRenderedComment(renderedSelection.mapped, true)",
   "suppressComposer={renderedSelection?.mode === \"comment\"}",
+  "onMouseUp={(event) => event.stopPropagation()}",
 ]) assert.ok(editorSource.includes(required), `Editor collaboration guard missing: ${required}`);
 
 for (const forbidden of ["mastery_editor_comments", "mastery_editor_suggestions", "mastery_editor_leases"]) {

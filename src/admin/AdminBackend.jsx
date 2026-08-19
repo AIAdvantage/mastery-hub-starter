@@ -2605,7 +2605,13 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
                 style={{ left: `${renderedSelection.left}px`, top: `${renderedSelection.top}px` }}
                 role={renderedSelection.mode === "comment" ? "dialog" : "toolbar"}
                 aria-label={renderedSelection.mode === "comment" ? "Add comment to selected text" : "Selected text actions"}
-                onMouseDown={(event) => renderedSelection.mode === "actions" && event.preventDefault()}
+                onMouseDown={(event) => {
+                  event.stopPropagation();
+                  if (renderedSelection.mode === "actions") event.preventDefault();
+                }}
+                onMouseUp={(event) => event.stopPropagation()}
+                onKeyUp={(event) => event.stopPropagation()}
+                onTouchEnd={(event) => event.stopPropagation()}
               >
                 {renderedSelection.mode === "comment" ? (
                   <div className="review-selection-composer">
