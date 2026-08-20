@@ -2238,7 +2238,13 @@ function MarkdownBoxEditor({ title, value, onChange, previewKind = "document", p
     setCommentDraft("");
     setCommentState("");
     if (contextual) {
-      setRenderedSelection((current) => current ? { ...current, mapped, mode: "comment" } : current);
+      setRenderedSelection((current) => {
+        if (!current) return current;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const composerHeight = Math.min(340, Math.max(220, viewportHeight - 24));
+        const top = Math.max(12, Math.min(current.top, viewportHeight - composerHeight - 12));
+        return { ...current, mapped, mode: "comment", top };
+      });
     } else {
       setRenderedSelection(null);
     }

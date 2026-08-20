@@ -5337,8 +5337,11 @@ h1 {
 }
 .review-selection-popover.is-composing {
   width: min(320px, calc(100vw - 24px));
+  max-height: min(340px, calc(100dvh - 24px));
+  overflow-y: auto;
   padding: 10px;
   background: #fffdf8;
+  overscroll-behavior: contain;
 }
 .review-selection-composer { display: grid; gap: 8px; width: 100%; }
 .review-selection-composer blockquote {
@@ -5352,6 +5355,7 @@ h1 {
 .review-selection-composer textarea {
   width: 100%;
   min-height: 78px;
+  max-height: 180px;
   resize: vertical;
   border: 1px solid rgba(49, 40, 32, 0.18);
   border-radius: 7px;
@@ -5360,7 +5364,15 @@ h1 {
   font: inherit;
   font-size: 13px;
 }
-.review-selection-composer > div { display: flex; justify-content: flex-end; gap: 7px; }
+.review-selection-composer > div {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  padding-top: 4px;
+  background: #fffdf8;
+}
 .review-selection-composer button:disabled { cursor: not-allowed; opacity: 0.46; }
 .review-selection-bar {
   position: sticky;
